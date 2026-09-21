@@ -20,11 +20,13 @@
     <changefreq>monthly</changefreq>
     <priority>0.78</priority>
   </url>
+  <!-- Temporarily removed — client asked to remove protocols (compliance risk). Restore when needed.
   <url>
     <loc>https://peplab.ai/protocols</loc>
     <changefreq>monthly</changefreq>
     <priority>0.86</priority>
   </url>
+  -->
   <url>
     <loc>https://peplab.ai/leaderboard</loc>
     <changefreq>weekly</changefreq>

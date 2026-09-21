@@ -19,7 +19,8 @@ export default function LandingNavigation() {
 
   const navEntries = [
     { label: 'Shop', href: shopPageUrl() },
-    { label: 'Protocols', href: shopUrl('/protocols') },
+    // Temporarily disabled — client asked to remove Protocols (compliance risk).
+    // { label: 'Protocols', href: shopUrl('/protocols') },
     { label: 'COA', href: shopUrl('/coa') },
     { label: 'Calculator', href: shopUrl('/calculator') },
     { label: 'About', href: shopUrl('/standards') },

@@ -12,7 +12,9 @@ import {
 import { CONFIG } from '@/lib/config';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/auspost';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
-import { HOME_PATH, SHOP_PATH, PROTOCOLS_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
+import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
+// PROTOCOLS_PATH temporarily unused — restore with Dosage chart footer link
+// import { HOME_PATH, SHOP_PATH, PROTOCOLS_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
 
 const HIGHLIGHTS = [
   {
@@ -130,9 +132,11 @@ export default function Footer() {
               <li>
                 <Link to="/standards">Our standards</Link>
               </li>
+              {/* Temporarily disabled — client asked to remove protocols (compliance risk).
               <li>
                 <Link to={PROTOCOLS_PATH}>Dosage chart</Link>
               </li>
+              */}
               <li>
                 <Link to={CALCULATOR_PATH}>Calculator</Link>
               </li>

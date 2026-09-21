@@ -157,9 +157,11 @@ export default function LandingFooter({ hideCta = false }: LandingFooterProps) {
               <li>
                 <a href={shopUrl('/standards')}>Our standards</a>
               </li>
+              {/* Temporarily disabled — client asked to remove protocols (compliance risk).
               <li>
                 <a href={shopUrl('/protocols')}>Dosage chart</a>
               </li>
+              */}
               <li>
                 <a href={shopUrl('/calculator')}>Peptide calculator</a>
               </li>

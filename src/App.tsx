@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, PROTOCOLS_PATH } from '@/lib/routes';
+// PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
+import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -53,7 +54,7 @@ const PromoterDashboard = lazy(() => import('@/pages/PromoterDashboard'));
 const TrackOrder = lazy(() => import('@/pages/TrackOrder'));
 const Leaderboard = lazy(() => import('@/pages/Leaderboard'));
 const Calculator = lazy(() => import('@/pages/Calculator'));
-const Protocols = lazy(() => import('@/pages/Protocols'));
+// const Protocols = lazy(() => import('@/pages/Protocols')); // temporarily disabled — restore with routes
 const CoaArchive = lazy(() => import('@/pages/CoaArchive'));
 const PeplabLandingRoute = lazy(() => import('@/pages/PeplabLandingRoute'));
 
@@ -456,8 +457,10 @@ function LoginOnlyApp() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/calculator" element={<Calculator />} />
+                {/* Temporarily disabled — client asked to remove protocols (compliance risk). Restore when needed.
                 <Route path="/protocols" element={<Protocols />} />
                 <Route path="/peptide-dosage-chart" element={<Navigate to={PROTOCOLS_PATH} replace />} />
+                */}
                 <Route path="/coa" element={<CoaArchive />} />
                 <Route path="/track-order" element={<TrackOrder />} />
 
@@ -538,8 +541,10 @@ function App() {
               <Route path="/promoter" element={<PromoterDashboard />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/calculator" element={<Calculator />} />
+              {/* Temporarily disabled — client asked to remove protocols (compliance risk). Restore when needed.
               <Route path="/protocols" element={<Protocols />} />
               <Route path="/peptide-dosage-chart" element={<Navigate to="/protocols" replace />} />
+              */}
               <Route path="/coa" element={<CoaArchive />} />
               <Route path="/track-order" element={<TrackOrder />} />
               <Route path="*" element={<NotFound />} />
