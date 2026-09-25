@@ -61,14 +61,17 @@ function CatalogCategoryDropdown({
     const el = rootRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    const width = r.width;
+    const bar = el.closest('.catalog-search')?.getBoundingClientRect();
+    const narrow = window.innerWidth < 720;
+    const anchor = narrow && bar ? bar : r;
+    const width = narrow ? Math.min(anchor.width, window.innerWidth - 24) : r.width;
     const gap = 8;
     const spaceBelow = window.innerHeight - r.bottom - gap - 12;
     const spaceAbove = r.top - gap - 12;
     // Prefer opening down; flip up only when below is clearly tighter.
     const openUp = spaceBelow < 280 && spaceAbove > spaceBelow;
     const maxHeight = Math.min(openUp ? spaceAbove : spaceBelow, 520);
-    const left = Math.min(r.left, window.innerWidth - width - 12);
+    const left = Math.min(anchor.left, window.innerWidth - width - 12);
     setMenuPos({
       top: openUp ? r.top - gap : r.bottom + gap,
       left: Math.max(12, left),
@@ -118,16 +121,8 @@ function CatalogCategoryDropdown({
 
   const itemClass = (active: boolean) =>
     [
-      'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] leading-snug transition-colors',
-      active
-        ? 'bg-[#7DD3FC] text-[#0B1220] font-semibold'
-        : 'text-[#E8EEF8] hover:bg-[#1c2638]',
-    ].join(' ');
-
-  const iconWrap = (accent: string, active: boolean) =>
-    [
-      'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg',
-      active ? 'bg-[rgba(11,18,32,0.18)]' : 'bg-[rgba(244,246,250,0.06)]',
+      'catalog-cat-item',
+      active ? 'is-active' : '',
     ].join(' ');
 
   const AllIcon = ALL_CATEGORIES_ICON;
@@ -149,31 +144,31 @@ function CatalogCategoryDropdown({
               maxHeight: menuPos.maxHeight,
               zIndex: 9999,
             }}
-            className="catalog-cat-menu overflow-y-auto overscroll-contain rounded-2xl border border-[rgba(173,198,230,0.22)] bg-[#0E1524] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.65),0_0_0_1px_rgba(125,211,252,0.06)]"
+            className="catalog-cat-menu"
           >
             <li role="option" aria-selected={!value}>
               <button type="button" className={itemClass(!value)} onClick={() => pick('')}>
-                <span className={iconWrap(ALL_CATEGORIES_ACCENT, !value)} aria-hidden>
+                <span className="catalog-cat-icon" aria-hidden>
                   <AllIcon
                     className="h-3.5 w-3.5"
-                    style={{ color: !value ? '#0B1220' : ALL_CATEGORIES_ACCENT }}
+                    style={{ color: ALL_CATEGORIES_ACCENT }}
                     strokeWidth={2}
                   />
                 </span>
                 <span className="truncate">All Categories</span>
               </button>
             </li>
-            <li aria-hidden className="my-1 mx-2 h-px bg-[rgba(244,246,250,0.08)]" />
+            <li aria-hidden className="catalog-cat-rule" />
             {RESEARCH_CATEGORIES.map((cat) => {
               const active = value === cat.id;
               const Icon = cat.icon;
               return (
                 <li key={cat.id} role="option" aria-selected={active}>
                   <button type="button" className={itemClass(active)} onClick={() => pick(cat.id)}>
-                    <span className={iconWrap(cat.accent, active)} aria-hidden>
+                    <span className="catalog-cat-icon" aria-hidden>
                       <Icon
                         className="h-3.5 w-3.5"
-                        style={{ color: active ? '#0B1220' : cat.accent }}
+                        style={{ color: cat.accent }}
                         strokeWidth={2}
                       />
                     </span>
@@ -188,27 +183,22 @@ function CatalogCategoryDropdown({
       : null;
 
   return (
-    <div ref={rootRef} className="relative w-[140px] sm:w-[200px] lg:w-[220px] shrink-0">
+    <div ref={rootRef} className="catalog-cat">
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen((v) => !v)}
-        className="flex h-full min-h-[48px] w-full items-center justify-between gap-2 border-l border-[rgba(244,246,250,0.12)] bg-[#0d121f] pl-3 pr-3 text-sm text-[#F4F6FA] transition-colors hover:bg-[#111827] focus:outline-none focus-visible:bg-[#111827]"
+        className={`catalog-cat-trigger${open ? ' is-open' : ''}`}
       >
-        <span className="flex min-w-0 items-center gap-2">
-          <span
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[rgba(244,246,250,0.06)]"
-            aria-hidden
-          >
+        <span className="catalog-cat-trigger-label">
+          <span className="catalog-cat-icon" aria-hidden>
             <TriggerIcon className="h-3.5 w-3.5" style={{ color: triggerAccent }} strokeWidth={2} />
           </span>
           <span className="truncate">{selected ? selected.label : 'All Categories'}</span>
         </span>
-        <ChevronDown
-          className={`h-4 w-4 shrink-0 text-[#C8D4E8] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
+        <ChevronDown className="catalog-cat-chevron" />
       </button>
       {menu}
     </div>
@@ -299,6 +289,108 @@ function HalloweenPumpkinIcon({ className }: { className?: string }) {
 
       <use href={`#${carveId}`} fill="#FDE047" opacity="0.9" filter={`url(#${glowId})`} />
       <use href={`#${carveId}`} fill={`url(#${faceId})`} />
+    </svg>
+  );
+}
+
+type SectionKind = 'hot' | 'trend' | 'popular' | 'essential' | 'more';
+
+/** Two-tone marks for the shop headings. Color sits on the symbol only. */
+function SectionGlyph({ kind }: { kind: SectionKind }) {
+  const uid = useId().replace(/:/g, '');
+  const fill = `sgf-${uid}`;
+  const tone: Record<SectionKind, [string, string]> = {
+    hot: ['#FDE68A', '#F43F5E'],
+    trend: ['#E9D5FF', '#7C3AED'],
+    popular: ['#DBEAFE', '#3B82F6'],
+    essential: ['#A7F3D0', '#10B981'],
+    more: ['#99F6E4', '#14B8A6'],
+  };
+  const [light, deep] = tone[kind];
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+      <defs>
+        <linearGradient id={fill} x1="4" y1="20" x2="20" y2="3" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={deep} />
+          <stop offset="100%" stopColor={light} />
+        </linearGradient>
+      </defs>
+      {kind === 'hot' && (
+        <>
+          <path
+            fill={`url(#${fill})`}
+            d="M12 1.6c.3 2.5-1.1 4-2.2 5 1.9-.3 3.4-1.7 3.8-3.6.7 1.9 3 3.2 3 6 0 4.8-2.9 8.6-6.6 8.6S3.4 13.8 3.4 9c0-2.3 1.4-4 2.5-5.4.6 1.6 1.7 2.6 3.1 2.8C8 4.6 9.7 2.6 12 1.6Z"
+          />
+          <path
+            fill="#fff"
+            opacity="0.72"
+            d="M12 9.4c.4 1.1 0 2-.6 2.5.7-.2 1.2-.8 1.4-1.6.3.7 1.1 1.3 1.1 2.4 0 1.9-1.3 3.4-2.9 3.4s-2.9-1.5-2.9-3.4c0-1 .5-1.8 1-2.4.3.6.8 1 1.2 1.2-.4-.7.2-1.8 1.7-2.1Z"
+          />
+        </>
+      )}
+      {kind === 'trend' && (
+        <>
+          <path
+            d="M3 16.8c2.4-.2 3.4-4.6 6-4.6 2.4 0 2.8 3.2 5.2 3.2 2.6 0 3.4-6.6 6.8-7.8"
+            stroke={`url(#${fill})`}
+            strokeWidth="1.7"
+            strokeLinecap="round"
+          />
+          <path
+            d="M16.6 6.1h4.6V10.7"
+            stroke={light}
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="20.9" cy="6.4" r="1.15" fill={light} />
+        </>
+      )}
+      {kind === 'popular' && (
+        <>
+          <path
+            fill={`url(#${fill})`}
+            d="m12 1.8 2.15 5.05 5.45.5-4.15 3.55 1.28 5.3L12 13.4 7.27 16.2l1.28-5.3L4.4 7.35l5.45-.5L12 1.8Z"
+          />
+          <path fill="#fff" opacity="0.55" d="M12 1.8 13.1 4.4 12 8.6 10.9 4.4 12 1.8Z" />
+        </>
+      )}
+      {kind === 'essential' && (
+        <>
+          <path
+            fill={`url(#${fill})`}
+            d="M9.1 2.4h5.8v1.5h1.1v1.5H8V3.9h1.1V2.4Z"
+          />
+          <path
+            stroke={`url(#${fill})`}
+            strokeWidth="1.45"
+            d="M8.2 6.2h7.6v10.2a2.2 2.2 0 0 1-2.2 2.2H10.4a2.2 2.2 0 0 1-2.2-2.2V6.2Z"
+          />
+          <path fill={`url(#${fill})`} d="M8.7 12.6h6.6v3.5a1.7 1.7 0 0 1-1.7 1.7h-3.2a1.7 1.7 0 0 1-1.7-1.7v-3.5Z" />
+          <path d="M10.1 8.1v4.4" stroke="#fff" strokeOpacity="0.7" strokeWidth="1" strokeLinecap="round" />
+        </>
+      )}
+      {kind === 'more' && (
+        <>
+          <path fill={`url(#${fill})`} d="M12 3.2 20.2 7.1 12 11 3.8 7.1 12 3.2Z" />
+          <path
+            d="M4.2 10.2 12 14l7.8-3.8"
+            stroke={`url(#${fill})`}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M4.2 14.2 12 18 19.8 14.2"
+            stroke={light}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.85"
+          />
+        </>
+      )}
     </svg>
   );
 }
@@ -616,30 +708,21 @@ export default function Catalog() {
           </h1>
 
           {/* Search + research category filter — full content width */}
-          <div className="flex w-full flex-row items-stretch rounded-xl border border-[rgba(244,246,250,0.12)] bg-[#0d121f]">
-            <div className="relative min-w-0 flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A9B3C7] pointer-events-none" />
+          <div className="catalog-search">
+            <label className="catalog-search-field">
+              <Search aria-hidden />
               <input
                 type="text"
                 placeholder="Search peptides, e.g. Tirzepatide, BPC-157, GHK-Cu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-full min-h-[48px] w-full rounded-l-xl bg-transparent pl-11 pr-4 text-[#F4F6FA] placeholder-[#A9B3C7] focus:outline-none focus:ring-1 focus:ring-inset focus:ring-[#2ED1B4]"
+                aria-label="Search peptides"
               />
-            </div>
+            </label>
             <CatalogCategoryDropdown
               value={selectedCategoryId}
               onChange={setSelectedCategoryId}
             />
-            <button
-              type="button"
-              onClick={() => {
-                gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="shrink-0 rounded-r-[11px] bg-[#2ED1B4] px-5 sm:px-8 text-sm font-semibold text-[#070A12] transition-colors hover:bg-[#1FA896] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#7DE8D4]"
-            >
-              Search
-            </button>
           </div>
 
           {/* Research Disclaimer Banner — infinite marquee */}
@@ -741,7 +824,9 @@ export default function Catalog() {
                   {bestSellers.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-xl">🔥</span>
+                        <span className="catalog-section-mark" aria-hidden>
+                          <SectionGlyph kind="hot" />
+                        </span>
                         <h3 className="text-lg sm:text-xl font-bold text-[#F4F6FA]">Best Sellers</h3>
                         <span className="px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.15)] text-[#EF4444] text-[10px] font-mono uppercase">
                           Very High Demand
@@ -757,7 +842,9 @@ export default function Catalog() {
                   {highPopularity.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-xl">⭐</span>
+                        <span className="catalog-section-mark" aria-hidden>
+                          <SectionGlyph kind="trend" />
+                        </span>
                         <h3 className="text-lg sm:text-xl font-bold text-[#F4F6FA]">High Popularity</h3>
                         <span className="px-2 py-0.5 rounded-full bg-[rgba(139,92,246,0.15)] text-[#8B5CF6] text-[10px] font-mono uppercase">
                           Trending Now
@@ -773,6 +860,9 @@ export default function Catalog() {
                   {popular.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
+                        <span className="catalog-section-mark" aria-hidden>
+                          <SectionGlyph kind="popular" />
+                        </span>
                         <h3 className="text-lg sm:text-xl font-bold text-[#F4F6FA]">Popular</h3>
                         <span className="px-2 py-0.5 rounded-full bg-[rgba(59,130,246,0.15)] text-[#3B82F6] text-[10px] font-mono uppercase">
                           Research Favourites
@@ -788,7 +878,9 @@ export default function Catalog() {
                   {essentials.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-xl">🧪</span>
+                        <span className="catalog-section-mark" aria-hidden>
+                          <SectionGlyph kind="essential" />
+                        </span>
                         <h3 className="text-lg sm:text-xl font-bold text-[#F4F6FA]">Essentials</h3>
                         <span className="px-2 py-0.5 rounded-full bg-[rgba(34,197,94,0.15)] text-[#22C55E] text-[10px] font-mono uppercase">
                           Must Haves
@@ -804,6 +896,9 @@ export default function Catalog() {
                   {otherCategories.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
+                        <span className="catalog-section-mark" aria-hidden>
+                          <SectionGlyph kind="more" />
+                        </span>
                         <h3 className="text-lg sm:text-xl font-bold text-[#F4F6FA]">More Products</h3>
                       </div>
                       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
