@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 // PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
-import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
+import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_RETATRUTIDE_PATH } from '@/lib/routes';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -38,6 +38,9 @@ const Legal = lazy(() => import('@/pages/Legal'));
 const Shipping = lazy(() => import('@/pages/Shipping'));
 const ContactInfo = lazy(() => import('@/pages/ContactInfo'));
 const Standards = lazy(() => import('@/pages/Standards'));
+const Research = lazy(() => import('@/pages/Research'));
+const ResearchCompounds = lazy(() => import('@/pages/ResearchCompounds'));
+const ResearchRetatrutide = lazy(() => import('@/pages/ResearchRetatrutide'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -453,6 +456,9 @@ function LoginOnlyApp() {
                 <Route path="/shipping" element={<Shipping />} />
                 <Route path="/contact-info" element={<ContactInfo />} />
                 <Route path="/standards" element={<Standards />} />
+                <Route path={RESEARCH_PATH} element={<Research />} />
+                <Route path={RESEARCH_COMPOUNDS_PATH} element={<ResearchCompounds />} />
+                <Route path={RESEARCH_RETATRUTIDE_PATH} element={<ResearchRetatrutide />} />
                 <Route path="/rewards-terms" element={<RewardsTerms />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
@@ -528,6 +534,9 @@ function App() {
               <Route path="/shipping" element={<Shipping />} />
               <Route path="/contact-info" element={<ContactInfo />} />
               <Route path="/standards" element={<Standards />} />
+              <Route path={RESEARCH_PATH} element={<Research />} />
+              <Route path={RESEARCH_COMPOUNDS_PATH} element={<ResearchCompounds />} />
+              <Route path={RESEARCH_RETATRUTIDE_PATH} element={<ResearchRetatrutide />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

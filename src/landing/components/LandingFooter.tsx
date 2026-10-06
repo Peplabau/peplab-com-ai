@@ -152,6 +152,9 @@ export default function LandingFooter({ hideCta = false }: LandingFooterProps) {
             <h4 className="rg-footer-col-heading">Quality</h4>
             <ul className="rg-footer-links">
               <li>
+                <a href={shopUrl('/research')}>Research</a>
+              </li>
+              <li>
                 <a href={coaArchiveUrl()}>COA results</a>
               </li>
               <li>

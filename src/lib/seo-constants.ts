@@ -38,4 +38,19 @@ export const PAGE_SEO = {
     description:
       'How PEPLAB Australia tests every peptide batch: HPLC purity, identity verification, published COAs, and research-grade handling standards.',
   },
+  research: {
+    title: 'Peptide Research Overview | PEPLAB Australia',
+    description:
+      'Understanding peptides, scientific evidence and laboratory testing. Learn how to assess research papers, HPLC purity, mass spectrometry and Certificates of Analysis.',
+  },
+  researchCompounds: {
+    title: 'Find Your Compound | PEPLAB Research',
+    description:
+      'Browse the PEPLAB Research Library. Open compound-specific research overviews covering mechanism, published studies and analytical testing.',
+  },
+  researchRetatrutide: {
+    title: 'Retatrutide Research Overview | PEPLAB Australia',
+    description:
+      'Retatrutide (LY3437943) research overview: GIP, GLP-1 and glucagon triple receptor activity, Phase 2 and Phase 3 findings, safety context and COA guidance.',
+  },
 } as const;

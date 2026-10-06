@@ -16,6 +16,15 @@ export const PROTOCOLS_PATH = '/protocols';
 /** Published COA archive — all products with certificates on file. */
 export const COA_ARCHIVE_PATH = '/coa';
 
+/** Peptide research overview (educational / compliance content). */
+export const RESEARCH_PATH = '/research';
+
+/** Find Your Compound — research section compound index. */
+export const RESEARCH_COMPOUNDS_PATH = '/research/compounds';
+
+/** Retatrutide compound research overview (first of series). */
+export const RESEARCH_RETATRUTIDE_PATH = '/research/compounds/retatrutide';
+
 import { CONFIG } from '@/lib/config';
 
 /** Full URL for external links (subdomain override via env). */

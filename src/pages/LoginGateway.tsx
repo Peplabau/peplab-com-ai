@@ -24,6 +24,7 @@ import {
   Shield,
   Scale,
   ShoppingBag,
+  FlaskConical,
 } from 'lucide-react';
 import { supabase, signIn, signUp, getCurrentUser } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
@@ -35,7 +36,7 @@ import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/s
 import { HOMEPAGE_SEO_DESCRIPTION } from '@/lib/seo-constants';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
 import { validateSignupReferralCode } from '@/lib/signup-referral';
-import { CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
+import { CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH } from '@/lib/routes';
 
 const VERIFICATION_PENDING_COPY =
   "Your account is created. We've also sent a quick confirmation email — open it to finish setting up your dashboard access.";
@@ -711,6 +712,14 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
             </Link>
             <span className="text-[#6B7280]"> · </span>
             <Link
+              to={RESEARCH_PATH}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.05)] transition-colors"
+            >
+              <FlaskConical className="w-3.5 h-3.5 opacity-70" />
+              Research
+            </Link>
+            <span className="text-[#6B7280]"> · </span>
+            <Link
               to={CALCULATOR_PATH}
               className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.05)] transition-colors"
             >
@@ -730,6 +739,9 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
             </Link>
             <Link to="/contact-info" className="hover:text-[#A9B3C7] transition-colors">
               Contact
+            </Link>
+            <Link to={RESEARCH_PATH} className="hover:text-[#A9B3C7] transition-colors">
+              Research
             </Link>
             <Link to="/standards" className="hover:text-[#A9B3C7] transition-colors">
               Standards
