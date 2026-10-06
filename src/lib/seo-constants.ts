@@ -78,4 +78,9 @@ export const PAGE_SEO = {
     description:
       'Explore tesamorelin research on growth hormone signalling, visceral fat and liver fat, with human studies, evidence limitations and COA guidance.',
   },
+  researchCjcIpa: {
+    title: 'CJC-1295 No DAC + Ipamorelin Research | PEPLAB',
+    description:
+      'Explore CJC-1295 No DAC + ipamorelin research, growth hormone pathways, DAC differences, component studies and the limits of blend evidence.',
+  },
 } as const;

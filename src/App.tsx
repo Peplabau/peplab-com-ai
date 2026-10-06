@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 // PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
-import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_RETATRUTIDE_PATH, RESEARCH_GHK_CU_PATH, RESEARCH_MOTS_C_PATH, RESEARCH_BPC_TB_PATH, RESEARCH_TIRZEPATIDE_PATH, RESEARCH_TESAMORELIN_PATH } from '@/lib/routes';
+import { LANDING_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_RETATRUTIDE_PATH, RESEARCH_GHK_CU_PATH, RESEARCH_MOTS_C_PATH, RESEARCH_BPC_TB_PATH, RESEARCH_TIRZEPATIDE_PATH, RESEARCH_TESAMORELIN_PATH, RESEARCH_CJC_IPA_PATH } from '@/lib/routes';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -46,6 +46,7 @@ const ResearchMotsC = lazy(() => import('@/pages/ResearchMotsC'));
 const ResearchBpcTbBlend = lazy(() => import('@/pages/ResearchBpcTbBlend'));
 const ResearchTirzepatide = lazy(() => import('@/pages/ResearchTirzepatide'));
 const ResearchTesamorelin = lazy(() => import('@/pages/ResearchTesamorelin'));
+const ResearchCjcIpaBlend = lazy(() => import('@/pages/ResearchCjcIpaBlend'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -469,6 +470,7 @@ function LoginOnlyApp() {
                 <Route path={RESEARCH_BPC_TB_PATH} element={<ResearchBpcTbBlend />} />
                 <Route path={RESEARCH_TIRZEPATIDE_PATH} element={<ResearchTirzepatide />} />
                 <Route path={RESEARCH_TESAMORELIN_PATH} element={<ResearchTesamorelin />} />
+                <Route path={RESEARCH_CJC_IPA_PATH} element={<ResearchCjcIpaBlend />} />
                 <Route path="/rewards-terms" element={<RewardsTerms />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
@@ -552,6 +554,7 @@ function App() {
               <Route path={RESEARCH_BPC_TB_PATH} element={<ResearchBpcTbBlend />} />
               <Route path={RESEARCH_TIRZEPATIDE_PATH} element={<ResearchTirzepatide />} />
               <Route path={RESEARCH_TESAMORELIN_PATH} element={<ResearchTesamorelin />} />
+              <Route path={RESEARCH_CJC_IPA_PATH} element={<ResearchCjcIpaBlend />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

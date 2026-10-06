@@ -40,6 +40,9 @@ export const RESEARCH_TIRZEPATIDE_PATH = '/research/compounds/tirzepatide';
 /** Tesamorelin compound research overview. */
 export const RESEARCH_TESAMORELIN_PATH = '/research/compounds/tesamorelin';
 
+/** CJC-1295 No DAC + Ipamorelin blend research overview. */
+export const RESEARCH_CJC_IPA_PATH = '/research/compounds/cjc-1295-no-dac-ipamorelin';
+
 import { CONFIG } from '@/lib/config';
 
 /** Full URL for external links (subdomain override via env). */

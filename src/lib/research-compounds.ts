@@ -80,6 +80,16 @@ export const RESEARCH_COMPOUNDS: ResearchCompound[] = [
     productSlug: 'tesamorelin',
     overviewPath: '/research/compounds/tesamorelin',
   },
+  {
+    slug: 'cjc-1295-no-dac-ipamorelin',
+    name: 'CJC-1295 No DAC + Ipamorelin',
+    category: 'Peptide Blends / Growth Hormone',
+    cardTitle: 'What is CJC-1295 No DAC + Ipamorelin Blend?',
+    cardDescription:
+      'A two-pathway growth hormone blend — No DAC vs long-acting CJC-1295, ipamorelin component evidence and the limits of blend claims.',
+    productSlug: 'cjc-1295-no-dac-ipa-5mg',
+    overviewPath: '/research/compounds/cjc-1295-no-dac-ipamorelin',
+  },
 ];
 
 export function getResearchCompound(slug: string): ResearchCompound | undefined {
