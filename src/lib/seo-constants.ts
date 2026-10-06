@@ -53,4 +53,29 @@ export const PAGE_SEO = {
     description:
       'Retatrutide (LY3437943) research overview: GIP, GLP-1 and glucagon triple receptor activity, Phase 2 and Phase 3 findings, safety context and COA guidance.',
   },
+  researchGhkCu: {
+    title: 'GHK-Cu Research: Copper Peptide, Skin & Collagen | PEPLAB',
+    description:
+      'Explore GHK-Cu copper peptide research on collagen, skin, tissue repair and hair, with original studies, evidence limitations and guidance on COA testing.',
+  },
+  researchMotsC: {
+    title: 'MOTS-C Research: Mitochondria & Metabolism | PEPLAB',
+    description:
+      'Explore MOTS-C research on mitochondrial signalling, AMPK, metabolic regulation and exercise, with original studies and clear human-evidence limits.',
+  },
+  researchBpcTb: {
+    title: 'BPC-157 + TB-500 Blend Research & Evidence | PEPLAB',
+    description:
+      'Explore BPC-157 + TB-500 blend research, component evidence, tissue-repair models, TB-500 identity and the limitations of combination claims.',
+  },
+  researchTirzepatide: {
+    title: 'Tirzepatide Research: GIP, GLP-1 & Metabolism | PEPLAB',
+    description:
+      'Explore tirzepatide research on GIP and GLP-1 receptor activity, body weight and glucose regulation, with clinical studies, FAQs and COA guidance.',
+  },
+  researchTesamorelin: {
+    title: 'Tesamorelin Research: GHRH & Visceral Fat | PEPLAB',
+    description:
+      'Explore tesamorelin research on growth hormone signalling, visceral fat and liver fat, with human studies, evidence limitations and COA guidance.',
+  },
 } as const;

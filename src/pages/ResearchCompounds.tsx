@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ChevronDown, FlaskConical, Search } from 'lucide-react';
+import { ArrowRight, ChevronDown, FlaskConical, Search } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
+import ContentPageHeader from '@/components/ContentPageHeader';
 import ProductImage from '@/components/ProductImage';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
@@ -89,25 +90,7 @@ export default function ResearchCompounds() {
       <div className="min-h-screen" style={{ background: '#070A12' }}>
         <div className="absolute inset-0 grid-overlay opacity-60 pointer-events-none" />
 
-        <nav className="relative z-50 px-6 lg:px-12 py-6">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex flex-col items-start">
-              <span className="text-3xl lg:text-4xl font-bold tracking-[0.12em] gradient-text leading-none">
-                PEPLAB
-              </span>
-              <span className="text-xs lg:text-sm font-mono uppercase tracking-[0.5em] text-[#8B5CF6] mt-0.5">
-                PEPTIDES AUSTRALIA
-              </span>
-            </Link>
-            <Link
-              to={RESEARCH_PATH}
-              className="flex items-center gap-2 text-sm text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Overview
-            </Link>
-          </div>
-        </nav>
+        <ContentPageHeader />
 
         <main className="relative z-10 px-6 lg:px-12 py-12 lg:py-16">
           <div className="max-w-3xl mx-auto">
