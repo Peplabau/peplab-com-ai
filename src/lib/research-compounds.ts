@@ -1,6 +1,8 @@
 /**
  * Research Library compounds — Find Your Compound cards + overview routes.
  * Add compounds here as dedicated overview pages ship.
+ *
+ * `productSlug` matches the live storefront slug (images come from Supabase).
  */
 
 export type ResearchCompound = {
@@ -11,8 +13,8 @@ export type ResearchCompound = {
   cardTitle: string;
   /** Short card blurb */
   cardDescription: string;
-  /** Product vial image in /public */
-  image: string;
+  /** Live shop product slug used to resolve vial image from Supabase */
+  productSlug: string;
   /** When set, card links to this overview path */
   overviewPath: string | null;
 };
@@ -25,7 +27,7 @@ export const RESEARCH_COMPOUNDS: ResearchCompound[] = [
     cardTitle: 'What is Retatrutide?',
     cardDescription:
       'An investigational GIP / GLP-1 / glucagon triple receptor agonist (LY3437943) — classification, receptor mechanism and the research record.',
-    image: '/retatrutide.png',
+    productSlug: 'reta',
     overviewPath: '/research/compounds/retatrutide',
   },
 ];

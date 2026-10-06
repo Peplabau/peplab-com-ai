@@ -1,18 +1,63 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, ChevronDown, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, FlaskConical, Search } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
+import ProductImage from '@/components/ProductImage';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import { RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
 import { RESEARCH_COMPOUNDS } from '@/lib/research-compounds';
+import { resolveProductSlug } from '@/lib/product-slug-aliases';
+import { loadProductsFromSupabase } from '@/lib/supabase-db';
+import type { Product } from '@/products';
 import Footer from '@/sections/Footer';
 import { ResearchSectionNav } from '@/components/ResearchSectionNav';
+
+function resolveCompoundImage(
+  productSlug: string,
+  productsById: Map<string, Product>,
+): string {
+  const canonical = resolveProductSlug(productSlug).toLowerCase();
+  const product =
+    productsById.get(canonical) ||
+    productsById.get(productSlug.toLowerCase()) ||
+    [...productsById.values()].find(
+      (p) =>
+        p.id.toLowerCase() === canonical ||
+        p.id.toLowerCase() === productSlug.toLowerCase() ||
+        p.name.toLowerCase() === productSlug.toLowerCase(),
+    );
+
+  if (!product) return '';
+  const dosageImage = product.dosages?.find((d) => d.imageUrl)?.imageUrl;
+  return dosageImage || product.image || '';
+}
 
 export default function ResearchCompounds() {
   const [query, setQuery] = useState('');
   const [sortOpen, setSortOpen] = useState(false);
+  const [imageBySlug, setImageBySlug] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    loadProductsFromSupabase()
+      .then((products) => {
+        if (cancelled) return;
+        const byId = new Map(products.map((p) => [p.id.toLowerCase(), p]));
+        const next: Record<string, string> = {};
+        for (const compound of RESEARCH_COMPOUNDS) {
+          next[compound.slug] = resolveCompoundImage(compound.productSlug, byId);
+        }
+        setImageBySlug(next);
+      })
+      .catch(() => {
+        /* keep empty images */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const compounds = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -120,16 +165,21 @@ export default function ResearchCompounds() {
                 </div>
               ) : (
                 compounds.map((compound) => {
+                  const imageSrc = imageBySlug[compound.slug] || '';
                   const CardInner = (
                     <>
                       <div className="flex gap-4 p-4 sm:p-5">
-                        <div className="h-20 w-16 sm:h-24 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[rgba(7,10,18,0.8)] border border-[rgba(244,246,250,0.06)]">
-                          <img
-                            src={compound.image}
-                            alt=""
-                            className="h-full w-full object-contain p-1"
-                            loading="lazy"
-                          />
+                        <div className="h-20 w-16 sm:h-24 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[rgba(7,10,18,0.8)] border border-[rgba(244,246,250,0.06)] flex items-center justify-center">
+                          {imageSrc ? (
+                            <ProductImage
+                              src={imageSrc}
+                              alt={`${compound.name} vial`}
+                              className="h-full w-full object-contain p-1"
+                              variant="card"
+                            />
+                          ) : (
+                            <FlaskConical className="w-7 h-7 text-[#8B5CF6] opacity-60" />
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-[#2ED1B4] mb-1.5">

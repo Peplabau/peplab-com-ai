@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
+import ProductImage from '@/components/ProductImage';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import {
@@ -19,6 +21,8 @@ import {
   RESEARCH_COMPOUNDS_PATH,
   RESEARCH_RETATRUTIDE_PATH,
 } from '@/lib/routes';
+import { resolveProductSlug } from '@/lib/product-slug-aliases';
+import { loadProductsFromSupabase } from '@/lib/supabase-db';
 import Footer from '@/sections/Footer';
 
 const sectionClass =
@@ -121,6 +125,32 @@ function ExtLink({ href, children }: { href: string; children: ReactNode }) {
 }
 
 export default function ResearchRetatrutide() {
+  const [imageSrc, setImageSrc] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    loadProductsFromSupabase()
+      .then((products) => {
+        if (cancelled) return;
+        const slug = resolveProductSlug('retatrutide').toLowerCase();
+        const product = products.find(
+          (p) =>
+            p.id.toLowerCase() === slug ||
+            p.id.toLowerCase() === 'reta' ||
+            p.name.toLowerCase() === 'retatrutide',
+        );
+        if (!product) return;
+        const dosageImage = product.dosages?.find((d) => d.imageUrl)?.imageUrl;
+        setImageSrc(dosageImage || product.image || '');
+      })
+      .catch(() => {
+        /* keep placeholder */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <>
       <SEO
@@ -163,12 +193,17 @@ export default function ResearchRetatrutide() {
         <main className="relative z-10 px-6 lg:px-12 py-12 lg:py-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <div className="mx-auto mb-6 h-28 w-24 overflow-hidden rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.6)]">
-                <img
-                  src="/retatrutide.png"
-                  alt="Retatrutide research vial"
-                  className="h-full w-full object-contain p-2"
-                />
+              <div className="mx-auto mb-6 h-28 w-24 overflow-hidden rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.6)] flex items-center justify-center">
+                {imageSrc ? (
+                  <ProductImage
+                    src={imageSrc}
+                    alt="Retatrutide research vial"
+                    className="h-full w-full object-contain p-2"
+                    variant="card"
+                  />
+                ) : (
+                  <FlaskConical className="w-10 h-10 text-[#8B5CF6] opacity-60" />
+                )}
               </div>
               <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-[#2ED1B4] mb-3">
                 GLP-1 / Incretin
