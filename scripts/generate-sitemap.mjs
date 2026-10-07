@@ -32,7 +32,10 @@ function envVar(name, fallback) {
   return fallback;
 }
 
-const SITE_URL = envVar('VITE_SITE_URL', 'https://peplab.com.au').replace(/\/$/, '');
+// Always peplab.com.au for this repo. `prebuild` regenerates sitemap.xml on every
+// deploy — reading VITE_SITE_URL previously rewrote live URLs to peplab.ai when
+// that env var was mis-set on Vercel (shop handoff uses VITE_MAIN_APP_ORIGIN).
+const SITE_URL = 'https://peplab.com.au';
 
 const STATIC_ROUTES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
