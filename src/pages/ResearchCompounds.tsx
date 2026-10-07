@@ -8,7 +8,7 @@ import ProductImage from '@/components/ProductImage';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import { RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
-import { RESEARCH_COMPOUNDS } from '@/lib/research-compounds';
+import { loadResearchCompounds, type ResearchCompound } from '@/lib/research-compounds';
 import { resolveProductSlug } from '@/lib/product-slug-aliases';
 import { loadProductsFromSupabase } from '@/lib/supabase-db';
 import type { Product } from '@/products';
@@ -37,40 +37,47 @@ function resolveCompoundImage(
 
 export default function ResearchCompounds() {
   const [query, setQuery] = useState('');
-  const [sortOpen, setSortOpen] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(true);
+  const [compounds, setCompounds] = useState<ResearchCompound[]>([]);
+  const [loading, setLoading] = useState(true);
   const [imageBySlug, setImageBySlug] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let cancelled = false;
-    loadProductsFromSupabase()
-      .then((products) => {
+    (async () => {
+      const list = await loadResearchCompounds();
+      if (cancelled) return;
+      setCompounds(list);
+      setLoading(false);
+
+      try {
+        const products = await loadProductsFromSupabase();
         if (cancelled) return;
         const byId = new Map(products.map((p) => [p.id.toLowerCase(), p]));
         const next: Record<string, string> = {};
-        for (const compound of RESEARCH_COMPOUNDS) {
+        for (const compound of list) {
           next[compound.slug] = resolveCompoundImage(compound.productSlug, byId);
         }
         setImageBySlug(next);
-      })
-      .catch(() => {
+      } catch {
         /* keep empty images */
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const compounds = useMemo(() => {
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = [...RESEARCH_COMPOUNDS].sort((a, b) => a.name.localeCompare(b.name));
-    if (!q) return list;
-    return list.filter(
+    if (!q) return compounds;
+    return compounds.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
         c.category.toLowerCase().includes(q) ||
         c.cardDescription.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [query, compounds]);
 
   return (
     <>
@@ -92,40 +99,54 @@ export default function ResearchCompounds() {
 
         <ContentPageHeader />
 
-        <main className="relative z-10 px-6 lg:px-12 py-12 lg:py-16">
-          <div className="max-w-3xl mx-auto">
-            <ResearchSectionNav active="compounds" />
-
-            <div className="mt-10 mb-8">
-              <p className="text-xs font-mono uppercase tracking-[0.35em] text-[#2ED1B4] mb-3">
-                The Research Library
-              </p>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F4F6FA] mb-4">
-                Find Your <span className="gradient-text">Compound</span>
-              </h1>
-              <Link
-                to={COA_ARCHIVE_PATH}
-                className="inline-flex items-center gap-1.5 text-sm text-[#A9B3C7] hover:text-[#2ED1B4] transition-colors"
-              >
-                Looking for a batch report? View the COA library
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+        <main className="relative z-10 px-6 lg:px-12 py-10 lg:py-14">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-8 flex justify-center lg:justify-start">
+              <ResearchSectionNav active="compounds" />
             </div>
 
-            <div className="mb-4 relative">
+            {/* Library header */}
+            <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-3 text-[11px] font-mono uppercase tracking-[0.35em] text-[#A78BFA]">
+                  The Research Library
+                </p>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight text-[#F4F6FA]">
+                  Find Your <span className="text-[#A78BFA]">Compound.</span>
+                </h1>
+              </div>
+              <div className="flex items-start gap-4 lg:max-w-xs lg:border-l lg:border-[rgba(244,246,250,0.12)] lg:pl-5">
+                <div>
+                  <p className="text-sm text-[#A9B3C7]">Looking for a batch report?</p>
+                  <Link
+                    to={COA_ARCHIVE_PATH}
+                    className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-[#A78BFA] hover:underline"
+                  >
+                    View the COA library
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* A–Z browse panel */}
+            <div className="mb-10 rounded-2xl border border-[rgba(167,139,250,0.28)] bg-[rgba(17,24,39,0.65)] overflow-hidden">
               <button
                 type="button"
-                onClick={() => setSortOpen((v) => !v)}
-                className="flex w-full items-center justify-between rounded-xl border border-[rgba(244,246,250,0.1)] bg-[rgba(17,24,39,0.75)] px-4 py-3.5 text-left text-sm text-[#F4F6FA]"
+                onClick={() => setBrowseOpen((v) => !v)}
+                className="flex w-full items-center justify-between px-5 py-4 text-left"
               >
-                <span>Browse compounds A–Z</span>
+                <span className="text-sm sm:text-base font-semibold text-[#F4F6FA]">
+                  Browse compounds A–Z
+                </span>
                 <ChevronDown
-                  className={`w-4 h-4 text-[#A9B3C7] transition-transform ${sortOpen ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 text-[#A78BFA] transition-transform ${browseOpen ? 'rotate-180' : ''}`}
                 />
               </button>
-              {sortOpen && (
-                <div className="mt-2 rounded-xl border border-[rgba(244,246,250,0.1)] bg-[rgba(17,24,39,0.95)] p-3">
-                  <label className="relative block">
+
+              {browseOpen && (
+                <div className="border-t border-[rgba(244,246,250,0.06)] px-4 pb-5 pt-3 sm:px-5">
+                  <label className="relative mb-4 block max-w-md">
                     <span className="sr-only">Search compounds</span>
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
                     <input
@@ -133,87 +154,149 @@ export default function ResearchCompounds() {
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Search by name…"
-                      autoFocus
-                      className="w-full rounded-lg border border-[rgba(244,246,250,0.08)] bg-[#070A12] py-2.5 pl-10 pr-3 text-sm text-[#F4F6FA] placeholder:text-[#6B7280] outline-none focus:border-[rgba(46,209,180,0.4)]"
+                      className="w-full rounded-xl border border-[rgba(244,246,250,0.08)] bg-[#070A12] py-2.5 pl-10 pr-3 text-sm text-[#F4F6FA] placeholder:text-[#6B7280] outline-none focus:border-[rgba(167,139,250,0.4)]"
                     />
                   </label>
-                </div>
-              )}
-            </div>
 
-            <div className="space-y-4">
-              {compounds.length === 0 ? (
-                <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.6)] p-8 text-center text-[#A9B3C7]">
-                  No compounds matched “{query.trim()}”.
-                </div>
-              ) : (
-                compounds.map((compound) => {
-                  const imageSrc = imageBySlug[compound.slug] || '';
-                  const CardInner = (
-                    <>
-                      <div className="flex gap-4 p-4 sm:p-5">
-                        <div className="h-20 w-16 sm:h-24 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[rgba(7,10,18,0.8)] border border-[rgba(244,246,250,0.06)] flex items-center justify-center">
-                          {imageSrc ? (
-                            <ProductImage
-                              src={imageSrc}
-                              alt={`${compound.name} vial`}
-                              className="h-full w-full object-contain p-1"
-                              variant="card"
-                            />
-                          ) : (
-                            <FlaskConical className="w-7 h-7 text-[#8B5CF6] opacity-60" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-[#2ED1B4] mb-1.5">
-                            {compound.category}
-                          </p>
-                          <h2 className="text-lg sm:text-xl font-bold text-[#F4F6FA] mb-2 leading-snug">
-                            {compound.cardTitle}
-                          </h2>
-                          <p className="text-sm text-[#A9B3C7] leading-relaxed">
-                            {compound.cardDescription}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="border-t border-[rgba(244,246,250,0.06)] px-4 sm:px-5 py-3">
-                        {compound.overviewPath ? (
-                          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2ED1B4]">
-                            Read overview
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </span>
+                  {loading ? (
+                    <p className="text-sm text-[#A9B3C7] py-4">Loading compounds…</p>
+                  ) : filtered.length === 0 ? (
+                    <p className="text-sm text-[#A9B3C7] py-4">
+                      {query.trim()
+                        ? `No compounds matched “${query.trim()}”.`
+                        : 'No published research compounds yet.'}
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                      {filtered.map((compound) =>
+                        compound.overviewPath ? (
+                          <Link
+                            key={compound.slug}
+                            to={compound.overviewPath}
+                            className="rounded-xl border border-[rgba(244,246,250,0.1)] bg-[rgba(7,10,18,0.7)] px-3 py-2.5 text-left text-sm text-[#F4F6FA] hover:border-[rgba(167,139,250,0.4)] hover:text-[#A78BFA] transition-colors"
+                          >
+                            {compound.name}
+                          </Link>
                         ) : (
-                          <span className="text-sm text-[#6B7280]">Overview coming soon</span>
-                        )}
-                      </div>
-                    </>
-                  );
-
-                  if (compound.overviewPath) {
-                    return (
-                      <Link
-                        key={compound.slug}
-                        to={compound.overviewPath}
-                        className="block rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.65)] transition-colors hover:border-[rgba(46,209,180,0.35)] hover:bg-[rgba(17,24,39,0.85)]"
-                      >
-                        {CardInner}
-                      </Link>
-                    );
-                  }
-
-                  return (
-                    <div
-                      key={compound.slug}
-                      className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.45)] opacity-80"
-                    >
-                      {CardInner}
+                          <span
+                            key={compound.slug}
+                            className="rounded-xl border border-[rgba(244,246,250,0.06)] bg-[rgba(7,10,18,0.45)] px-3 py-2.5 text-left text-sm text-[#6B7280]"
+                          >
+                            {compound.name}
+                          </span>
+                        ),
+                      )}
                     </div>
-                  );
-                })
+                  )}
+                </div>
               )}
             </div>
 
-            <p className="mt-10 text-center text-sm text-[#6B7280]">
+            {/* Overview cards — 2-column Lazarus layout */}
+            <div className="grid gap-5 md:grid-cols-2">
+              {loading
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-40 animate-pulse rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.06)]"
+                    />
+                  ))
+                : filtered.map((compound) => {
+                    const imageSrc = imageBySlug[compound.slug] || '';
+                    const inner = (
+                      <>
+                        {/* Teal border draws around the card from top-left on hover */}
+                        <span className="research-card-edge research-card-edge--top" aria-hidden />
+                        <span className="research-card-edge research-card-edge--left" aria-hidden />
+                        <div className="relative flex gap-4 p-5 sm:p-6">
+                          <div className="h-24 w-20 sm:h-28 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-[rgba(7,10,18,0.85)] border border-[rgba(244,246,250,0.06)] flex items-center justify-center">
+                            {imageSrc ? (
+                              <ProductImage
+                                src={imageSrc}
+                                alt={`${compound.name} vial`}
+                                className="h-full w-full object-contain p-1.5"
+                                variant="card"
+                              />
+                            ) : (
+                              <FlaskConical className="w-8 h-8 text-[#8B5CF6] opacity-60" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1 flex flex-col">
+                            <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-[#A78BFA] mb-2">
+                              {compound.category}
+                            </p>
+                            <h2 className="text-lg sm:text-xl font-bold text-[#F4F6FA] mb-2 leading-snug">
+                              {compound.cardTitle}
+                            </h2>
+                            <p className="text-sm text-[#A9B3C7] leading-relaxed flex-1">
+                              {compound.cardDescription}
+                            </p>
+                            <span className="mt-4 pt-3 border-t border-[rgba(244,246,250,0.08)] inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#A78BFA]">
+                              Read overview
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    );
+
+                    if (compound.overviewPath) {
+                      return (
+                        <Link
+                          key={compound.slug}
+                          id={`compound-${compound.slug}`}
+                          to={compound.overviewPath}
+                          className="research-compound-card group relative block overflow-hidden rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.7)] transition-colors hover:bg-[rgba(17,24,39,0.92)]"
+                        >
+                          {inner}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={compound.slug}
+                        id={`compound-${compound.slug}`}
+                        className="relative rounded-2xl border border-[rgba(244,246,250,0.06)] bg-[rgba(17,24,39,0.45)] opacity-80"
+                      >
+                        <div className="relative flex gap-4 p-5 sm:p-6">
+                          <div className="h-24 w-20 sm:h-28 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-[rgba(7,10,18,0.85)] border border-[rgba(244,246,250,0.06)] flex items-center justify-center">
+                            {imageSrc ? (
+                              <ProductImage
+                                src={imageSrc}
+                                alt={`${compound.name} vial`}
+                                className="h-full w-full object-contain p-1.5"
+                                variant="card"
+                              />
+                            ) : (
+                              <FlaskConical className="w-8 h-8 text-[#8B5CF6] opacity-60" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1 flex flex-col">
+                            <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-[#A78BFA] mb-2">
+                              {compound.category}
+                            </p>
+                            <h2 className="text-lg sm:text-xl font-bold text-[#F4F6FA] mb-2 leading-snug">
+                              {compound.cardTitle}
+                            </h2>
+                            <p className="text-sm text-[#A9B3C7] leading-relaxed flex-1">
+                              {compound.cardDescription}
+                            </p>
+                            <span className="mt-4 text-sm text-[#6B7280]">Overview coming soon</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+            </div>
+
+            {!loading && filtered.length === 0 && (
+              <p className="mt-6 text-center text-sm text-[#A9B3C7]">
+                No compounds to display.
+              </p>
+            )}
+
+            <p className="mt-12 text-center text-sm text-[#6B7280]">
               More compound overviews will be added over time. Research use only.
             </p>
           </div>

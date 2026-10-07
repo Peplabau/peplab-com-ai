@@ -22,26 +22,8 @@ export const RESEARCH_PATH = '/research';
 /** Find Your Compound — research section compound index. */
 export const RESEARCH_COMPOUNDS_PATH = '/research/compounds';
 
-/** Retatrutide compound research overview (first of series). */
-export const RESEARCH_RETATRUTIDE_PATH = '/research/compounds/retatrutide';
-
-/** GHK-Cu compound research overview. */
-export const RESEARCH_GHK_CU_PATH = '/research/compounds/ghk-cu';
-
-/** MOTS-C compound research overview. */
-export const RESEARCH_MOTS_C_PATH = '/research/compounds/mots-c';
-
-/** BPC-157 + TB-500 blend research overview. */
-export const RESEARCH_BPC_TB_PATH = '/research/compounds/bpc-157-tb-500';
-
-/** Tirzepatide compound research overview. */
-export const RESEARCH_TIRZEPATIDE_PATH = '/research/compounds/tirzepatide';
-
-/** Tesamorelin compound research overview. */
-export const RESEARCH_TESAMORELIN_PATH = '/research/compounds/tesamorelin';
-
-/** CJC-1295 No DAC + Ipamorelin blend research overview. */
-export const RESEARCH_CJC_IPA_PATH = '/research/compounds/cjc-1295-no-dac-ipamorelin';
+/** Dynamic compound research overview: `/research/compounds/:slug` */
+export const RESEARCH_COMPOUND_SLUG_PATH = '/research/compounds/:slug';
 
 import { CONFIG } from '@/lib/config';
 

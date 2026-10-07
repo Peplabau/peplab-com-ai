@@ -60,7 +60,7 @@ DROP TRIGGER IF EXISTS research_articles_set_updated_at ON public.research_artic
 CREATE TRIGGER research_articles_set_updated_at
   BEFORE UPDATE ON public.research_articles
   FOR EACH ROW
-  EXECUTE FUNCTION public.set_research_articles_updated_at();
+  EXECUTE PROCEDURE public.set_research_articles_updated_at();
 
 ALTER TABLE public.research_articles ENABLE ROW LEVEL SECURITY;
 

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import {
-  FlaskConical,
   BookOpen,
   Microscope,
   FileSearch,
@@ -10,6 +9,10 @@ import {
   ExternalLink,
   Library,
   Search,
+  ArrowDown,
+  ArrowRight,
+  List,
+  Shield,
 } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
@@ -24,11 +27,13 @@ import {
 import Footer from '@/sections/Footer';
 import { ResearchSectionNav } from '@/components/ResearchSectionNav';
 
+const RESEARCH_HERO_BG = '/research-hero-vials.png';
+
 const sectionClass =
   'p-6 sm:p-8 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]';
 const bodyClass = 'text-[#A9B3C7] leading-relaxed';
 const listClass = 'space-y-2 text-[#A9B3C7] mt-3';
-const linkClass = 'text-[#2ED1B4] hover:underline';
+const linkClass = 'text-[#A78BFA] hover:underline';
 const h2Class = 'text-xl font-bold text-[#F4F6FA]';
 const h3Class = 'text-lg font-semibold text-[#F4F6FA] mb-2';
 
@@ -145,24 +150,126 @@ export default function Research() {
 
         <ContentPageHeader />
 
-        <main className="relative z-10 px-6 lg:px-12 py-12 lg:py-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-[rgba(46,209,180,0.1)] flex items-center justify-center mb-6">
-                <FlaskConical className="w-8 h-8 text-[#2ED1B4]" />
+        <main className="relative z-10">
+          {/* Lazarus-style research hero — PEPLAB theme */}
+          <section className="relative overflow-hidden border-b border-[rgba(244,246,250,0.06)]">
+            <div
+              className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${RESEARCH_HERO_BG})` }}
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(7,10,18,0.92) 0%, rgba(7,10,18,0.78) 45%, rgba(7,10,18,0.55) 100%), linear-gradient(180deg, rgba(7,10,18,0.55) 0%, rgba(7,10,18,0.85) 100%)',
+              }}
+              aria-hidden
+            />
+            <div className="relative mx-auto max-w-6xl px-6 lg:px-12 py-12 lg:py-16">
+              <div className="mb-10 flex justify-center lg:justify-start">
+                <ResearchSectionNav active="overview" />
               </div>
-              <span className="eyebrow mb-4 block">RESEARCH · OVERVIEW</span>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#F4F6FA] mb-4">
-                Peptide Research <span className="gradient-text">Overview</span>
-              </h1>
-              <p className={`${bodyClass} max-w-2xl mx-auto text-base sm:text-lg`}>
-                Understanding Peptides, Scientific Evidence and Laboratory Testing
-              </p>
+
+              <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-12">
+                <div>
+                  <p className="mb-4 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.35em] text-[#A78BFA]">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#A78BFA]" />
+                    PEPLAB Research
+                  </p>
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold uppercase tracking-tight leading-[1.05] text-[#F4F6FA] mb-5">
+                    Research{' '}
+                    <span className="text-[#A78BFA]">Overviews</span>
+                  </h1>
+                  <p className="text-[#A9B3C7] text-base sm:text-lg leading-relaxed max-w-xl mb-7">
+                    Explore scientific classifications, studied mechanisms and primary sources.
+                    Plain-English, citation-backed overviews for laboratory and educational research.
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {[
+                      { icon: List, label: 'Primary Sources' },
+                      { icon: BookOpen, label: 'Plain English' },
+                      { icon: Shield, label: 'Research Use Only · 18+' },
+                    ].map(({ icon: Icon, label }) => (
+                      <span
+                        key={label}
+                        className="inline-flex items-center gap-2 rounded-full border border-[rgba(244,246,250,0.14)] bg-[rgba(17,24,39,0.7)] px-3.5 py-2 text-xs sm:text-sm text-[#F4F6FA]"
+                      >
+                        <Icon className="w-3.5 h-3.5 text-[#A78BFA]" />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Link
+                    to={RESEARCH_COMPOUNDS_PATH}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] hover:from-[#7C4FED] hover:to-[#DB2777] transition-colors"
+                  >
+                    Find Your Compound
+                    <ArrowDown className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <aside className="rounded-2xl border border-[rgba(167,139,250,0.35)] bg-[rgba(17,24,39,0.75)] p-6 sm:p-7 shadow-[0_0_40px_rgba(167,139,250,0.08)]">
+                  <p className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#A78BFA] mb-2">
+                    Inside each overview
+                  </p>
+                  <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-[#F4F6FA] mb-6">
+                    Follow the <span className="text-[#A78BFA]">Evidence.</span>
+                  </h2>
+
+                  <ol className="relative space-y-5 pl-1">
+                    {[
+                      {
+                        n: '01',
+                        title: 'Classification',
+                        body: 'What the compound is and how it is described.',
+                      },
+                      {
+                        n: '02',
+                        title: 'Mechanisms',
+                        body: 'The receptors and pathways studied in research.',
+                      },
+                      {
+                        n: '03',
+                        title: 'Primary sources',
+                        body: 'References to the published scientific record.',
+                      },
+                    ].map((step, i, arr) => (
+                      <li key={step.n} className="relative flex gap-4">
+                        {i < arr.length - 1 && (
+                          <span
+                            className="absolute left-[17px] top-10 bottom-[-20px] w-px bg-[rgba(167,139,250,0.25)]"
+                            aria-hidden
+                          />
+                        )}
+                        <span className="relative z-[1] flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[rgba(167,139,250,0.45)] bg-[rgba(7,10,18,0.8)] text-xs font-bold text-[#A78BFA]">
+                          {step.n}
+                        </span>
+                        <div className="pt-1">
+                          <p className="font-semibold text-[#F4F6FA] mb-0.5">{step.title}</p>
+                          <p className="text-sm text-[#A9B3C7] leading-relaxed">{step.body}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+
+                  <a
+                    href="#how-we-prepare"
+                    className="mt-7 flex items-center justify-between border-t border-[rgba(244,246,250,0.08)] pt-4 text-sm font-medium text-[#A78BFA] hover:underline"
+                  >
+                    How we prepare the overviews
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </aside>
+              </div>
             </div>
+          </section>
 
-            <ResearchSectionNav active="overview" />
-
-            <div className="space-y-6 mt-8">
+          <div className="px-6 lg:px-12 py-12 lg:py-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-6" id="how-we-prepare">
               <section className={sectionClass}>
                 <p className={`${bodyClass} mb-4`}>
                   Peptide research investigates how chains of amino acids interact with biological
@@ -186,8 +293,8 @@ export default function Research() {
 
               <section className={sectionClass}>
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[rgba(46,209,180,0.1)] flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-6 h-6 text-[#2ED1B4]" />
+                  <div className="w-12 h-12 rounded-xl bg-[rgba(167,139,250,0.1)] flex items-center justify-center flex-shrink-0">
+                    <BookOpen className="w-6 h-6 text-[#A78BFA]" />
                   </div>
                   <h2 className={`${h2Class} pt-2`}>What Are Peptides?</h2>
                 </div>
@@ -347,7 +454,7 @@ export default function Research() {
                 <ul className={listClass}>
                   {PAPER_CHECKS.map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className="text-[#2ED1B4] mt-1">•</span>
+                      <span className="text-[#A78BFA] mt-1">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -437,7 +544,7 @@ export default function Research() {
                 <ul className={listClass}>
                   {COA_CHECKS.map((item) => (
                     <li key={item.title} className="flex items-start gap-2">
-                      <span className="text-[#2ED1B4] mt-1">•</span>
+                      <span className="text-[#A78BFA] mt-1">•</span>
                       <span>
                         <strong className="text-[#F4F6FA]">{item.title}:</strong> {item.text}
                       </span>
@@ -544,8 +651,8 @@ export default function Research() {
 
               <section className={sectionClass}>
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[rgba(46,209,180,0.1)] flex items-center justify-center flex-shrink-0">
-                    <Search className="w-6 h-6 text-[#2ED1B4]" />
+                  <div className="w-12 h-12 rounded-xl bg-[rgba(167,139,250,0.1)] flex items-center justify-center flex-shrink-0">
+                    <Search className="w-6 h-6 text-[#A78BFA]" />
                   </div>
                   <h2 className={`${h2Class} pt-2`}>Explore PEPLAB Research</h2>
                 </div>
@@ -556,7 +663,7 @@ export default function Research() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     to={RESEARCH_COMPOUNDS_PATH}
-                    className="inline-flex items-center justify-center rounded-xl bg-[#2ED1B4] px-5 py-3 text-sm font-semibold text-[#070A12] hover:bg-[#26b89e] transition-colors"
+                    className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-5 py-3 text-sm font-semibold text-white hover:from-[#7C4FED] hover:to-[#DB2777] transition-colors"
                   >
                     Find Your Compound
                   </Link>
@@ -582,6 +689,7 @@ export default function Research() {
                 </p>
               </section>
             </div>
+          </div>
           </div>
         </main>
 

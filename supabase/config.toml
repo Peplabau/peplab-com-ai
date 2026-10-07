@@ -21,6 +21,10 @@ verify_jwt = false
 [functions.auspost-track-public]
 verify_jwt = false
 
+# Admin research CMS — OpenAI document → structured article (JWT + is_admin)
+[functions.research-ai-parse]
+verify_jwt = true
+
 # -----------------------------------------------------------------------------
 # Auth — frictionless signup (no email verification)
 # -----------------------------------------------------------------------------

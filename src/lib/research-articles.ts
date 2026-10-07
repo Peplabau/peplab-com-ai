@@ -6,7 +6,13 @@ export type ResearchFeatureRow = { feature: string; details: string };
 export type ResearchSectionBlock = { title: string; body: string; link_label?: string; link_url?: string };
 export type ResearchGlanceRow = { area: string; investigated: string; distinction: string };
 export type ResearchFaq = { q: string; a: string };
-export type ResearchRelated = { label: string; slug?: string };
+export type ResearchRelated = {
+  label: string;
+  slug?: string;
+  /** PRODUCT | CATEGORY | RESEARCH — defaults to RESEARCH when slug is set */
+  kind?: 'product' | 'category' | 'research';
+  href?: string;
+};
 
 export type ResearchArticle = {
   id: string;
@@ -131,7 +137,12 @@ export function normalizeResearchArticle(row: Record<string, unknown>): Research
     coa_heading: String(row.coa_heading ?? ''),
     coa_body: String(row.coa_body ?? ''),
     faqs: asArray<ResearchFaq>(row.faqs),
-    related: asArray<ResearchRelated>(row.related),
+    related: asArray<ResearchRelated>(row.related).map((r) => ({
+      label: String((r as ResearchRelated).label ?? ''),
+      slug: (r as ResearchRelated).slug?.trim() || undefined,
+      kind: (r as ResearchRelated).kind,
+      href: (r as ResearchRelated).href?.trim() || undefined,
+    })),
     status: row.status === 'published' ? 'published' : 'draft',
     author_name: row.author_name ? String(row.author_name) : null,
     published_at: row.published_at ? String(row.published_at) : null,
@@ -173,6 +184,8 @@ function toDbPayload(input: ResearchArticleInput) {
     related: (input.related ?? []).map((r) => ({
       label: r.label,
       slug: r.slug?.trim() || undefined,
+      kind: r.kind,
+      href: r.href?.trim() || undefined,
     })),
     status,
     author_name: input.author_name?.trim() || null,
