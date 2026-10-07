@@ -30,7 +30,6 @@ import { loadProductsFromSupabase } from '@/lib/supabase-db';
 import { CONFIG } from '@/lib/config';
 import Footer from '@/sections/Footer';
 
-const RESEARCH_HERO_BG = '/research-hero-vials.png';
 const STOREFRONT_HOME_URL = `${CONFIG.SITE_URL.replace(/\/$/, '')}/`;
 
 /** Product related links always go to the peplab.ai homepage (not a product slug). */
@@ -316,23 +315,9 @@ export default function ResearchCompoundPage() {
         <ContentPageHeader />
 
         <main className="relative z-10">
-          <section className="relative overflow-hidden border-b border-[rgba(244,246,250,0.06)]">
-            <div
-              className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${RESEARCH_HERO_BG})` }}
-              aria-hidden
-            />
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(180deg, rgba(7,10,18,0.72) 0%, rgba(7,10,18,0.82) 55%, rgba(7,10,18,0.94) 100%), radial-gradient(ellipse 70% 60% at 50% 40%, rgba(7,10,18,0.35), rgba(7,10,18,0.85))',
-              }}
-              aria-hidden
-            />
-
-            <div className="relative mx-auto max-w-4xl px-6 py-14 text-center lg:px-12 lg:py-20">
-              <div className="mx-auto mb-6 flex h-28 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(244,246,250,0.12)] bg-[rgba(17,24,39,0.55)] backdrop-blur-sm">
+          <section className="relative border-b border-[rgba(244,246,250,0.06)]">
+            <div className="mx-auto max-w-4xl px-6 py-12 text-center lg:px-12 lg:py-16">
+              <div className="mx-auto mb-6 flex h-28 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.6)]">
                 {imageSrc ? (
                   <ProductImage
                     src={imageSrc}

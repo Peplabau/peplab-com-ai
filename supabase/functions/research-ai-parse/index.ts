@@ -16,8 +16,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-authorization, x-supabase-api-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
 const MAX_CHARS = 60_000;
@@ -47,25 +49,42 @@ async function requireAdmin(req: Request): Promise<
   }
 
   const authHeader = req.headers.get("Authorization");
-  if (!authHeader) {
+  const token = authHeader?.replace(/^Bearer\s+/i, "").trim() || "";
+  if (!token) {
     return {
       ok: false,
       response: jsonResponse({ error: "Unauthorized — admin JWT required" }, 401),
     };
   }
 
-  const userClient = createClient(supabaseUrl, anonKey || serviceKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
+  const adminClient = createClient(supabaseUrl, serviceKey);
   const {
     data: { user },
     error: userErr,
-  } = await userClient.auth.getUser();
+  } = await adminClient.auth.getUser(token);
   if (userErr || !user) {
-    return { ok: false, response: jsonResponse({ error: "Invalid session" }, 401) };
+    // Fallback via anon client (some projects prefer this path)
+    const userClient = createClient(supabaseUrl, anonKey || serviceKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    const again = await userClient.auth.getUser();
+    if (again.error || !again.data.user) {
+      return {
+        ok: false,
+        response: jsonResponse({ error: "Invalid or expired session — sign in again" }, 401),
+      };
+    }
+    const { data: profile, error: profileErr } = await adminClient
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", again.data.user.id)
+      .maybeSingle();
+    if (profileErr || !profile?.is_admin) {
+      return { ok: false, response: jsonResponse({ error: "Admin only" }, 403) };
+    }
+    return { ok: true, userId: again.data.user.id };
   }
 
-  const adminClient = createClient(supabaseUrl, serviceKey);
   const { data: profile, error: profileErr } = await adminClient
     .from("profiles")
     .select("is_admin")
@@ -85,14 +104,25 @@ Rules:
 - Educational / research-use tone only. Never give dosing advice for human use.
 - Prefer plain English with accurate scientific terminology.
 - Keep citations as markdown links when URLs or DOIs are present: [label](url).
-- Invent nothing material that is not supported by the source; if a section is missing, leave it as an empty string or empty array.
-- slug: lowercase kebab-case from the compound name.
+- Invent nothing material that is not supported by the source; if a body section is missing, leave it as an empty string or empty array.
+- slug: lowercase kebab-case from the compound name (required).
 - product_slug: best guess storefront slug (often shorter, e.g. reta for Retatrutide); empty string if unknown.
 - status must be "draft".
 - author_name may be null.
 - published_at may be null.
 - coa_body: short COA guidance tailored to the compound if the source mentions testing; otherwise a brief generic HPLC/identity/content note.
 - related: only include clearly related compounds mentioned in the source (label + optional slug/kind/href).
+
+SEO + listing fields are REQUIRED — always fill these from the document (never leave blank):
+- name: compound display name
+- slug: URL slug
+- category / eyebrow: research category (e.g. "GLP-1 / Incretin")
+- seo_title: ~50–60 chars, format "{Name} Research Overview | PEPLAB Australia"
+- seo_description: 140–160 chars meta description for Google; include compound + research focus; research-use tone
+- card_title: short hub title, usually "What is {Name}?"
+- card_description: 1–2 sentence plain-English teaser for the Find Your Compound card
+- h1: page H1, usually "{Name} Research Overview"
+- subtitle: short supporting line under the H1
 
 Return ONLY a JSON object with exactly these keys:
 {
@@ -129,8 +159,9 @@ Return ONLY a JSON object with exactly these keys:
 }`;
 
 Deno.serve(async (req) => {
+  // CORS preflight must return quickly with allow headers (no auth).
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
@@ -142,10 +173,11 @@ Deno.serve(async (req) => {
 
     const openaiKey = Deno.env.get("OPENAI_API_KEY")?.trim();
     if (!openaiKey) {
+      console.error("research-ai-parse: OPENAI_API_KEY missing");
       return jsonResponse(
         {
           error:
-            "Missing OPENAI_API_KEY. Add it under Supabase Edge Function secrets.",
+            "Missing OPENAI_API_KEY. Add it under Supabase → Edge Functions → Secrets, then redeploy research-ai-parse.",
         },
         500,
       );

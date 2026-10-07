@@ -1,3 +1,4 @@
+import { CONFIG } from '@/lib/config';
 import { supabase } from '@/lib/supabase';
 import {
   DEFAULT_COA_BODY,
@@ -10,27 +11,29 @@ import {
   type ResearchSectionBlock,
 } from '@/lib/research-articles';
 
-async function edgeInvokeErrorMessage(error: {
-  message?: string;
-  context?: Response;
-}): Promise<string> {
-  const fallback = error.message || 'AI parse failed';
-  try {
-    const ctx = error.context;
-    if (ctx && typeof ctx.json === 'function') {
-      const body = (await ctx.clone().json()) as { error?: unknown; message?: unknown };
-      if (body?.error != null) return String(body.error);
-      if (body?.message != null) return String(body.message);
-    }
-  } catch {
-    /* keep fallback */
-  }
-  return fallback;
-}
+/** OpenAI parse can take well over the app's default 15s fetch timeout. */
+const AI_PARSE_TIMEOUT_MS = 120_000;
 
 function asString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback;
 }
+
+/** Prefer non-empty AI/user strings so SEO fields are never left blank when a fallback exists. */
+function asFilled(value: unknown, fallback = ''): string {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (typeof fallback === 'string' && fallback.trim()) return fallback.trim();
+  return '';
+}
+
+function firstSentence(text: string, max = 160): string {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (!clean) return '';
+  const match = clean.match(/^(.+?[.!?])(\s|$)/);
+  const sentence = (match?.[1] || clean).trim();
+  if (sentence.length <= max) return sentence;
+  return `${sentence.slice(0, max - 1).trimEnd()}…`;
+}
+
 
 function asArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
@@ -83,30 +86,51 @@ export function mergeAiArticleIntoInput(
     }))
     .filter((r) => r.label);
 
-  const name = asString(ai.name, existing?.name || base.name);
-  const slug = asString(ai.slug, existing?.slug || base.slug)
+  const name = asFilled(ai.name, existing?.name || base.name);
+  const slug = asFilled(ai.slug, existing?.slug || base.slug)
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
+
+  const intro = asFilled(ai.intro, existing?.intro || '');
+  const whatIsBody = asFilled(ai.what_is_body, existing?.what_is_body || '');
+  const cardDescription = asFilled(
+    ai.card_description,
+    existing?.card_description || firstSentence(whatIsBody || intro, 180),
+  );
+  const seoDescription = asFilled(
+    ai.seo_description,
+    existing?.seo_description ||
+      firstSentence(cardDescription || whatIsBody || intro, 160) ||
+      (name
+        ? `${name} research overview: classification, mechanism and primary sources. Research use only — PEPLAB Australia.`
+        : ''),
+  );
 
   return {
     ...base,
     ...existing,
     slug,
     name,
-    category: asString(ai.category, existing?.category || ''),
-    product_slug: asString(ai.product_slug, existing?.product_slug || ''),
-    card_title: asString(ai.card_title, existing?.card_title || `What is ${name}?`),
-    card_description: asString(ai.card_description, existing?.card_description || ''),
-    seo_title: asString(ai.seo_title, existing?.seo_title || `${name} Research | PEPLAB`),
-    seo_description: asString(ai.seo_description, existing?.seo_description || ''),
-    eyebrow: asString(ai.eyebrow, asString(ai.category, existing?.eyebrow || '')),
-    h1: asString(ai.h1, existing?.h1 || `${name} Research Overview`),
-    subtitle: asString(ai.subtitle, existing?.subtitle || ''),
-    intro: asString(ai.intro, existing?.intro || ''),
-    what_is_heading: asString(ai.what_is_heading, existing?.what_is_heading || `What Is ${name}?`),
-    what_is_body: asString(ai.what_is_body, existing?.what_is_body || ''),
+    category: asFilled(ai.category, existing?.category || ''),
+    product_slug: asFilled(ai.product_slug, existing?.product_slug || ''),
+    card_title: asFilled(ai.card_title, existing?.card_title || (name ? `What is ${name}?` : '')),
+    card_description: cardDescription,
+    seo_title: asFilled(
+      ai.seo_title,
+      existing?.seo_title || (name ? `${name} Research Overview | PEPLAB Australia` : ''),
+    ),
+    seo_description: seoDescription,
+    eyebrow: asFilled(ai.eyebrow, asFilled(ai.category, existing?.eyebrow || '')),
+    h1: asFilled(ai.h1, existing?.h1 || (name ? `${name} Research Overview` : '')),
+    subtitle: asFilled(ai.subtitle, existing?.subtitle || ''),
+    intro,
+    what_is_heading: asFilled(
+      ai.what_is_heading,
+      existing?.what_is_heading || (name ? `What Is ${name}?` : ''),
+    ),
+    what_is_body: whatIsBody,
     feature_rows: featureRows.length ? featureRows : existing?.feature_rows?.length
       ? existing.feature_rows
       : base.feature_rows,
@@ -153,45 +177,158 @@ export async function parseResearchDocumentWithAi(opts: {
   const document_text = opts.documentText.trim();
   if (!document_text) return { ok: false, error: 'Paste or upload a document first.' };
 
-  const { data, error } = await supabase.functions.invoke('research-ai-parse', {
-    body: {
-      document_text,
-      compound_name: opts.compoundName?.trim() || undefined,
-    },
-  });
-
-  if (error) {
-    return { ok: false, error: await edgeInvokeErrorMessage(error) };
-  }
-  if (data && typeof data === 'object' && 'error' in data && (data as { error: unknown }).error) {
-    return { ok: false, error: String((data as { error: unknown }).error) };
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+  if (sessionError || !session?.access_token) {
+    return { ok: false, error: 'Please sign in again as admin, then retry.' };
   }
 
-  const articleRaw = (data as { article?: Record<string, unknown> })?.article;
-  if (!articleRaw || typeof articleRaw !== 'object') {
-    return { ok: false, error: 'AI did not return a structured article.' };
+  const baseUrl = CONFIG.SUPABASE_URL.replace(/\/$/, '');
+  const anonKey = CONFIG.SUPABASE_ANON_KEY;
+  if (!baseUrl || !anonKey) {
+    return { ok: false, error: 'Supabase is not configured in this environment.' };
   }
 
-  return {
-    ok: true,
-    article: mergeAiArticleIntoInput(articleRaw),
-    truncated: Boolean((data as { truncated?: boolean }).truncated),
-    model: String((data as { model?: string }).model || ''),
-  };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), AI_PARSE_TIMEOUT_MS);
+
+  try {
+    // Bypass the global 15s supabase fetch timeout — AI needs longer.
+    const res = await fetch(`${baseUrl}/functions/v1/research-ai-parse`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: anonKey,
+      },
+      body: JSON.stringify({
+        document_text,
+        compound_name: opts.compoundName?.trim() || undefined,
+      }),
+      signal: controller.signal,
+    });
+
+    const payload = (await res.json().catch(() => null)) as
+      | {
+          error?: unknown;
+          message?: unknown;
+          article?: Record<string, unknown>;
+          truncated?: boolean;
+          model?: string;
+        }
+      | null;
+
+    if (!res.ok) {
+      const msg =
+        payload?.error != null
+          ? String(payload.error)
+          : payload?.message != null
+            ? String(payload.message)
+            : `Edge function failed (${res.status})`;
+      return { ok: false, error: msg };
+    }
+
+    if (payload?.error != null) {
+      return { ok: false, error: String(payload.error) };
+    }
+
+    const articleRaw = payload?.article;
+    if (!articleRaw || typeof articleRaw !== 'object') {
+      return { ok: false, error: 'AI did not return a structured article.' };
+    }
+
+    return {
+      ok: true,
+      article: mergeAiArticleIntoInput(articleRaw),
+      truncated: Boolean(payload?.truncated),
+      model: String(payload?.model || ''),
+    };
+  } catch (err: unknown) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      return {
+        ok: false,
+        error: 'AI processing timed out. Try a shorter document, then retry.',
+      };
+    }
+    const message = err instanceof Error ? err.message : 'Failed to reach the AI edge function';
+    if (/failed to fetch|networkerror|load failed/i.test(message)) {
+      return {
+        ok: false,
+        error:
+          'Could not reach the research-ai-parse function. Confirm it is deployed and OPENAI_API_KEY is set in Supabase secrets.',
+      };
+    }
+    return { ok: false, error: message };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
-/** Read plain-text-ish files in the browser (.txt, .md, .html, .csv). */
+async function extractPdfText(file: File): Promise<string> {
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  // Vite resolves this to a worker asset URL
+  const workerMod = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url');
+  pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default;
+
+  const data = new Uint8Array(await file.arrayBuffer());
+  const doc = await pdfjs.getDocument({ data }).promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    const line = content.items
+      .map((item) => ('str' in item ? String((item as { str: string }).str) : ''))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (line) pages.push(line);
+  }
+  const text = pages.join('\n\n').trim();
+  if (!text) {
+    throw new Error('No extractable text found in this PDF (it may be image-only).');
+  }
+  return text;
+}
+
+async function extractDocxText(file: File): Promise<string> {
+  const mammoth = await import('mammoth');
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  const text = (result.value || '').trim();
+  if (!text) throw new Error('No extractable text found in this Word document.');
+  return text;
+}
+
+/** Read research docs in the browser: .txt/.md/.html/.csv/.json/.docx/.pdf */
 export async function readDocumentFileAsText(file: File): Promise<string> {
   const name = file.name.toLowerCase();
+  const type = (file.type || '').toLowerCase();
+
+  if (name.endsWith('.pdf') || type === 'application/pdf') {
+    return extractPdfText(file);
+  }
+
+  if (
+    name.endsWith('.docx') ||
+    type ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ) {
+    return extractDocxText(file);
+  }
+
+  if (name.endsWith('.doc')) {
+    throw new Error(
+      'Legacy .doc is not supported — save as .docx or PDF, or paste the text.',
+    );
+  }
+
   const okExt = /\.(txt|md|markdown|html?|csv|json)$/i.test(name);
   const okType =
-    file.type.startsWith('text/') ||
-    file.type === 'application/json' ||
-    file.type === '';
+    type.startsWith('text/') || type === 'application/json' || type === '';
   if (!okExt && !okType) {
-    throw new Error(
-      'Use a .txt, .md, or .html file — or paste Word/PDF content into the box.',
-    );
+    throw new Error('Use a .pdf, .docx, .txt, .md, or .html file — or paste the text.');
   }
   return file.text();
 }
