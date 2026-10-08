@@ -88,6 +88,21 @@ const DEFAULT_RESEARCH_SLUGS = [
   'cjc-1295-no-dac',
   'cjc-1295-dac',
   'slu-pp-332',
+  'adamax',
+  'foxo4-dri',
+  'dihexa',
+  'sermorelin',
+  'ghrp-2',
+  'melatonin',
+  'pnc-27',
+  'ghrp-6',
+  'vip',
+  'adalank',
+  'cartalax',
+  'cerebrolysin',
+  'igf-1-des',
+  'll-37',
+  'p21',
 ];
 
 async function fetchPublishedResearchSlugs() {
