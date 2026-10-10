@@ -97,7 +97,7 @@ export default function ResearchCompounds() {
       <div className="min-h-screen" style={{ background: '#070A12' }}>
         <div className="absolute inset-0 grid-overlay opacity-60 pointer-events-none" />
 
-        <ContentPageHeader />
+        <ContentPageHeader backTo={RESEARCH_PATH} backLabel="Back to Research" />
 
         <main className="relative z-10 px-6 lg:px-12 py-10 lg:py-14">
           <div className="mx-auto max-w-6xl">

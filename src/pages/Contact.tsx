@@ -4,6 +4,7 @@ import { CONFIG } from '@/lib/config';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
 import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
@@ -333,14 +334,7 @@ export default function Contact() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 px-6 lg:px-12 py-8 border-t border-[rgba(244,246,250,0.08)]">
-        <div className="max-w-5xl mx-auto text-center">
-          <p className="text-xs text-[#A9B3C7]">
-            © 2026 PEPLAB. All rights reserved. For research use only.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );

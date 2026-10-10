@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft,
   Trophy,
   Crown,
   Medal,
@@ -12,6 +11,8 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SEO } from '@/components/SEO';
+import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 import { useAffiliate } from '@/context/AffiliateContext';
 import {
   getLeaderboard,
@@ -97,27 +98,7 @@ export default function Leaderboard() {
     <div className="min-h-screen" style={{ background: '#070A12' }}>
       <div className="absolute inset-0 grid-overlay opacity-60" />
 
-      {/* Header */}
-      <nav className="relative z-50 sticky top-0 bg-[rgba(7,10,18,0.95)] backdrop-blur-sm border-b border-[rgba(244,246,250,0.06)]">
-        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 lg:px-6 py-3">
-          <a
-            href="/"
-            className="flex items-center justify-center w-9 h-9 rounded-xl bg-[rgba(244,246,250,0.06)] text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors"
-            aria-label="Back to shop"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </a>
-          <div className="flex flex-col items-center">
-            <span className="text-xl lg:text-2xl font-bold tracking-[0.12em] gradient-text leading-none">
-              PEPLAB
-            </span>
-            <span className="text-[10px] lg:text-xs font-mono uppercase tracking-[0.3em] text-[#F59E0B] mt-0.5">
-              LEADERBOARD
-            </span>
-          </div>
-          <div className="w-9 h-9" />
-        </div>
-      </nav>
+      <ContentPageHeader />
 
       <main className="relative z-10 max-w-5xl mx-auto px-4 lg:px-6 py-6 lg:py-10 space-y-6 lg:space-y-8">
         {/* Hero */}
@@ -237,13 +218,10 @@ export default function Leaderboard() {
         </section>
       </main>
 
-      <footer className="relative z-10 px-4 lg:px-12 py-6 mt-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-[10px] sm:text-xs text-[#A9B3C7]">
-            Names shown as first name + initial to protect privacy. © {new Date().getFullYear()} PEPLAB.
-          </p>
-        </div>
-      </footer>
+      <p className="relative z-10 px-4 lg:px-12 py-4 text-center text-[10px] sm:text-xs text-[#A9B3C7]">
+        Names shown as first name + initial to protect privacy.
+      </p>
+      <Footer />
     </div>
     </>
   );

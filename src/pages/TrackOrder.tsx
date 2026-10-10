@@ -32,6 +32,7 @@ import { formatOrderNumberDisplay } from '@/utils/order-number';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
 import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 
@@ -450,6 +451,8 @@ export default function TrackOrder() {
           )}
         </div>
       </main>
+
+      <Footer />
     </div>
     </>
   );

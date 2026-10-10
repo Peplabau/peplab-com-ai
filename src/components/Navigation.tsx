@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Menu, X, User, LayoutDashboard, Award, Settings, Search, Package, TrendingUp, Trophy } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LayoutDashboard, Award, Settings, Search, Package, TrendingUp, Trophy, LogOut } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRewards } from '@/context/RewardsContext';
 import { useAffiliate } from '@/context/AffiliateContext';
-import { supabase, getCurrentUser } from '@/lib/supabase';
+import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH } from '@/lib/routes';
@@ -72,6 +72,14 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    setIsMobileMenuOpen(false);
+    await signOut();
+    localStorage.removeItem('peplab_logged_in');
+    localStorage.removeItem('peplab_is_admin');
+    window.location.href = HOME_PATH;
+  };
 
   const navClassDesktop =
     'text-sm font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300';
@@ -184,6 +192,14 @@ export default function Navigation({ embedded = false }: NavigationProps) {
                   >
                     <Settings className="w-4 h-4" />
                   </a>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(244,246,250,0.08)] border border-[rgba(244,246,250,0.15)] text-[#A9B3C7] hover:text-[#EF4444] hover:bg-[rgba(239,68,68,0.1)] transition-colors duration-300"
+                    title="Log out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
                 </div>
               ) : (
                 <a
@@ -294,10 +310,19 @@ export default function Navigation({ embedded = false }: NavigationProps) {
                 <a
                   href="/settings"
                   className="flex items-center gap-2 text-lg font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300 py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Settings className="w-5 h-5" />
                   Account Settings
                 </a>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-lg font-medium text-[#A9B3C7] hover:text-[#EF4444] transition-colors duration-300 py-2"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Log out
+                </button>
               </>
             ) : (
               <a

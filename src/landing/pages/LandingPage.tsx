@@ -3,8 +3,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SEO } from '@/landing/components/SEO';
 import { NEW_LANDING_SEO } from '@/landing/lib/seo-keywords';
-import LandingNavigation from '@/landing/components/LandingNavigation';
-import LandingFooter from '@/landing/components/LandingFooter';
+import Navigation from '@/components/Navigation';
+import CartDrawer from '@/components/CartDrawer';
+import Footer from '@/sections/Footer';
 import NewLandingAnnounce from '@/landing/sections/new-landing/NewLandingAnnounce';
 import NewLandingHero from '@/landing/sections/new-landing/NewLandingHero';
 import NewLandingCatalogStrip from '@/landing/sections/new-landing/NewLandingCatalogStrip';
@@ -41,7 +42,8 @@ export default function LandingPage() {
       <div className="grid-overlay opacity-60" />
       <header className="nl-site-header">
         <NewLandingAnnounce />
-        <LandingNavigation embedded />
+        <Navigation embedded />
+        <CartDrawer />
       </header>
       <div className="nl-site-header-spacer" aria-hidden />
 
@@ -56,7 +58,7 @@ export default function LandingPage() {
         <NewLandingWhyPeplab />
         <NewLandingFAQ />
         <NewLandingClosing />
-        <LandingFooter />
+        <Footer />
       </main>
     </div>
   );

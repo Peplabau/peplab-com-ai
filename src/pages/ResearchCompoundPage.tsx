@@ -264,8 +264,14 @@ export default function ResearchCompoundPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#070A12' }}>
-        <p className="text-[#A9B3C7]">Loading research…</p>
+      <div className="min-h-screen" style={{ background: '#070A12' }}>
+        <ContentPageHeader
+          backTo={RESEARCH_COMPOUNDS_PATH}
+          backLabel="Back to compounds"
+        />
+        <div className="flex items-center justify-center py-20">
+          <p className="text-[#A9B3C7]">Loading research…</p>
+        </div>
       </div>
     );
   }
@@ -275,7 +281,10 @@ export default function ResearchCompoundPage() {
       <>
         <SEO title="Research Not Found | PEPLAB" description="This research page is not available." />
         <div className="min-h-screen" style={{ background: '#070A12' }}>
-          <ContentPageHeader />
+          <ContentPageHeader
+            backTo={RESEARCH_COMPOUNDS_PATH}
+            backLabel="Back to compounds"
+          />
           <main className="relative z-10 px-6 py-20 text-center">
             <h1 className="text-2xl font-bold text-[#F4F6FA] mb-4">Research page not found</h1>
             <p className={`${bodyClass} mb-6`}>This compound overview is not published yet.</p>
@@ -312,7 +321,10 @@ export default function ResearchCompoundPage() {
 
       <div className="min-h-screen" style={{ background: '#070A12' }}>
         <div className="absolute inset-0 grid-overlay opacity-60 pointer-events-none" />
-        <ContentPageHeader />
+        <ContentPageHeader
+          backTo={RESEARCH_COMPOUNDS_PATH}
+          backLabel="Back to compounds"
+        />
 
         <main className="relative z-10">
           <section className="relative border-b border-[rgba(244,246,250,0.06)]">

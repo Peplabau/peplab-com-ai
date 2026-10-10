@@ -16,7 +16,7 @@ import {
   REDEMPTION_TIERS,
   BONUS_POINTS,
 } from '@/context/RewardsContext';
-import { supabase, signOut, getCurrentUser } from '@/lib/supabase';
+import { supabase, getCurrentUser } from '@/lib/supabase';
 import { getUserOrders, getUserReviews, createReview, uploadReviewImage, getProductUuidBySlug, getUserReviewCount, checkIsAdmin, type OrderFromDB, type UserReview } from '@/lib/supabase-db';
 import { useAffiliate } from '@/context/AffiliateContext';
 import { createOrUpdatePromoterForUser } from '@/lib/affiliates';
@@ -29,6 +29,8 @@ import {
   getReviewableProductsFromOrders,
 } from '@/utils/review-eligibility';
 import { SEO } from '@/components/SEO';
+import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 
 // Reviews are temporarily disabled for GMC compliance. Keep the implementation
 // intact so moderation/submission can be re-enabled later.
@@ -169,19 +171,6 @@ export default function Dashboard() {
       .finally(() => { if (!cancelled) setUserReviewsLoading(false); });
     return () => { cancelled = true; };
   }, [user?.id, reviewSuccess]);
-
-  const handleLogout = async () => {
-    // 1. Wipe local UI state immediately so the click feels instant.
-    setUser(null);
-    localStorage.removeItem('peplab_logged_in');
-    localStorage.removeItem('peplab_is_admin');
-    // 2. Await the local sign-out so /login won't see a stale session and
-    //    bounce the user back here. Our signOut helper does only a local
-    //    clear synchronously and fires the slow server-side revoke in the
-    //    background, so this resolves in milliseconds.
-    try { await signOut(); } catch { /* always navigate, even on failure */ }
-    navigate('/login', { replace: true });
-  };
 
   const promoCode = myPromoter?.referral_code ?? '';
 
@@ -391,24 +380,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen" style={{ background: '#070A12' }}>
         <div className="absolute inset-0 grid-overlay opacity-60" />
-        {/* Nav skeleton — mobile */}
-        <nav className="lg:hidden relative z-50 px-4 py-3 border-b border-[rgba(244,246,250,0.06)]">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-9 w-9 rounded-xl" />
-            <Skeleton className="h-7 w-20 rounded" />
-            <Skeleton className="h-9 w-9 rounded-xl" />
-          </div>
-        </nav>
-        {/* Nav skeleton — desktop */}
-        <nav className="hidden lg:block relative z-50 px-12 py-6">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-10 w-36 rounded-lg" />
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-8 w-20 rounded-full" />
-              <Skeleton className="h-8 w-28 rounded-full" />
-            </div>
-          </div>
-        </nav>
+        <ContentPageHeader />
         <main className="relative z-10 px-4 lg:px-12 py-5 lg:py-16">
           <div className="max-w-6xl mx-auto space-y-4 sm:space-y-8">
             {/* Profile card — mobile */}
@@ -494,81 +466,7 @@ export default function Dashboard() {
     <div className="min-h-screen" style={{ background: '#070A12' }}>
       <div className="absolute inset-0 grid-overlay opacity-60" />
 
-      {/* Mobile header */}
-      <nav className="lg:hidden relative z-50 sticky top-0 bg-[rgba(7,10,18,0.95)] backdrop-blur-sm border-b border-[rgba(244,246,250,0.06)]">
-        <div className="flex items-start justify-between gap-2 px-4 py-3">
-          <a
-            href="/"
-            className="shrink-0 text-xs font-semibold px-3 py-2 rounded-xl bg-[rgba(46,209,180,0.12)] border border-[rgba(46,209,180,0.28)] text-[#2ED1B4] hover:bg-[rgba(46,209,180,0.18)] transition-colors text-center leading-tight"
-          >
-            Shop now
-          </a>
-          <a href="/" className="flex flex-col items-center min-w-0 flex-1 pt-0.5">
-            <span className="text-xl font-bold tracking-[0.12em] gradient-text leading-none">PEPLAB</span>
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#8B5CF6] mt-0.5">DASHBOARD</span>
-          </a>
-          <div className="shrink-0 flex flex-col items-end gap-1 min-w-[4.5rem]">
-            {myPromoter && (
-              <a
-                href="/promoter"
-                className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] text-[#22C55E] hover:bg-[rgba(34,197,94,0.2)] transition-colors w-full text-center"
-              >
-                Promoter
-              </a>
-            )}
-            {isAdminUser && (
-              <a
-                href="/admin/dashboard"
-                className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] transition-colors w-full text-center"
-              >
-                Admin
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-[rgba(244,246,250,0.06)] border border-[rgba(244,246,250,0.08)] text-[#A9B3C7] hover:text-[#EF4444] hover:border-[rgba(239,68,68,0.25)] transition-colors w-full text-center"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Desktop header */}
-      <nav className="hidden lg:block relative z-50 px-12 py-6">
-        <div className="flex items-center justify-between">
-          <a href="/" className="flex flex-col items-start">
-            <span className="text-4xl font-bold tracking-[0.12em] gradient-text leading-none">PEPLAB</span>
-            <span className="text-sm font-mono uppercase tracking-[0.5em] text-[#8B5CF6] mt-0.5">PEPTIDES AUSTRALIA</span>
-          </a>
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            <a
-              href="/"
-              className="text-sm font-semibold px-4 py-2 rounded-full bg-[rgba(46,209,180,0.12)] border border-[rgba(46,209,180,0.28)] text-[#2ED1B4] hover:bg-[rgba(46,209,180,0.18)] transition-colors"
-            >
-              Shop now
-            </a>
-            {myPromoter && (
-              <a href="/promoter" className="text-sm font-semibold px-4 py-2 rounded-full bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.25)] text-[#22C55E] hover:bg-[rgba(34,197,94,0.2)] transition-colors">
-                Promoter panel
-              </a>
-            )}
-            {isAdminUser && (
-              <a href="/admin/dashboard" className="text-sm font-semibold px-4 py-2 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] transition-colors">
-                Admin panel
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-sm font-semibold px-4 py-2 rounded-full bg-[rgba(244,246,250,0.06)] border border-[rgba(244,246,250,0.1)] text-[#A9B3C7] hover:text-[#EF4444] hover:border-[rgba(239,68,68,0.25)] transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <ContentPageHeader />
 
       <main className="relative z-10 px-4 lg:px-12 py-5 lg:py-20">
         <div className="max-w-6xl mx-auto">
@@ -581,19 +479,41 @@ export default function Dashboard() {
               <p className="text-base font-semibold text-[#F4F6FA] truncate">{userName}</p>
               <p className="text-xs text-[#A9B3C7]">Member since {joinDate}</p>
             </div>
-            <a
-              href="/settings"
-              className="ml-auto shrink-0 text-xs font-semibold px-3 py-2 rounded-xl bg-[rgba(244,246,250,0.06)] border border-[rgba(244,246,250,0.08)] text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.1)] transition-colors"
-            >
-              Settings
-            </a>
+            <div className="ml-auto shrink-0 flex flex-col items-end gap-1">
+              {isAdminUser && (
+                <a
+                  href="/admin/dashboard"
+                  className="text-[10px] font-semibold px-2.5 py-1.5 rounded-lg bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] text-[#EF4444]"
+                >
+                  Admin
+                </a>
+              )}
+              <a
+                href="/settings"
+                className="text-xs font-semibold px-3 py-2 rounded-xl bg-[rgba(244,246,250,0.06)] border border-[rgba(244,246,250,0.08)] text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.1)] transition-colors"
+              >
+                Settings
+              </a>
+            </div>
           </div>
           {/* Desktop welcome */}
           <div className="hidden lg:block mb-8">
-            <h1 className="text-4xl font-bold text-[#F4F6FA] mb-2">
-              Welcome back, <span className="gradient-text">{userName}</span>
-            </h1>
-            <p className="text-[#A9B3C7]">Member since {joinDate}</p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-4xl font-bold text-[#F4F6FA] mb-2">
+                  Welcome back, <span className="gradient-text">{userName}</span>
+                </h1>
+                <p className="text-[#A9B3C7]">Member since {joinDate}</p>
+              </div>
+              {isAdminUser && (
+                <a
+                  href="/admin/dashboard"
+                  className="text-sm font-semibold px-4 py-2 rounded-full bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] transition-colors"
+                >
+                  Admin panel
+                </a>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-5 lg:mb-8">
@@ -1108,11 +1028,7 @@ export default function Dashboard() {
         </div>
       </main>
 
-      <footer className="relative z-0 px-4 lg:px-12 py-6 lg:py-8 border-t border-[rgba(244,246,250,0.08)]">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-[10px] sm:text-xs text-[#A9B3C7]">© 2026 PEPLAB. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );

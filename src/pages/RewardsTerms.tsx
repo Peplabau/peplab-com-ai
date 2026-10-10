@@ -1,6 +1,7 @@
 import { Award, Gift, TrendingUp, Users, Clock, AlertTriangle } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 
 export default function RewardsTerms() {
   return (
@@ -299,14 +300,7 @@ export default function RewardsTerms() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 px-6 lg:px-12 py-8 border-t border-[rgba(244,246,250,0.08)]">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs text-[#A9B3C7]">
-            © 2026 PEPLAB. All rights reserved. For research use only.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );
