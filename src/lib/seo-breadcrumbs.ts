@@ -1,4 +1,4 @@
-import { siteOrigin } from '@/lib/domain';
+import { publicCanonicalOrigin } from '@/lib/domain';
 
 export type BreadcrumbItem = {
   name: string;
@@ -7,7 +7,7 @@ export type BreadcrumbItem = {
 
 /** Build BreadcrumbList JSON-LD for inner pages. */
 export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]) {
-  const origin = siteOrigin();
+  const origin = publicCanonicalOrigin();
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',

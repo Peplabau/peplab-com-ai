@@ -78,8 +78,9 @@ import {
 } from '@/lib/seo-constants';
 
 export const RESEARCH_GATEWAY_SEO = {
-  title: HOMEPAGE_SEO_TITLE,
-  description: HOMEPAGE_SEO_DESCRIPTION,
+  title: 'Buy Premium Peptides in Australia | PEPLAB',
+  description:
+    'Every PEPLAB Australia research lot ships with a published COA — HPLC purity, LC-MS identity, and content assay under one batch ID. Research use only.',
   keywords: mergeSeoKeywords(PEPTIDE_AUSTRALIA_SEO_KEYWORDS, CORE_SITE_SEO_KEYWORDS, COA_LANDING_SEO_KEYWORDS),
 } as const;
 

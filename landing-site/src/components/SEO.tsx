@@ -20,6 +20,12 @@ export function SEO({
   useEffect(() => {
     document.title = title;
     const keywordsText = Array.isArray(keywords) ? keywords.join(', ') : keywords;
+    const host = window.location.hostname.toLowerCase();
+    const origin = host === 'peplab.com.au' || host === 'www.peplab.com.au'
+      ? 'https://peplab.com.au'
+      : CONFIG.SITE_URL.replace(/\/$/, '');
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    const canonicalHref = `${origin}${path === '/' ? '/' : path}`;
 
     const faviconHref = `${CONFIG.SITE_URL}${CONFIG.FAVICON_PATH}`;
     const ensureLink = (rel: string, attrs: Record<string, string>) => {
@@ -43,7 +49,7 @@ export function SEO({
       { property: 'og:title', content: title },
       { property: 'og:description', content: description },
       { property: 'og:image', content: ogImage },
-      { property: 'og:url', content: CONFIG.SITE_URL },
+      { property: 'og:url', content: canonicalHref },
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'PEPLAB | Peptides Australia' },
       { property: 'og:locale', content: 'en_AU' },
@@ -89,7 +95,7 @@ export function SEO({
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', CONFIG.SITE_URL);
+    canonical.setAttribute('href', canonicalHref);
   }, [title, description, keywords, ogImage, noIndex]);
 
   return null;

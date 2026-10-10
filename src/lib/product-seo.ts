@@ -1,8 +1,8 @@
-import { CONFIG } from '@/lib/config';
+import { publicCanonicalOrigin } from '@/lib/domain';
 import { mergeSeoKeywords } from '@/lib/seo-keywords';
 import { getDefaultStorefrontDosage, type Product } from '@/products';
 
-const SITE_ORIGIN = CONFIG.SITE_URL.replace(/\/$/, '');
+const SITE_ORIGIN = publicCanonicalOrigin();
 
 function truncate(text: string, max = 158): string {
   const clean = text.replace(/\s+/g, ' ').trim();

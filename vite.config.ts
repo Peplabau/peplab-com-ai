@@ -1,4 +1,6 @@
+import { spawnSync } from "node:child_process"
 import path from "path"
+import { fileURLToPath } from "node:url"
 import react from "@vitejs/plugin-react"
 import { defineConfig, loadEnv, type Plugin } from "vite"
 
@@ -58,6 +60,13 @@ export default defineConfig(({ mode }) => {
         name: "force-exit-after-build",
         apply: "build",
         closeBundle() {
+          const script = fileURLToPath(new URL("./scripts/prerender-seo-html.mjs", import.meta.url))
+          const cwd = fileURLToPath(new URL(".", import.meta.url))
+          const result = spawnSync(process.execPath, [script], { cwd, stdio: "inherit" })
+          if (result.status !== 0) {
+            console.error("SEO prerender failed")
+            process.exit(result.status || 1)
+          }
           setTimeout(() => process.exit(0), 0)
         },
       },

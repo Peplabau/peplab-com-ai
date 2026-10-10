@@ -1,4 +1,4 @@
-/** Shared SEO copy — peplab.ai branded homepage and site defaults. */
+/** Shared SEO copy — peplab.com.au homepage and site defaults. */
 
 export const HOMEPAGE_SEO_TITLE = 'PEPLAB | Peptides Australia';
 

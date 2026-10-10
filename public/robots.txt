@@ -1,5 +1,8 @@
+# peplab.com.au — public research, COA, and support pages are indexable.
+# Account, checkout, and admin are not. /product/ is a handoff shell, not a page on this host.
 User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /admin/
 Disallow: /dashboard
 Disallow: /checkout
@@ -9,4 +12,6 @@ Disallow: /settings
 Disallow: /promoter
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /product/
+
 Sitemap: https://peplab.com.au/sitemap.xml

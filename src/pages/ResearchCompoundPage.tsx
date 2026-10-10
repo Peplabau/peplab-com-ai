@@ -27,10 +27,10 @@ import {
 import { RESEARCH_SEED_ARTICLES } from '@/lib/research-seed-data';
 import { resolveProductSlug } from '@/lib/product-slug-aliases';
 import { loadProductsFromSupabase } from '@/lib/supabase-db';
-import { CONFIG } from '@/lib/config';
+import { MAIN_APP_ORIGIN } from '@/lib/domain';
 import Footer from '@/sections/Footer';
 
-const STOREFRONT_HOME_URL = `${CONFIG.SITE_URL.replace(/\/$/, '')}/`;
+const STOREFRONT_HOME_URL = `${MAIN_APP_ORIGIN}/`;
 
 /** Product related links always go to the peplab.ai homepage (not a product slug). */
 function resolveRelatedHref(

@@ -11,7 +11,7 @@ export const MAIN_SITE_URL = trim(
 
 export const LANDING_SITE_URL = trim(
   import.meta.env.VITE_LANDING_SITE_URL ||
-    (typeof window !== 'undefined' ? window.location.origin : 'https://peplab.ai'),
+    (typeof window !== 'undefined' ? window.location.origin : 'https://peplab.com.au'),
 );
 
 export const SHOP_URL = MAIN_SITE_URL;

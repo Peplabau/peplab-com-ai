@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CONFIG } from '@/lib/config';
-import { isLoginOnlyDomain } from '@/lib/domain';
+import { publicCanonicalOrigin } from '@/lib/domain';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 
 interface SEOProps {
@@ -12,12 +12,13 @@ interface SEOProps {
   noIndex?: boolean;
 }
 
-/** Canonical / OG origin — .com.au public pages use their own host; .ai uses SITE_URL. */
-function seoOrigin(): string {
-  if (typeof window !== 'undefined' && isLoginOnlyDomain()) {
-    return window.location.origin;
-  }
-  return CONFIG.SITE_URL.replace(/\/$/, '');
+const INDEXABLE_ROBOTS = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+/** Canonical URL for this deployment. Query strings are not part of the canonical. */
+function canonicalUrl(pathname: string): string {
+  const origin = publicCanonicalOrigin();
+  const path = pathname.replace(/\/+$/, '') || '/';
+  return `${origin}${path === '/' ? '/' : path}`;
 }
 
 export function SEO({
@@ -28,7 +29,8 @@ export function SEO({
   noIndex = false,
 }: SEOProps) {
   const location = useLocation();
-  const origin = seoOrigin();
+  const origin = publicCanonicalOrigin();
+  const pageUrl = canonicalUrl(location.pathname);
   const keywordsText = Array.isArray(keywords) ? keywords.join(', ') : keywords;
   const resolvedOgImage =
     ogImage ?? `${origin}${CONFIG.SHARE_PREVIEW_IMAGE_PATH}`;
@@ -62,7 +64,7 @@ export function SEO({
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:alt', content: 'PEPLAB — Peptides Australia' },
       { property: 'og:site_name', content: SITE_SEO_TITLE },
-      { property: 'og:url', content: `${origin}${location.pathname}${location.search}` },
+      { property: 'og:url', content: pageUrl },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'en_AU' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -75,7 +77,7 @@ export function SEO({
     if (noIndex) {
       metaTags.push({ name: 'robots', content: 'noindex, nofollow' });
     } else {
-      metaTags.push({ name: 'robots', content: 'index, follow' });
+      metaTags.push({ name: 'robots', content: INDEXABLE_ROBOTS });
     }
 
     metaTags.forEach(({ name, property, content }) => {
@@ -107,11 +109,21 @@ export function SEO({
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute(
-      'href',
-      `${origin}${location.pathname}${location.search}`,
-    );
-  }, [title, description, keywordsText, resolvedOgImage, noIndex, location.pathname, location.search, origin]);
+    canonical.setAttribute('href', pageUrl);
+
+    const setAlternate = (hreflang: string) => {
+      let link = document.querySelector(`link[rel="alternate"][hreflang="${hreflang}"]`) as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'alternate';
+        link.hreflang = hreflang;
+        document.head.appendChild(link);
+      }
+      link.href = pageUrl;
+    };
+    setAlternate('en-AU');
+    setAlternate('x-default');
+  }, [title, description, keywordsText, resolvedOgImage, noIndex, pageUrl, origin]);
 
   return null;
 }

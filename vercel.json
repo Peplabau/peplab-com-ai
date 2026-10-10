@@ -1,6 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
   "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.peplab.com.au" }],
+      "destination": "https://peplab.com.au/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.peplab.com.au" }],
+      "destination": "https://peplab.com.au/:path*",
+      "permanent": true
+    },
     { "source": "/product/retatrutide", "destination": "/product/reta", "permanent": true },
     { "source": "/product/semaglutide", "destination": "/product/Semaglutide", "permanent": true },
     { "source": "/product/bacteriostatic-water", "destination": "/product/bac-water", "permanent": true },

@@ -67,6 +67,17 @@ export const MAIN_APP_ORIGIN: string = (
   import.meta.env.VITE_MAIN_APP_ORIGIN ?? DEFAULT_MAIN_APP_ORIGIN
 ).replace(/\/+$/, '');
 
+/**
+ * Public origin search engines should index for this deployment.
+ * Hardcoded so a mis-set VITE_SITE_URL=https://peplab.ai cannot move
+ * canonicals, Open Graph, or breadcrumbs off peplab.com.au.
+ */
+export const PUBLIC_SITE_ORIGIN = 'https://peplab.com.au';
+
+export function publicCanonicalOrigin(): string {
+  return PUBLIC_SITE_ORIGIN;
+}
+
 /** Canonical site origin for this deployment (no trailing slash). */
 export function siteOrigin(): string {
   return CONFIG.SITE_URL.replace(/\/$/, '');
@@ -75,7 +86,7 @@ export function siteOrigin(): string {
 /** Hostname shown in footers and legal copy, e.g. peplab.com.au */
 export function siteHostname(): string {
   try {
-    return new URL(siteOrigin()).hostname;
+    return new URL(publicCanonicalOrigin()).hostname;
   } catch {
     return 'peplab.com.au';
   }

@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { STOREFRONT_PRODUCT_SLUGS } from './storefront-product-slugs.mjs';
+import { SITE_URL, STATIC_SEO_ROUTES } from './seo-routes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -32,32 +32,9 @@ function envVar(name, fallback) {
   return fallback;
 }
 
-// Always peplab.com.au for this repo. `prebuild` regenerates sitemap.xml on every
-// deploy — reading VITE_SITE_URL previously rewrote live URLs to peplab.ai when
-// that env var was mis-set on Vercel (shop handoff uses VITE_MAIN_APP_ORIGIN).
-const SITE_URL = 'https://peplab.com.au';
-
-const STATIC_ROUTES = [
-  { path: '/', priority: '1.0', changefreq: 'weekly' },
-  { path: '/shop', priority: '0.98', changefreq: 'weekly' },
-  { path: '/coa', priority: '0.88', changefreq: 'weekly' },
-  { path: '/calculator', priority: '0.78', changefreq: 'monthly' },
-  { path: '/protocols', priority: '0.86', changefreq: 'monthly' },
-  { path: '/leaderboard', priority: '0.72', changefreq: 'weekly' },
-  { path: '/standards', priority: '0.75', changefreq: 'monthly' },
-  { path: '/contact-info', priority: '0.75', changefreq: 'monthly' },
-  { path: '/contact', priority: '0.65', changefreq: 'monthly' },
-  { path: '/faq', priority: '0.72', changefreq: 'monthly' },
-  { path: '/shipping', priority: '0.62', changefreq: 'monthly' },
-  { path: '/track-order', priority: '0.6', changefreq: 'monthly' },
-  { path: '/terms', priority: '0.4', changefreq: 'yearly' },
-  { path: '/privacy', priority: '0.38', changefreq: 'yearly' },
-  { path: '/refund', priority: '0.38', changefreq: 'yearly' },
-  { path: '/legal', priority: '0.38', changefreq: 'yearly' },
-  { path: '/rewards-terms', priority: '0.35', changefreq: 'yearly' },
-  { path: '/research', priority: '0.85', changefreq: 'monthly' },
-  { path: '/research/compounds', priority: '0.84', changefreq: 'weekly' },
-];
+// Always peplab.com.au for this repo. Shop and product URLs are not listed:
+// on this host they leave for peplab.ai, and /protocols is unpublished.
+// Account pages (/rewards-terms) are noindex and stay out of the sitemap.
 
 /** Known published research compound slugs (seed defaults). Extended from Supabase when credentials exist. */
 const DEFAULT_RESEARCH_SLUGS = [
@@ -136,11 +113,7 @@ function urlEntry(path, priority, changefreq) {
   </url>`;
 }
 
-const productEntries = STOREFRONT_PRODUCT_SLUGS.map(({ slug, priority }) =>
-  urlEntry(`/product/${slug}`, priority || '0.82', 'weekly'),
-);
-
-const staticEntries = STATIC_ROUTES.map((route) =>
+const staticEntries = STATIC_SEO_ROUTES.map((route) =>
   urlEntry(route.path, route.priority, route.changefreq),
 );
 
@@ -151,12 +124,12 @@ const researchEntries = researchSlugs.map((slug) =>
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...researchEntries, ...productEntries].join('\n')}
+${[...staticEntries, ...researchEntries].join('\n')}
 </urlset>
 `;
 
 const outPath = join(root, 'public/sitemap.xml');
 writeFileSync(outPath, xml, 'utf8');
 console.log(
-  `Wrote ${staticEntries.length + researchEntries.length + productEntries.length} URLs to public/sitemap.xml (${researchEntries.length} research, ${productEntries.length} products)`,
+  `Wrote ${staticEntries.length + researchEntries.length} URLs to public/sitemap.xml (${researchEntries.length} research)`,
 );

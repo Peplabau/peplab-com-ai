@@ -60,28 +60,17 @@
          PRIMARY SEO
     ════════════════════════════════════════════════ -->
     <title>PEPLAB | Peptides Australia</title>
-    <!-- Login-only hosts: noindex auth entry routes only (/login, /signup, /forgot-password). -->
-    <script>
-      (function () {
-        var raw = '%VITE_LOGIN_ONLY_HOSTS%';
-        var hosts = raw.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
-        if (!hosts.length) return;
-        var h = location.hostname.toLowerCase();
-        var full = location.host.toLowerCase();
-        var loginOnly = hosts.indexOf(h) !== -1 || hosts.indexOf(full) !== -1;
-        if (!loginOnly) return;
-        var p = (location.pathname || '/').replace(/\/$/, '') || '/';
-        var authEntry = p === '/login' || p === '/signup' || p === '/forgot-password';
-        if (!authEntry) return;
-        document.title = 'PEPLAB | Sign in';
-        var robots = document.querySelector('meta[name="robots"]');
-        if (robots) robots.setAttribute('content', 'noindex, nofollow');
-      })();
-    </script>
+    <!--
+      Canonical is always https://peplab.com.au (this deployment).
+      Do not point it at peplab.ai — that tells Google not to index this host.
+    -->
     <meta name="description" content="Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only." />
     <meta name="keywords" content="peptides australia, bpc 157 australia, bpc 157, bpc 157 peptide, buy bpc 157, buy peptides australia, buy peptides, bpc 157 pure, peptide 157, semaglutide peptide buy, bpc peptide, bpc 157 tb 500, best place to buy peptides australia, bpc 157 near me, order bpc 157, bpc 157 10mg, bpc 157 purchase, ghk peptide, tb 500 and bpc 157, bpc 157 5mg, bpc 157 reviews, bpc 157 peptide australia, bpc 157 injections, tb 500 bpc 157, purchase bpc 157, BPC-157 Australia, TB-500 Australia, buy peptides Australia, research peptides Australia, GHK-Cu Australia, Retatrutide for sale Australia, Semaglutide peptide Australia, Tirzepatide Australia, peptide supplier Sydney, HPLC tested peptides, lab grade peptides online, domestic peptide shipping Australia" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://peplab.ai/" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://peplab.com.au/" />
+    <link rel="alternate" hreflang="en-AU" href="https://peplab.com.au/" />
+    <link rel="alternate" hreflang="x-default" href="https://peplab.com.au/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://peplab.com.au/sitemap.xml" />
 
     <!-- ═══════════════════════════════════════════════
          GEO / LOCAL SEO
@@ -94,10 +83,10 @@
     ════════════════════════════════════════════════ -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="PEPLAB | Peptides Australia" />
-    <meta property="og:url" content="https://peplab.ai/" />
+    <meta property="og:url" content="https://peplab.com.au/" />
     <meta property="og:title" content="PEPLAB | Peptides Australia" />
     <meta property="og:description" content="Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only." />
-    <meta property="og:image" content="https://peplab.ai/chrome-seo.jpeg" />
+    <meta property="og:image" content="https://peplab.com.au/chrome-seo.jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="PEPLAB — Peptides Australia" />
@@ -110,7 +99,7 @@
     <meta name="twitter:site" content="@peplab_au" />
     <meta name="twitter:title" content="PEPLAB | Peptides Australia" />
     <meta name="twitter:description" content="Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only." />
-    <meta name="twitter:image" content="https://peplab.ai/chrome-seo.jpeg" />
+    <meta name="twitter:image" content="https://peplab.com.au/chrome-seo.jpeg" />
 
     <!-- ═══════════════════════════════════════════════
          STRUCTURED DATA — Organization + Website
@@ -121,14 +110,14 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://peplab.ai/#organization",
+          "@id": "https://peplab.com.au/#organization",
           "name": "PEPLAB | Peptides Australia",
-          "url": "https://peplab.ai/",
+          "url": "https://peplab.com.au/",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://peplab.ai/favicon.png"
+            "url": "https://peplab.com.au/favicon.png"
           },
-          "image": "https://peplab.ai/chrome-seo.jpeg",
+          "image": "https://peplab.com.au/chrome-seo.jpeg",
           "description": "Australian research peptide supplier with HPLC-verified batches and published COA results. Research use only.",
           "address": {
             "@type": "PostalAddress",
@@ -144,45 +133,92 @@
         },
         {
           "@type": "WebSite",
-          "@id": "https://peplab.ai/#website",
-          "url": "https://peplab.ai/",
+          "@id": "https://peplab.com.au/#website",
+          "url": "https://peplab.com.au/",
           "name": "PEPLAB | Peptides Australia",
-          "publisher": { "@id": "https://peplab.ai/#organization" }
+          "publisher": { "@id": "https://peplab.com.au/#organization" }
         },
         {
           "@type": "WebPage",
-          "@id": "https://peplab.ai/#webpage",
-          "url": "https://peplab.ai/",
+          "@id": "https://peplab.com.au/#webpage",
+          "url": "https://peplab.com.au/",
           "name": "PEPLAB | Peptides Australia",
           "description": "Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only.",
           "primaryImageOfPage": {
             "@type": "ImageObject",
-            "url": "https://peplab.ai/chrome-seo.jpeg",
+            "url": "https://peplab.com.au/chrome-seo.jpeg",
             "width": 1200,
             "height": 630
           },
-          "isPartOf": { "@id": "https://peplab.ai/#website" },
-          "about": { "@id": "https://peplab.ai/#organization" }
+          "isPartOf": { "@id": "https://peplab.com.au/#website" },
+          "about": { "@id": "https://peplab.com.au/#organization" }
         },
         {
           "@type": "ItemList",
-          "@id": "https://peplab.ai/#sitewide-primary-nav",
+          "@id": "https://peplab.com.au/#sitewide-primary-nav",
           "name": "PEPLAB primary pages",
           "description": "Main sections linked from navigation and footer.",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "url": "https://peplab.ai/" },
-            { "@type": "ListItem", "position": 2, "name": "Shop — research peptides", "url": "https://peplab.ai/shop" },
-            { "@type": "ListItem", "position": 3, "name": "COA Results", "url": "https://peplab.ai/coa" },
-            { "@type": "ListItem", "position": 4, "name": "Peptide Calculator", "url": "https://peplab.ai/calculator" },
-            { "@type": "ListItem", "position": 5, "name": "Quality Standards", "url": "https://peplab.ai/standards" },
-            { "@type": "ListItem", "position": 6, "name": "Track Order", "url": "https://peplab.ai/track-order" },
-            { "@type": "ListItem", "position": 7, "name": "Contact", "url": "https://peplab.ai/contact-info" },
-            { "@type": "ListItem", "position": 8, "name": "FAQ", "url": "https://peplab.ai/faq" },
-            { "@type": "ListItem", "position": 9, "name": "Shipping", "url": "https://peplab.ai/shipping" }
+            { "@type": "ListItem", "position": 1, "name": "Home", "url": "https://peplab.com.au/" },
+            { "@type": "ListItem", "position": 2, "name": "Peptide research", "url": "https://peplab.com.au/research" },
+            { "@type": "ListItem", "position": 3, "name": "COA Results", "url": "https://peplab.com.au/coa" },
+            { "@type": "ListItem", "position": 4, "name": "Peptide Calculator", "url": "https://peplab.com.au/calculator" },
+            { "@type": "ListItem", "position": 5, "name": "Quality Standards", "url": "https://peplab.com.au/standards" },
+            { "@type": "ListItem", "position": 6, "name": "Track Order", "url": "https://peplab.com.au/track-order" },
+            { "@type": "ListItem", "position": 7, "name": "Contact", "url": "https://peplab.com.au/contact-info" },
+            { "@type": "ListItem", "position": 8, "name": "FAQ", "url": "https://peplab.com.au/faq" },
+            { "@type": "ListItem", "position": 9, "name": "Shipping", "url": "https://peplab.com.au/shipping" }
           ]
         }
       ]
     }
+    </script>
+    <!--
+      Runs after the canonical and robots tags exist.
+      Public pages stay indexable. Account, checkout, shop handoff, and product
+      shells are noindex — those URLs are not the pages we want in Google.
+    -->
+    <script>
+      (function () {
+        var PUBLIC = 'https://peplab.com.au';
+        var path = (location.pathname || '/').replace(/\/+$/, '') || '/';
+        var url = PUBLIC + (path === '/' ? '/' : path);
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) canonical.setAttribute('href', url);
+        var ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', url);
+        var au = document.querySelector('link[rel="alternate"][hreflang="en-AU"]');
+        var xd = document.querySelector('link[rel="alternate"][hreflang="x-default"]');
+        if (au) au.setAttribute('href', url);
+        if (xd) xd.setAttribute('href', url);
+
+        var publicExact = {
+          '/': 1,
+          '/landing': 1,
+          '/coa': 1,
+          '/calculator': 1,
+          '/leaderboard': 1,
+          '/standards': 1,
+          '/contact-info': 1,
+          '/contact': 1,
+          '/faq': 1,
+          '/shipping': 1,
+          '/track-order': 1,
+          '/terms': 1,
+          '/privacy': 1,
+          '/refund': 1,
+          '/legal': 1,
+          '/research': 1,
+          '/research/compounds': 1
+        };
+        var isResearchCompound = /^\/research\/compounds\/[^/]+$/.test(path);
+        if (publicExact[path] || isResearchCompound) return;
+        var robots = document.querySelector('meta[name="robots"]');
+        if (robots) robots.setAttribute('content', 'noindex, nofollow');
+        if (path === '/login' || path === '/signup' || path === '/forgot-password' || path === '/reset-password') {
+          document.title = 'PEPLAB | Sign in';
+        }
+      })();
     </script>
   </head>
   <body>
@@ -198,7 +234,8 @@
       </p>
       <nav aria-label="Primary">
         <ul>
-          <li><a href="https://peplab.com.au/shop">Research Peptides</a></li>
+          <li><a href="https://peplab.com.au/landing">Buy peptides in Australia</a></li>
+          <li><a href="https://peplab.com.au/research">Peptide research</a></li>
           <li><a href="https://peplab.com.au/standards">Quality &amp; Testing</a></li>
           <li><a href="https://peplab.com.au/coa">COA Results</a></li>
           <li><a href="https://peplab.com.au/calculator">Peptide Calculator</a></li>
@@ -270,6 +307,9 @@
         var full = location.host.toLowerCase();
         var loginOnly = hosts.indexOf(h) !== -1 || hosts.indexOf(full) !== -1;
         if (!loginOnly) return;
+        var path = (location.pathname || '/').replace(/\/+$/, '') || '/';
+        var authEntry = path === '/login' || path === '/signup' || path === '/forgot-password' || path === '/reset-password';
+        if (!authEntry) return;
         var title = 'PEPLAB | Sign in';
         var description = 'Sign in to your PEPLAB account. Member access for existing customers.';
         document.title = title;
