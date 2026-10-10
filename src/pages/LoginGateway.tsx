@@ -334,7 +334,7 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
       <div className="min-h-screen flex flex-col" style={{ background: '#070A12' }}>
         <div className="absolute inset-0 grid-overlay opacity-60" />
 
-        <ContentPageHeader />
+        <ContentPageHeader backTo={null} />
 
         <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10 sm:px-6">
           <div className="w-full max-w-[420px]">
