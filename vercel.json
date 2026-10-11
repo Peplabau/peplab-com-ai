@@ -83,6 +83,16 @@
       "source": "/product/syringes-1ml-31g",
       "destination": "/product/1ml-31g-6mm-syringes",
       "permanent": true
+    },
+    {
+      "source": "/landing",
+      "destination": "/shop",
+      "permanent": true
+    },
+    {
+      "source": "/new-landing",
+      "destination": "/shop",
+      "permanent": true
     }
   ],
   "rewrites": [

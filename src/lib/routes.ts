@@ -4,7 +4,7 @@ export const HOME_PATH = '/';
 /** Canonical shop / catalogue URL. */
 export const SHOP_PATH = '/shop';
 
-/** Marketing landing page (same app as shop). */
+/** Legacy marketing landing path — redirects to shop. */
 export const LANDING_PATH = '/landing';
 
 /** Peptide reconstitution calculator. */
@@ -33,9 +33,9 @@ export const BLOG_SLUG_PATH = '/blog/:slug';
 
 import { CONFIG } from '@/lib/config';
 
-/** Full URL for external links (subdomain override via env). */
+/** Full URL for external links — landing now points at the shop. */
 export const LANDING_SITE_URL =
   import.meta.env.VITE_LANDING_SITE_URL ||
   (typeof window !== 'undefined'
-    ? `${window.location.origin}${LANDING_PATH}`
-    : `${CONFIG.SITE_URL.replace(/\/$/, '')}${LANDING_PATH}`);
+    ? `${window.location.origin}${SHOP_PATH}`
+    : `${CONFIG.SITE_URL.replace(/\/$/, '')}${SHOP_PATH}`);
