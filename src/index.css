@@ -4283,6 +4283,19 @@
   }
 }
 
+/* One solid button — no hover flash / opacity change (match peplab.ai) */
+a.catalog-halloween-promo,
+a.catalog-halloween-promo:hover,
+a.catalog-halloween-promo:focus,
+a.catalog-halloween-promo:active {
+  text-decoration: none;
+  color: inherit;
+  background-color: #0c0a14;
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
 .catalog-halloween-treat {
   background: transparent;
 }
