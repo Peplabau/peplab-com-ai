@@ -381,11 +381,9 @@ function RedirectToMainShop() {
 }
 
 /**
- * `/` on peplab.com.au:
- * - guests and Google see the public peptide page (this is the URL that should rank)
- * - members are handed off to peplab.ai
- * Content renders immediately. Auth is checked after paint so the crawlable page
- * is not a sign-in form.
+ * `/` on peplab.com.au is the lock page.
+ * Guests and Google see that page. Members are handed off to peplab.ai.
+ * The lock page paints immediately so Google indexes `/`, not a spinner.
  */
 function HomeGate() {
   const [authed, setAuthed] = useState(false);
@@ -417,7 +415,7 @@ function HomeGate() {
   }, []);
 
   if (authed) return <RedirectToMainShop />;
-  return <PeplabLandingRoute />;
+  return <LoginGateway asHomepage />;
 }
 
 function LoginOnlyApp() {

@@ -339,14 +339,20 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
         <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10 sm:px-6">
           <div className="w-full max-w-[420px]">
             <div className="text-center mb-6">
-              <span className="text-4xl font-bold tracking-[0.12em] gradient-text leading-none">
-                PEPLAB
-              </span>
+              {asHomepage ? (
+                <h1 className="text-4xl font-bold tracking-[0.12em] gradient-text leading-none">
+                  PEPLAB
+                </h1>
+              ) : (
+                <span className="text-4xl font-bold tracking-[0.12em] gradient-text leading-none">
+                  PEPLAB
+                </span>
+              )}
               {asHomepage ? (
                 <>
-                  <h1 className="mt-4 text-xl sm:text-2xl font-bold text-[#F4F6FA] leading-snug">
-                    PEPLAB Australia | Research peptides &amp; COA results
-                  </h1>
+                  <p className="mt-4 text-xl sm:text-2xl font-bold text-[#F4F6FA] leading-snug">
+                    Peptides Australia
+                  </p>
                   <p className="mt-3 text-sm text-[#A9B3C7] leading-relaxed">
                     {HOMEPAGE_SEO_DESCRIPTION}
                   </p>

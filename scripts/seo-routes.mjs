@@ -11,19 +11,11 @@ export const STATIC_SEO_ROUTES = [
     changefreq: 'weekly',
   },
   {
-    path: '/landing',
-    title: 'Buy Premium Peptides in Australia | PEPLAB',
-    description:
-      'Every PEPLAB Australia research lot ships with a published COA — HPLC purity, LC-MS identity, and content assay under one batch ID. Research use only.',
-    priority: '0.9',
-    changefreq: 'weekly',
-  },
-  {
     path: '/coa',
     title: 'COA Results | PEPLAB Australia',
     description:
       'Browse published Certificates of Analysis for PEPLAB Australia research peptides. HPLC-verified batch documentation from independent testing.',
-    priority: '0.88',
+    priority: '0.74',
     changefreq: 'weekly',
   },
   {
