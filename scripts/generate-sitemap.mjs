@@ -105,9 +105,12 @@ async function fetchPublishedResearchSlugs() {
   }
 }
 
+const LASTMOD = new Date().toISOString().slice(0, 10);
+
 function urlEntry(path, priority, changefreq) {
   return `  <url>
     <loc>${SITE_URL}${path}</loc>
+    <lastmod>${LASTMOD}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
