@@ -6,6 +6,7 @@ import { CONFIG } from '@/lib/config';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
 import ContentPageHeader from '@/components/ContentPageHeader';
+import Footer from '@/sections/Footer';
 import { PAGE_SEO } from '@/lib/seo-constants';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 
@@ -299,25 +300,7 @@ export default function ContactInfo() {
         </div>
       </main>
 
-      <footer className="relative z-10 px-6 lg:px-12 py-8 border-t border-[rgba(244,246,250,0.08)]">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#A9B3C7]">© 2026 PEPLAB. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs text-[#A9B3C7]">
-            <a href="/privacy" className="hover:text-[#F4F6FA] transition-colors">
-              Privacy
-            </a>
-            <a href="/terms" className="hover:text-[#F4F6FA] transition-colors">
-              Terms
-            </a>
-            <a href="/refund" className="hover:text-[#F4F6FA] transition-colors">
-              Refunds
-            </a>
-            <a href="/shipping" className="hover:text-[#F4F6FA] transition-colors">
-              Shipping
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );

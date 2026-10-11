@@ -18,8 +18,8 @@ import OzcaniumAnalyticsName from '@/components/OzcaniumAnalyticsName';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
 import { RESEARCH_GATEWAY_SEO } from '@/landing/lib/seo-keywords';
-import LandingFooter from '@/landing/components/LandingFooter';
 import { coaArchiveUrl, shopPageUrl } from '@/landing/lib/site';
+import Footer from '@/sections/Footer';
 import TrustpilotReviews from '@/sections/TrustpilotReviews';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -634,7 +634,7 @@ export default function ResearchGateway() {
         </div>
         <Faq />
         <Closing />
-        <LandingFooter hideCta />
+        <Footer />
       </main>
     </div>
   );
