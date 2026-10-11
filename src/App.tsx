@@ -365,9 +365,10 @@ function ScrollToTop() {
 }
 
 /**
- * peplab.com.au (login-gated host):
- * - Public content pages stay open for SEO (privacy, terms, COA, calculator, …)
- * - Shop lives on peplab.ai; these routes hand the session across and leave this host
+ * Optional login-only host (VITE_LOGIN_ONLY_HOSTS):
+ * - Public content pages stay open for SEO
+ * - Shop routes hand the session across to VITE_MAIN_APP_ORIGIN
+ * Production peplab.com.au leaves VITE_LOGIN_ONLY_HOSTS empty (full shop tree below).
  */
 function RedirectToMainShop() {
   useEffect(() => {
@@ -383,9 +384,7 @@ function RedirectToMainShop() {
 }
 
 /**
- * `/` on peplab.com.au is the lock page.
- * Guests and Google see that page. Members are handed off to peplab.ai.
- * The lock page paints immediately so Google indexes `/`, not a spinner.
+ * `/` on an optional login-only host: lock page for guests, shop handoff for members.
  */
 function HomeGate() {
   const [authed, setAuthed] = useState(false);
@@ -463,9 +462,7 @@ function LoginOnlyApp() {
                 <Route path="/coa" element={<CoaArchive />} />
                 <Route path="/track-order" element={<TrackOrder />} />
 
-                {/* `/` is indexable: lock page for guests, shop for members. `/login` + `/signup` stay unchanged. */}
                 <Route path="/" element={<HomeGate />} />
-                {/* Shop lives on peplab.ai — hand off session and leave this host */}
                 <Route path="/shop" element={<RedirectToMainShop />} />
                 <Route path="/product/:slug" element={<RedirectToMainShop />} />
                 <Route path="/checkout" element={<RedirectToMainShop />} />
@@ -498,7 +495,7 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
-  // peplab.com.au → serve nothing but the auth flow. See `src/lib/domain.ts`.
+  // Optional login-gateway host only. Production .com.au uses the full shop below.
   if (isLoginOnlyDomain()) {
     return <LoginOnlyApp />;
   }

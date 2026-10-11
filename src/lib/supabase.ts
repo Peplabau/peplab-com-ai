@@ -160,9 +160,7 @@ export const isAdmin = async (): Promise<boolean> => {
 // still have confirmation enabled — clicking the link returns the user
 // straight to /dashboard instead of a generic Supabase page.
 export const signUp = async (email: string, password: string, metadata?: object) => {
-  // Always land verification-email clicks on the main app (peplab.com.au) — even
-  // when signup happens on the login-only host — so users never bounce back
-  // to peplab.com.au after confirming their email.
+  // Verification-email clicks land on this deployment's /dashboard.
   const dashboardUrl = `${siteOrigin()}/dashboard`;
   return await supabase.auth.signUp({
     email,

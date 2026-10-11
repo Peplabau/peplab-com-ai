@@ -28,8 +28,9 @@ export async function resolvePostLoginPath(redirectParam: string | null | undefi
 }
 
 /**
- * Send the current session from a login-only host (peplab.com.au) to peplab.ai.
- * Tokens go in the URL hash (never sent to the server); peplab.ai consumes them in main.tsx.
+ * Navigate to the storefront after auth.
+ * Same-origin (peplab.com.au): plain navigation.
+ * Cross-origin (optional login-only staging host): hash token handoff.
  */
 export async function handoffToMainApp(nextPath?: string | null): Promise<void> {
   const next = sanitizeRedirectPath(nextPath) ?? '/';

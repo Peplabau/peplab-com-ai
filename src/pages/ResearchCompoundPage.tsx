@@ -27,12 +27,11 @@ import {
 import { RESEARCH_SEED_ARTICLES } from '@/lib/research-seed-data';
 import { resolveProductSlug } from '@/lib/product-slug-aliases';
 import { loadProductsFromSupabase } from '@/lib/supabase-db';
-import { MAIN_APP_ORIGIN } from '@/lib/domain';
 import Footer from '@/sections/Footer';
 
-const STOREFRONT_HOME_URL = `${MAIN_APP_ORIGIN}/`;
+const STOREFRONT_HOME_URL = '/';
 
-/** Product related links always go to the peplab.ai homepage (not a product slug). */
+/** Product related links go to the peplab.com.au shop homepage (not a product slug). */
 function resolveRelatedHref(
   href: string | undefined,
   kind: 'PRODUCT' | 'CATEGORY' | 'RESEARCH',

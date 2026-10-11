@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { SITE_URL, STATIC_SEO_ROUTES } from './seo-routes.mjs';
+import { STOREFRONT_PRODUCT_SLUGS } from './storefront-product-slugs.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -32,8 +33,8 @@ function envVar(name, fallback) {
   return fallback;
 }
 
-// Always peplab.com.au for this repo. Shop and product URLs are not listed:
-// on this host they leave for peplab.ai, and /protocols is unpublished.
+// Full peplab.com.au storefront sitemap: static SEO pages, shop products,
+// research compounds, and blog posts. /protocols is unpublished.
 // Account pages (/rewards-terms) are noindex and stay out of the sitemap.
 
 /** Known published research compound slugs (seed defaults). Extended from Supabase when credentials exist. */
@@ -141,6 +142,10 @@ const staticEntries = STATIC_SEO_ROUTES.map((route) =>
   urlEntry(route.path, route.priority, route.changefreq),
 );
 
+const productEntries = STOREFRONT_PRODUCT_SLUGS.map((p) =>
+  urlEntry(`/product/${p.slug}`, p.priority || '0.8', 'weekly'),
+);
+
 const researchSlugs = await fetchPublishedResearchSlugs();
 const researchEntries = researchSlugs.map((slug) =>
   urlEntry(`/research/compounds/${slug}`, '0.82', 'monthly'),
@@ -151,9 +156,11 @@ const blogEntries = blogSlugs.map((slug) =>
   urlEntry(`/blog/${slug}`, '0.76', 'monthly'),
 );
 
+const allEntries = [...staticEntries, ...productEntries, ...researchEntries, ...blogEntries];
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...researchEntries, ...blogEntries].join('\n')}
+${allEntries.join('\n')}
 </urlset>
 `;
 
@@ -168,5 +175,5 @@ for (const outPath of outPaths) {
   writeFileSync(outPath, xml, 'utf8');
 }
 console.log(
-  `Wrote ${staticEntries.length + researchEntries.length} URLs to sitemap.xml and peplab-sitemap.xml (${researchEntries.length} research)`,
+  `Wrote ${allEntries.length} URLs to sitemap.xml and peplab-sitemap.xml (${productEntries.length} products, ${researchEntries.length} research, ${blogEntries.length} blog)`,
 );

@@ -184,7 +184,7 @@ Explore PEPLAB’s [Quality & Testing](/standards) information and available [CO
       {
         kind: 'product',
         label: 'Tirzepatide reference material',
-        href: 'https://peplab.ai/',
+        href: 'https://peplab.com.au/',
       },
       {
         kind: 'research',
@@ -820,7 +820,7 @@ This page summarises scientific evidence and does not provide instructions for p
       {
         kind: 'product',
         label: 'Retatrutide reference material',
-        href: 'https://peplab.ai/',
+        href: 'https://peplab.com.au/',
       },
       {
         kind: 'research',

@@ -1,8 +1,9 @@
 /**
- * LoginGateway — entry pages on the login-only host (peplab.com.au / staging.*).
+ * LoginGateway — optional login-only host entry (VITE_LOGIN_ONLY_HOSTS).
  *
  * Sign-in for returning members; sign-up with referral verification for new members.
- * After auth, members are handed off to peplab.ai (the shop is not on this domain).
+ * After auth, members are handed off to VITE_MAIN_APP_ORIGIN.
+ * Production peplab.com.au uses the normal /login page instead (full shop).
  */
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';

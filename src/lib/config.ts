@@ -60,7 +60,7 @@ export const CONFIG = {
   },
 
   // Site Info — public domain for THIS deployment (peplab.com.au).
-  // Shop handoff uses VITE_MAIN_APP_ORIGIN (peplab.ai), not this value.
+  // Storefront absolute URLs also use VITE_MAIN_APP_ORIGIN (same host by default).
   SITE_URL: import.meta.env.VITE_SITE_URL || 'https://peplab.com.au',
   SITE_NAME: 'PEPLAB - Peptides Australia',
   SITE_DESCRIPTION: 'Premium Peptides Australia for research. Lab-tested, fast shipping, exceptional quality.',

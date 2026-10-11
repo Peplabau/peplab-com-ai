@@ -1,5 +1,18 @@
-import { useState, useEffect } from 'react';
-import { ShoppingCart, Menu, X, User, LayoutDashboard, Award, Settings, Search, Package, TrendingUp, Trophy, LogOut } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import {
+  ShoppingCart,
+  Menu,
+  X,
+  User,
+  LayoutDashboard,
+  Award,
+  Settings,
+  Package,
+  TrendingUp,
+  Trophy,
+  LogOut,
+  ChevronDown,
+} from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRewards } from '@/context/RewardsContext';
 import { useAffiliate } from '@/context/AffiliateContext';
@@ -7,8 +20,6 @@ import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH } from '@/lib/routes';
-// PROTOCOLS_PATH temporarily unused — restore with Protocols nav entry below
-// import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, PROTOCOLS_PATH } from '@/lib/routes';
 
 type NavigationProps = {
   /** Render inside a parent fixed header (e.g. below announce bar on /landing). */
@@ -18,14 +29,15 @@ type NavigationProps = {
 export default function Navigation({ embedded = false }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
   const { totalItems, setIsCartOpen } = useCart();
   const { balance } = useRewards();
   const { myPromoter } = useAffiliate();
 
-  // Check login + admin state — read from Supabase session directly
   useEffect(() => {
     const syncAuthState = async () => {
       const user = await getCurrentUser();
@@ -45,8 +57,9 @@ export default function Navigation({ embedded = false }: NavigationProps) {
 
     syncAuthState();
 
-    // Re-sync whenever auth changes (login / logout in another tab etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setIsLoggedIn(true);
         localStorage.setItem('peplab_logged_in', 'true');
@@ -68,13 +81,32 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
     };
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isAccountOpen) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (!accountRef.current?.contains(event.target as Node)) {
+        setIsAccountOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsAccountOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isAccountOpen]);
+
   const handleLogout = async () => {
     setIsMobileMenuOpen(false);
+    setIsAccountOpen(false);
     await signOut();
     localStorage.removeItem('peplab_logged_in');
     localStorage.removeItem('peplab_is_admin');
@@ -85,13 +117,12 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     'text-sm font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300';
   const navClassMobile =
     'block w-full text-left text-lg font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300 py-2';
+  const menuItemClass =
+    'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.06)] hover:text-[#F4F6FA] transition-colors';
 
   type NavAnchor = { label: string; href: string };
-  /** Crawlable anchors where possible; Google sitelinks are still automated. */
   const navEntries: ReadonlyArray<NavAnchor> = [
     { label: 'Shop', href: SHOP_PATH },
-    // Temporarily disabled — client asked to remove Protocols (compliance risk).
-    // { label: 'Protocols', href: PROTOCOLS_PATH },
     { label: 'Research', href: RESEARCH_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },
     { label: 'Calculator', href: CALCULATOR_PATH },
@@ -111,19 +142,38 @@ export default function Navigation({ embedded = false }: NavigationProps) {
               : 'bg-[#070A12]'
         }`}
       >
-        <div className={embedded ? 'nl-container' : 'w-full px-4 sm:px-6 lg:px-12'}>
-          <div className={`nl-nav-bar flex items-center justify-between ${embedded ? '' : 'h-16 sm:h-20 lg:h-24'}`}>
-            <a href={HOME_PATH} className="flex flex-col items-start" aria-label="PEPLAB Australia home" onClick={() => setIsMobileMenuOpen(false)}>
-              <span className={`font-bold tracking-[0.12em] gradient-text leading-none ${embedded ? 'text-xl sm:text-2xl lg:text-4xl' : 'text-3xl sm:text-4xl lg:text-5xl'}`}>
+        <div className={embedded ? 'nl-container' : 'w-full px-4 sm:px-6 lg:px-10 xl:px-12'}>
+          <div
+            className={`nl-nav-bar flex items-center justify-between gap-4 ${
+              embedded ? '' : 'h-16 sm:h-20 lg:h-[5.5rem]'
+            }`}
+          >
+            <a
+              href={HOME_PATH}
+              className="flex shrink-0 flex-col items-start"
+              aria-label="PEPLAB Australia home"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <span
+                className={`font-bold tracking-[0.12em] gradient-text leading-none ${
+                  embedded ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-2xl sm:text-3xl lg:text-4xl'
+                }`}
+              >
                 PEPLAB
               </span>
-              <span className={`nl-nav-tagline font-mono uppercase text-[#8B5CF6] mt-0.5 ${embedded ? 'text-[9px] sm:text-[10px] tracking-[0.35em]' : 'text-[10px] sm:text-xs lg:text-sm tracking-[0.45em] sm:tracking-[0.5em]'}`}>
+              <span
+                className={`nl-nav-tagline font-mono uppercase text-[#8B5CF6] mt-0.5 ${
+                  embedded
+                    ? 'text-[9px] sm:text-[10px] tracking-[0.35em]'
+                    : 'text-[9px] sm:text-[10px] lg:text-xs tracking-[0.4em] sm:tracking-[0.45em]'
+                }`}
+              >
                 PEPTIDES AUSTRALIA
               </span>
             </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-10">
+            <div className="hidden lg:flex items-center gap-5 xl:gap-7">
               {navEntries.map((entry) => (
                 <a key={entry.label} href={entry.href} className={navClassDesktop}>
                   {entry.label}
@@ -131,103 +181,145 @@ export default function Navigation({ embedded = false }: NavigationProps) {
               ))}
             </div>
 
-            {/* Right Side */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Search Button */}
-              {/* <button
-                onClick={() => setIsSearchOpen(true)}
-                className="hidden sm:flex p-2.5 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
-                title="Search products"
-              >
-                <Search className="w-5 h-5 text-[#F4F6FA]" />
-              </button> */}
-
-              {/* Leaderboard Link - Desktop */}
-              <a
-                href="/leaderboard"
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
-                title="Promoter Leaderboard"
-              >
-                <Trophy className="w-5 h-5 text-amber-300" />
-              </a>
-              {/* Track Order Link - Desktop */}
-              <a
-                href="/track-order"
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
-                title="Track Order"
-              >
-                <Package className="w-5 h-5 text-[#F4F6FA]" />
-              </a>
-              {/* Points Display - When Logged In */}
-              {isLoggedIn && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)]">
-                  <Award className="w-4 h-4 text-[#8B5CF6]" />
-                  <span className="text-sm font-medium text-[#8B5CF6]">{balance.toLocaleString()} pts</span>
-                </div>
-              )}
-
-              {/* Dashboard/Login Button - Desktop */}
-              {isLoggedIn ? (
-                <div className="hidden sm:flex items-center gap-2">
-                  {myPromoter && (
-                    <a
-                      href="/promoter"
-                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)] text-[#22C55E] hover:bg-[rgba(34,197,94,0.25)] transition-colors duration-300"
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-sm font-medium">Promoter</span>
-                    </a>
-                  )}
-                  <a
-                    href="/dashboard"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(46,209,180,0.15)] border border-[rgba(46,209,180,0.3)] text-[#2ED1B4] hover:bg-[rgba(46,209,180,0.25)] transition-colors duration-300"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span className="text-sm font-medium">Dashboard</span>
-                  </a>
-                  <a
-                    href="/settings"
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(244,246,250,0.08)] border border-[rgba(244,246,250,0.15)] text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.12)] transition-colors duration-300"
-                    title="Account Settings"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </a>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(244,246,250,0.08)] border border-[rgba(244,246,250,0.15)] text-[#A9B3C7] hover:text-[#EF4444] hover:bg-[rgba(239,68,68,0.1)] transition-colors duration-300"
-                    title="Log out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
+            {/* Right Side — cart + account only */}
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              {!isLoggedIn && (
                 <a
                   href="/login"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(139,92,246,0.15)] border border-[rgba(139,92,246,0.3)] text-[#8B5CF6] hover:bg-[rgba(139,92,246,0.25)] transition-colors duration-300"
+                  className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[rgba(139,92,246,0.15)] border border-[rgba(139,92,246,0.3)] text-[#8B5CF6] hover:bg-[rgba(139,92,246,0.25)] transition-colors duration-300"
                 >
                   <User className="w-4 h-4" />
                   <span className="text-sm font-medium">Login</span>
                 </a>
               )}
 
-              {/* Cart Button */}
+              {isLoggedIn && (
+                <div className="relative hidden sm:block" ref={accountRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsAccountOpen((open) => !open)}
+                    className="inline-flex items-center gap-2 rounded-full border border-[rgba(244,246,250,0.12)] bg-[rgba(244,246,250,0.04)] px-3 py-2 text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.08)] transition-colors"
+                    aria-expanded={isAccountOpen}
+                    aria-haspopup="menu"
+                  >
+                    <User className="w-4 h-4 text-[#A78BFA]" />
+                    <span className="text-sm font-medium tabular-nums text-[#A78BFA]">
+                      {balance.toLocaleString()}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-[#A9B3C7] transition-transform ${
+                        isAccountOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {isAccountOpen && (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-[rgba(244,246,250,0.1)] bg-[#111827] p-1.5 shadow-xl shadow-black/40"
+                    >
+                      <div className="mb-1 flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#6B7280]">
+                        <Award className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                        <span>
+                          <span className="font-semibold text-[#A78BFA]">
+                            {balance.toLocaleString()}
+                          </span>{' '}
+                          reward points
+                        </span>
+                      </div>
+                      <div className="my-1 h-px bg-[rgba(244,246,250,0.08)]" />
+                      <a
+                        href="/dashboard"
+                        className={menuItemClass}
+                        role="menuitem"
+                        onClick={() => setIsAccountOpen(false)}
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-[#2ED1B4]" />
+                        Dashboard
+                      </a>
+                      {myPromoter && (
+                        <a
+                          href="/promoter"
+                          className={menuItemClass}
+                          role="menuitem"
+                          onClick={() => setIsAccountOpen(false)}
+                        >
+                          <TrendingUp className="w-4 h-4 text-[#22C55E]" />
+                          Promoter
+                        </a>
+                      )}
+                      {isAdminUser && (
+                        <a
+                          href="/admin/dashboard"
+                          className={menuItemClass}
+                          role="menuitem"
+                          onClick={() => setIsAccountOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 text-[#EF4444]" />
+                          Admin
+                        </a>
+                      )}
+                      <a
+                        href="/settings"
+                        className={menuItemClass}
+                        role="menuitem"
+                        onClick={() => setIsAccountOpen(false)}
+                      >
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </a>
+                      <a
+                        href="/track-order"
+                        className={menuItemClass}
+                        role="menuitem"
+                        onClick={() => setIsAccountOpen(false)}
+                      >
+                        <Package className="w-4 h-4" />
+                        Track order
+                      </a>
+                      <a
+                        href="/leaderboard"
+                        className={menuItemClass}
+                        role="menuitem"
+                        onClick={() => setIsAccountOpen(false)}
+                      >
+                        <Trophy className="w-4 h-4 text-amber-300" />
+                        Leaderboard
+                      </a>
+                      <div className="my-1 h-px bg-[rgba(244,246,250,0.08)]" />
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className={`${menuItemClass} hover:text-[#EF4444]`}
+                        role="menuitem"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Log out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <button
+                type="button"
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2.5 sm:p-3 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
+                className="relative p-2.5 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
+                aria-label="Open cart"
               >
-                <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 text-[#F4F6FA]" />
+                <ShoppingCart className="w-6 h-6 text-[#F4F6FA]" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#2ED1B4] text-[#070A12] text-xs sm:text-sm font-bold flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#2ED1B4] px-1 text-[11px] font-bold text-[#070A12]">
                     {totalItems}
                   </span>
                 )}
               </button>
 
-              {/* Mobile Menu Button */}
               <button
+                type="button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden p-2 rounded-full hover:bg-[rgba(244,246,250,0.08)] transition-colors duration-300"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6 text-[#F4F6FA]" />
@@ -247,15 +339,16 @@ export default function Navigation({ embedded = false }: NavigationProps) {
               : 'opacity-0 -translate-y-4 pointer-events-none'
           }`}
         >
-          <div className="px-6 py-6 space-y-4">
-            {/* Points Display - Mobile */}
+          <div className="px-6 py-6 space-y-1">
             {isLoggedIn && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)] w-fit">
+              <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)] w-fit">
                 <Award className="w-4 h-4 text-[#8B5CF6]" />
-                <span className="text-sm font-medium text-[#8B5CF6]">{balance.toLocaleString()} pts</span>
+                <span className="text-sm font-medium text-[#8B5CF6]">
+                  {balance.toLocaleString()} pts
+                </span>
               </div>
             )}
-            
+
             {navEntries.map((entry) => (
               <a
                 key={entry.label}
@@ -266,59 +359,68 @@ export default function Navigation({ embedded = false }: NavigationProps) {
                 {entry.label}
               </a>
             ))}
-            
-            {/* Mobile Track Order Link — above Leaderboard */}
+
+            <div className="my-3 h-px bg-[rgba(244,246,250,0.08)]" />
+
             <a
               href="/track-order"
-              className="flex items-center gap-2 text-lg font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300 py-2"
+              className="flex items-center gap-2 text-base font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <Package className="w-5 h-5" />
               Track Order
             </a>
-
-            {/* Mobile Leaderboard Link */}
             <a
               href="/leaderboard"
-              className="flex items-center gap-2 text-lg font-medium text-amber-300 hover:text-amber-200 transition-colors duration-300 py-2"
+              className="flex items-center gap-2 text-base font-medium text-amber-300 hover:text-amber-200 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <Trophy className="w-5 h-5" />
               Leaderboard
             </a>
 
-            {/* Mobile Login/Dashboard Button */}
             {isLoggedIn ? (
               <>
                 {myPromoter && (
                   <a
                     href="/promoter"
-                    className="flex items-center gap-2 text-lg font-medium text-[#22C55E] hover:text-[#4ADE80] transition-colors duration-300 py-2"
+                    className="flex items-center gap-2 text-base font-medium text-[#22C55E] hover:text-[#4ADE80] transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <TrendingUp className="w-5 h-5" />
-                    Promoter Dashboard
+                    Promoter
                   </a>
                 )}
                 <a
                   href="/dashboard"
-                  className="flex items-center gap-2 text-lg font-medium text-[#2ED1B4] hover:text-[#5EEAD4] transition-colors duration-300 py-2"
+                  className="flex items-center gap-2 text-base font-medium text-[#2ED1B4] hover:text-[#5EEAD4] transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <LayoutDashboard className="w-5 h-5" />
                   Dashboard
                 </a>
+                {isAdminUser && (
+                  <a
+                    href="/admin/dashboard"
+                    className="flex items-center gap-2 text-base font-medium text-[#EF4444] hover:text-[#F87171] transition-colors py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Settings className="w-5 h-5" />
+                    Admin
+                  </a>
+                )}
                 <a
                   href="/settings"
-                  className="flex items-center gap-2 text-lg font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors duration-300 py-2"
+                  className="flex items-center gap-2 text-base font-medium text-[#A9B3C7] hover:text-[#F4F6FA] transition-colors py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Settings className="w-5 h-5" />
-                  Account Settings
+                  Settings
                 </a>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-lg font-medium text-[#A9B3C7] hover:text-[#EF4444] transition-colors duration-300 py-2"
+                  className="flex items-center gap-2 text-base font-medium text-[#A9B3C7] hover:text-[#EF4444] transition-colors py-2"
                 >
                   <LogOut className="w-5 h-5" />
                   Log out
@@ -327,7 +429,8 @@ export default function Navigation({ embedded = false }: NavigationProps) {
             ) : (
               <a
                 href="/login"
-                className="flex items-center gap-2 text-lg font-medium text-[#8B5CF6] hover:text-[#A78BFA] transition-colors duration-300 py-2"
+                className="flex items-center gap-2 text-base font-medium text-[#8B5CF6] hover:text-[#A78BFA] transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <User className="w-5 h-5" />
                 Login
@@ -337,7 +440,6 @@ export default function Navigation({ embedded = false }: NavigationProps) {
         </div>
       </nav>
 
-      {/* Search Bar Modal */}
       <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );

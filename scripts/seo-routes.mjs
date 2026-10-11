@@ -11,6 +11,14 @@ export const STATIC_SEO_ROUTES = [
     changefreq: 'weekly',
   },
   {
+    path: '/shop',
+    title: 'Shop Research Peptides | PEPLAB Australia',
+    description:
+      'Browse PEPLAB Australia research peptides. HPLC-tested reference materials with published COAs and Australia-wide express dispatch.',
+    priority: '0.95',
+    changefreq: 'weekly',
+  },
+  {
     path: '/coa',
     title: 'COA Results | PEPLAB Australia',
     description:
