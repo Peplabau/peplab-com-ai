@@ -382,11 +382,12 @@ function RedirectToMainShop() {
 
 /**
  * `/` on peplab.com.au:
- * - guests see the lock/login UI with homepage SEO (indexable, no redirect)
+ * - guests and Google see the public peptide page (this is the URL that should rank)
  * - members are handed off to peplab.ai
+ * Content renders immediately. Auth is checked after paint so the crawlable page
+ * is not a sign-in form.
  */
 function HomeGate() {
-  const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
@@ -398,7 +399,6 @@ function HomeGate() {
       } = await supabase.auth.getSession();
       if (cancelled) return;
       setAuthed(Boolean(session?.user));
-      setReady(true);
     };
 
     sync();
@@ -408,7 +408,6 @@ function HomeGate() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (cancelled) return;
       setAuthed(Boolean(session?.user));
-      setReady(true);
     });
 
     return () => {
@@ -417,16 +416,8 @@ function HomeGate() {
     };
   }, []);
 
-  if (!ready) {
-    return (
-      <div style={PAGE_SHELL_STYLE} className="flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#2ED1B4] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   if (authed) return <RedirectToMainShop />;
-  return <LoginGateway asHomepage />;
+  return <PeplabLandingRoute />;
 }
 
 function LoginOnlyApp() {
@@ -446,8 +437,8 @@ function LoginOnlyApp() {
                 <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Public — keep indexed / crawlable */}
-                <Route path="/landing" element={<PeplabLandingRoute />} />
-                <Route path="/new-landing" element={<Navigate to={LANDING_PATH} replace />} />
+                <Route path="/landing" element={<Navigate to="/" replace />} />
+                <Route path="/new-landing" element={<Navigate to="/" replace />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
