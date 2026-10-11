@@ -105,6 +105,27 @@ async function fetchPublishedResearchSlugs() {
   }
 }
 
+async function fetchPublishedBlogSlugs() {
+  const url = envVar('VITE_SUPABASE_URL', '');
+  const key = envVar('VITE_SUPABASE_ANON_KEY', '');
+  if (!url || !key) return [];
+  try {
+    const endpoint = `${url.replace(/\/$/, '')}/rest/v1/blog_posts?select=slug&status=eq.published`;
+    const res = await fetch(endpoint, {
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+      },
+    });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return [];
+    return rows.map((r) => String(r.slug || '').trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 const LASTMOD = new Date().toISOString().slice(0, 10);
 
 function urlEntry(path, priority, changefreq) {
@@ -125,9 +146,14 @@ const researchEntries = researchSlugs.map((slug) =>
   urlEntry(`/research/compounds/${slug}`, '0.82', 'monthly'),
 );
 
+const blogSlugs = await fetchPublishedBlogSlugs();
+const blogEntries = blogSlugs.map((slug) =>
+  urlEntry(`/blog/${slug}`, '0.76', 'monthly'),
+);
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...researchEntries].join('\n')}
+${[...staticEntries, ...researchEntries, ...blogEntries].join('\n')}
 </urlset>
 `;
 

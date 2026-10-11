@@ -25,6 +25,12 @@ export const RESEARCH_COMPOUNDS_PATH = '/research/compounds';
 /** Dynamic compound research overview: `/research/compounds/:slug` */
 export const RESEARCH_COMPOUND_SLUG_PATH = '/research/compounds/:slug';
 
+/** Blog index. */
+export const BLOG_PATH = '/blog';
+
+/** Dynamic blog post: `/blog/:slug` */
+export const BLOG_SLUG_PATH = '/blog/:slug';
+
 import { CONFIG } from '@/lib/config';
 
 /** Full URL for external links (subdomain override via env). */

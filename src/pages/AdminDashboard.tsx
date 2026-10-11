@@ -7,7 +7,7 @@ import {
   CreditCard, Box, Send, Ban, Save, Tag, Gift, X, Pencil, Trash2,
   ChevronUp, ChevronDown, Star, MessageSquare, Upload, Image as ImageIcon,
   Printer, ArrowUp, ArrowDown, MinusCircle, PlusCircle, Link2, Copy, Check,
-  TrendingUp, BarChart2, FlaskConical, Cake, AlertTriangle, CheckSquare, Square, Clock, CalendarDays, BookOpen
+  TrendingUp, BarChart2, FlaskConical, Cake, AlertTriangle, CheckSquare, Square, Clock, CalendarDays, BookOpen, Newspaper
 } from 'lucide-react';
 import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +21,7 @@ import TrustpilotAdminSection from '@/components/admin/TrustpilotAdminSection';
 import OrderTimingSection from '@/components/admin/OrderTimingSection';
 import EmailCampaignPromoToggle from '@/components/admin/EmailCampaignPromoToggle';
 import ResearchAdminSection from '@/components/admin/ResearchAdminSection';
+import BlogAdminSection from '@/components/admin/BlogAdminSection';
 import ResearchMarquee from '@/components/ResearchMarquee';
 import { DEFAULT_MORE_INFO_TEXT } from '@/lib/defaultMoreInfo';
 import { BONUS_POINTS } from '@/context/RewardsContext';
@@ -479,6 +480,7 @@ type AdminTabId =
   | 'affiliates'
   | 'promo-codes'
   | 'research'
+  | 'blog'
   | 'settings';
 
 const ADMIN_TAB_IDS = new Set<AdminTabId>([
@@ -491,6 +493,7 @@ const ADMIN_TAB_IDS = new Set<AdminTabId>([
   'affiliates',
   'promo-codes',
   'research',
+  'blog',
   'settings',
 ]);
 
@@ -672,6 +675,7 @@ export default function AdminDashboard() {
     // { id: 'affiliates', label: 'Affiliates', icon: Link2 },
     { id: 'promo-codes', label: 'Promo Codes', icon: Tag },
     { id: 'research', label: 'Research', icon: BookOpen },
+    { id: 'blog', label: 'Blog', icon: Newspaper },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -801,6 +805,7 @@ export default function AdminDashboard() {
           {/* {activeTab === 'affiliates' && <AffiliatesSection />} */}
           {activeTab === 'promo-codes' && <PromoCodesSection />}
           {activeTab === 'research' && <ResearchAdminSection />}
+          {activeTab === 'blog' && <BlogAdminSection />}
           {activeTab === 'settings' && <SettingsSection />}
         </div>
       </main>

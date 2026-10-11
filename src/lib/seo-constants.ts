@@ -43,6 +43,11 @@ export const PAGE_SEO = {
     description:
       'Understanding peptides, scientific evidence and laboratory testing. Learn how to assess research papers, HPLC purity, mass spectrometry and Certificates of Analysis.',
   },
+  blog: {
+    title: 'Blog | PEPLAB Australia',
+    description:
+      'PEPLAB Australia blog: research peptide literacy, COA guidance, HPLC testing notes, and practical tips for Australian laboratory buyers.',
+  },
   researchCompounds: {
     title: 'Find Your Compound | PEPLAB Research',
     description:

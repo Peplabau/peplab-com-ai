@@ -129,4 +129,12 @@ export const STATIC_SEO_ROUTES = [
     priority: '0.84',
     changefreq: 'weekly',
   },
+  {
+    path: '/blog',
+    title: 'Blog | PEPLAB Australia',
+    description:
+      'PEPLAB Australia blog: research peptide literacy, COA guidance, HPLC testing notes, and practical tips for Australian laboratory buyers.',
+    priority: '0.8',
+    changefreq: 'weekly',
+  },
 ];

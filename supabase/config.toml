@@ -27,6 +27,11 @@ verify_jwt = false
 [functions.research-ai-parse]
 verify_jwt = false
 
+# Admin blog CMS — OpenAI suggest topics + generate draft
+# JWT verified inside the function (admin profile check).
+[functions.blog-ai]
+verify_jwt = false
+
 # -----------------------------------------------------------------------------
 # Auth — frictionless signup (no email verification)
 # -----------------------------------------------------------------------------
