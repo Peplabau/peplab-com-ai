@@ -4,8 +4,7 @@
  *   peplab.com.au  → This repo / Vercel project
  *                    Full shop + research + blog + account. Canonical SEO host.
  *
- *   peplab.ai      → Optional separate deploy / redirect target (not required).
- *                    Leave VITE_LOGIN_ONLY_HOSTS empty so every host gets the shop.
+ * Leave VITE_LOGIN_ONLY_HOSTS empty so every host gets the full shop.
  *
  * Env (production):
  *   VITE_SITE_URL           = https://peplab.com.au

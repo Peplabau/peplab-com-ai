@@ -3,10 +3,10 @@ const trim = (url: string) => url.replace(/\/$/, '');
 /**
  * Standalone landing deploy:
  * - VITE_LANDING_SITE_URL = this landing site's public URL
- * - VITE_MAIN_SITE_URL    = shop (peplab.ai)
+ * - VITE_MAIN_SITE_URL    = shop (peplab.com.au)
  */
 export const MAIN_SITE_URL = trim(
-  import.meta.env.VITE_MAIN_SITE_URL || 'https://peplab.ai',
+  import.meta.env.VITE_MAIN_SITE_URL || 'https://peplab.com.au',
 );
 
 export const LANDING_SITE_URL = trim(
