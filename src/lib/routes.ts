@@ -4,7 +4,11 @@ export const HOME_PATH = '/';
 /** Canonical shop / catalogue URL. */
 export const SHOP_PATH = '/shop';
 
-/** Legacy marketing landing path — redirects to shop. */
+/**
+ * Legacy marketing landing path.
+ * Kept for old bookmarks/links; app + Vercel redirect this to the shop.
+ * Prefer SHOP_PATH for new links.
+ */
 export const LANDING_PATH = '/landing';
 
 /** Peptide reconstitution calculator. */
