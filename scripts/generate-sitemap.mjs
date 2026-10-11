@@ -131,8 +131,16 @@ ${[...staticEntries, ...researchEntries].join('\n')}
 </urlset>
 `;
 
-const outPath = join(root, 'public/sitemap.xml');
-writeFileSync(outPath, xml, 'utf8');
+const outPaths = [
+  join(root, 'public/sitemap.xml'),
+  // Separate URL so Search Console can start a new read. The old
+  // sitemap.xml record has been stuck since 3 Oct and resubmitting it
+  // does not make Google download the file again.
+  join(root, 'public/peplab-sitemap.xml'),
+];
+for (const outPath of outPaths) {
+  writeFileSync(outPath, xml, 'utf8');
+}
 console.log(
-  `Wrote ${staticEntries.length + researchEntries.length} URLs to public/sitemap.xml (${researchEntries.length} research)`,
+  `Wrote ${staticEntries.length + researchEntries.length} URLs to sitemap.xml and peplab-sitemap.xml (${researchEntries.length} research)`,
 );
