@@ -11,7 +11,7 @@
         }
       ],
       "destination": "https://peplab.com.au/",
-      "permanent": true
+      "statusCode": 301
     },
     {
       "source": "/:path*",
@@ -22,7 +22,7 @@
         }
       ],
       "destination": "https://peplab.com.au/:path*",
-      "permanent": true
+      "statusCode": 301
     },
     {
       "source": "/product/retatrutide",

@@ -17,4 +17,5 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /rewards-terms
 
+Sitemap: https://peplab.com.au/peplab-sitemap.xml
 Sitemap: https://peplab.com.au/sitemap.xml
