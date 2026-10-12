@@ -1,20 +1,9 @@
 /**
- * Marketing landing at /landing — Research Gateway (atelier).
+ * Legacy /landing route — always send visitors to the shop.
  */
-import '@/landing/index.css';
-import '@/landing/research-atelier.css';
-import BrandSplash from '@/landing/components/BrandSplash';
-import ResearchGateway from '@/landing/pages/ResearchGateway';
-import Navigation from '@/components/Navigation';
-import CartDrawer from '@/components/CartDrawer';
+import { Navigate } from 'react-router-dom';
+import { SHOP_PATH } from '@/lib/routes';
 
 export default function PeplabLandingRoute() {
-  return (
-    <>
-      <BrandSplash />
-      <Navigation />
-      <CartDrawer />
-      <ResearchGateway />
-    </>
-  );
+  return <Navigate to={SHOP_PATH} replace />;
 }

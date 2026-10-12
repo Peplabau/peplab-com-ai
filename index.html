@@ -203,8 +203,8 @@
     </script>
   <!--
       Runs after the canonical and robots tags exist.
-      Public pages stay indexable. Account, checkout, shop handoff, and product
-      shells are noindex — those URLs are not the pages we want in Google.
+      Public storefront pages stay indexable (home, shop, products, research, blog, COA…).
+      Account, checkout, and auth routes stay noindex.
     -->
   <script>
     (function () {
@@ -222,6 +222,7 @@
 
       var publicExact = {
         '/': 1,
+        '/shop': 1,
         '/coa': 1,
         '/calculator': 1,
         '/leaderboard': 1,
@@ -236,10 +237,13 @@
         '/refund': 1,
         '/legal': 1,
         '/research': 1,
-        '/research/compounds': 1
+        '/research/compounds': 1,
+        '/blog': 1
       };
       var isResearchCompound = /^\/research\/compounds\/[^/]+$/.test(path);
-      if (publicExact[path] || isResearchCompound) return;
+      var isProduct = /^\/product\/[^/]+$/.test(path);
+      var isBlogPost = /^\/blog\/[^/]+$/.test(path);
+      if (publicExact[path] || isResearchCompound || isProduct || isBlogPost) return;
       var robots = document.querySelector('meta[name="robots"]');
       if (robots) robots.setAttribute('content', 'noindex, nofollow');
       if (path === '/login' || path === '/signup' || path === '/forgot-password' || path === '/reset-password') {

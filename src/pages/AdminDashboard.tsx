@@ -7,11 +7,12 @@ import {
   CreditCard, Box, Send, Ban, Save, Tag, Gift, X, Pencil, Trash2,
   ChevronUp, ChevronDown, Star, MessageSquare, Upload, Image as ImageIcon,
   Printer, ArrowUp, ArrowDown, MinusCircle, PlusCircle, Link2, Copy, Check,
-  TrendingUp, BarChart2, FlaskConical, Cake, AlertTriangle, CheckSquare, Square, Clock, CalendarDays, BookOpen, Newspaper
+  Cake, AlertTriangle, CheckSquare, Square, Clock, BookOpen, Newspaper,
+  MapPin,
 } from 'lucide-react';
 import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cached, invalidateCache, setCache, TTL_ADMIN_OVERVIEW, TTL_ADMIN_ORDERS, TTL_ADMIN_PRODUCTS } from '@/lib/cache';
+import { cached, invalidateCache, setCache, TTL_ADMIN_ORDERS, TTL_ADMIN_PRODUCTS } from '@/lib/cache';
 import { CONFIG } from '@/lib/config';
 import { fetchAllSiteSettings, updateSiteSetting, DEFAULT_BANK_DETAILS, DEFAULT_DISCOUNT_SETTINGS, DEFAULT_FREE_GIFT_SETTINGS, DEFAULT_SUPPORT_LINKS, DEFAULT_LANDING_PAGE_SETTINGS, DEFAULT_AFFILIATE_PROGRAM_SETTINGS, DEFAULT_RESEARCH_DISCLAIMER_SETTINGS } from '@/lib/settings';
 import { getEarnedTransactionsCount, getOrderPointsAwarded, getOrderEarnedPointsSum, addUserPoints, normalizeImageUrl, getUserTransactions, getUserPointsBalance, getLifetimePurchaseSpend, getLifetimePurchaseSpendForUsers, logAdminAction, fetchAdminProductWaitlistCounts, syncProductDetailFieldsToSupabase, uploadReviewImage, resetUserBirthday, adminUpdateUserBirthday, adminDeleteUser, invokeAusPostSyncDelivered, type PointsEvent } from '@/lib/supabase-db';
@@ -20,6 +21,8 @@ import ReviewImageUpload, { ReviewPhoto, revokePreviewUrl } from '@/components/R
 import TrustpilotAdminSection from '@/components/admin/TrustpilotAdminSection';
 import OrderTimingSection from '@/components/admin/OrderTimingSection';
 import EmailCampaignPromoToggle from '@/components/admin/EmailCampaignPromoToggle';
+import AdminOverviewSection from '@/components/admin/AdminOverviewSection';
+import StockInventorySection from '@/components/admin/StockInventorySection';
 import ResearchAdminSection from '@/components/admin/ResearchAdminSection';
 import BlogAdminSection from '@/components/admin/BlogAdminSection';
 import ResearchMarquee from '@/components/ResearchMarquee';
@@ -48,14 +51,6 @@ import { sendPaymentReceived, sendOrderShipped, sendReplacementTrackingEmail, se
 import { createAusPostLabel, looksLikeParcelLockerAddress } from '@/lib/auspost-shipping';
 import { copyTextToClipboard } from '@/lib/clipboard';
 import { SEO } from '@/components/SEO';
-import {
-  aggregateWeeklyRevenue,
-  canonicalBestSellerProductKey,
-  formatAdminDosageDisplay,
-  normalizeAdminDosageKey,
-  preferAdminDisplayName,
-  type WeeklyRevenueRow,
-} from '@/lib/admin-analytics';
 
 /** Award purchase points at the buyer's current loyalty cashback rate. */
 async function loyaltyPurchasePoints(
@@ -685,44 +680,49 @@ export default function AdminDashboard() {
     <div className="min-h-screen" style={{ background: '#070A12' }}>
       <div className="absolute inset-0 grid-overlay opacity-40 pointer-events-none" aria-hidden />
 
-      {/* Sidebar - Desktop */}
-      <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[rgba(17,24,39,0.95)] border-r border-[rgba(244,246,250,0.08)] z-50 hidden lg:block">
-        <div className="p-6 border-b border-[rgba(244,246,250,0.08)]">
+      {/* Sidebar - Desktop (scrollable nav + pinned account footer) */}
+      <aside className="fixed left-0 top-0 bottom-0 z-50 hidden w-64 flex-col border-r border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.97)] lg:flex">
+        <div className="shrink-0 border-b border-[rgba(244,246,250,0.08)] px-5 py-5">
           <a href="/" className="flex flex-col items-start">
             <span className="text-2xl font-bold tracking-[0.12em] gradient-text leading-none">PEPLAB</span>
-            <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-[#8B5CF6] mt-0.5">ADMIN</span>
+            <span className="mt-0.5 text-[10px] font-mono uppercase tracking-[0.4em] text-[#8B5CF6]">ADMIN</span>
           </a>
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain px-3 py-3 [scrollbar-width:thin] [scrollbar-color:rgba(46,209,180,0.35)_transparent]">
           {navItems.map((item) => (
             <button
               key={item.id}
+              type="button"
               onClick={() => setActiveTab(item.id as AdminTabId)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors ${
+              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
                 activeTab === item.id
-                  ? 'bg-[rgba(46,209,180,0.15)] text-[#2ED1B4]'
-                  : 'text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.05)] hover:text-[#F4F6FA]'
+                  ? 'bg-[rgba(46,209,180,0.15)] font-semibold text-[#2ED1B4]'
+                  : 'font-medium text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.05)] hover:text-[#F4F6FA]'
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <item.icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[rgba(244,246,250,0.08)]">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-[rgba(46,209,180,0.2)] flex items-center justify-center shrink-0">
-              <Shield className="w-4 h-4 text-[#2ED1B4]" />
+        <div className="shrink-0 border-t border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.98)] p-4">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgba(46,209,180,0.2)]">
+              <Shield className="h-4 w-4 text-[#2ED1B4]" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-[#F4F6FA] truncate">{adminEmail.split('@')[0]}</p>
+              <p className="truncate text-sm font-medium text-[#F4F6FA]">{adminEmail.split('@')[0]}</p>
               <p className="text-xs text-[#2ED1B4]">Administrator</p>
             </div>
           </div>
-          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.15)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] transition-colors text-sm font-medium">
-            <LogOut className="w-4 h-4" />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(239,68,68,0.15)] bg-[rgba(239,68,68,0.1)] px-4 py-2.5 text-sm font-medium text-[#EF4444] transition-colors hover:bg-[rgba(239,68,68,0.2)]"
+          >
+            <LogOut className="h-4 w-4" />
             Sign Out
           </button>
         </div>
@@ -752,28 +752,27 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[rgba(17,24,39,0.97)] border-t border-[rgba(244,246,250,0.08)] backdrop-blur-sm safe-area-bottom">
-        <div className="flex justify-around px-1 py-1">
+      {/* Mobile Bottom Nav — horizontal scroll so all tabs stay usable */}
+      <nav className="safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.97)] backdrop-blur-sm lg:hidden">
+        <div className="flex gap-1 overflow-x-auto overscroll-x-contain px-2 py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => setActiveTab(item.id as AdminTabId)}
-                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl min-w-[52px] transition-all active:scale-95 ${
+                className={`flex min-w-[64px] shrink-0 flex-col items-center gap-1 rounded-xl px-2.5 py-2 transition-all active:scale-95 ${
                   isActive
                     ? 'bg-[rgba(46,209,180,0.12)] text-[#2ED1B4]'
                     : 'text-[#6B7280] hover:text-[#A9B3C7]'
                 }`}
               >
-                <item.icon className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
-                <span className={`text-[10px] font-medium leading-none ${isActive ? 'text-[#2ED1B4]' : ''}`}>
+                <item.icon className={`h-5 w-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <span className={`whitespace-nowrap text-[10px] font-medium leading-none ${isActive ? 'text-[#2ED1B4]' : ''}`}>
                   {item.label}
                 </span>
-                {isActive && (
-                  <span className="w-1 h-1 rounded-full bg-[#2ED1B4]" />
-                )}
+                {isActive ? <span className="h-1 w-1 rounded-full bg-[#2ED1B4]" /> : <span className="h-1 w-1" />}
               </button>
             );
           })}
@@ -795,7 +794,9 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {activeTab === 'overview' && <OverviewSection />}
+          {activeTab === 'overview' && (
+            <AdminOverviewSection onNavigate={(tab) => setActiveTab(tab as AdminTabId)} />
+          )}
           {activeTab === 'orders' && <OrdersSection />}
           {activeTab === 'timing' && <OrderTimingSection />}
           {activeTab === 'products' && <ProductsSection />}
@@ -814,698 +815,6 @@ export default function AdminDashboard() {
   );
 }
 
-// ─── Best-sellers aggregation ──────────────────────────────────────────────
-interface BestSellerItem {
-  key: string;        // canonical product||dosage
-  name: string;
-  dosage: string;
-  unitsSold: number;
-  revenue: number;
-}
-
-type BsTimeFilter = '7d' | '30d' | '90d' | 'all';
-type BsSortBy = 'units' | 'revenue';
-
-function aggregateBestSellers(
-  ordersWithItems: Array<{ items: any[]; created_at: string; status: string }>,
-  timeFilter: BsTimeFilter,
-): BestSellerItem[] {
-  const now = Date.now();
-  const cutoffs: Record<BsTimeFilter, number> = {
-    '7d': now - 7 * 86400_000,
-    '30d': now - 30 * 86400_000,
-    '90d': now - 90 * 86400_000,
-    all: 0,
-  };
-  const cutoff = cutoffs[timeFilter];
-
-  const map = new Map<string, BestSellerItem>();
-
-  for (const order of ordersWithItems) {
-    // Exclude cancelled orders from the tally.
-    if ((order.status || '').toLowerCase() === 'cancelled') continue;
-    if (cutoff > 0 && new Date(order.created_at).getTime() < cutoff) continue;
-
-    const items: any[] = Array.isArray(order.items) ? order.items : [];
-    for (const item of items) {
-      // Skip free gifts from revenue; still omit them from ranking noise.
-      if (item?.is_free) continue;
-
-      const name = String(item.name ?? '').trim();
-      const dosage = String(item.dosage ?? '').trim();
-      const productId = String(item.product_id ?? '').trim();
-      if (!name && !productId) continue;
-
-      // Canonical key merges: casing, 10MG/10 mg/10.0 mg, reta/retatrutide, MT-2/Melanotan II, etc.
-      const productKey = canonicalBestSellerProductKey(productId, name);
-      const dosageKey = normalizeAdminDosageKey(dosage);
-      if (!productKey) continue;
-      const key = `${productKey}||${dosageKey || 'default'}`;
-
-      const qty = Number(item.quantity) || 1;
-      const price = Number(item.price) || 0;
-      const displayDosage = formatAdminDosageDisplay(dosage);
-
-      const existing = map.get(key);
-      if (existing) {
-        existing.unitsSold += qty;
-        existing.revenue += price * qty;
-        if (name) existing.name = preferAdminDisplayName(existing.name, name);
-        if (displayDosage) existing.dosage = displayDosage;
-      } else {
-        map.set(key, {
-          key,
-          name: name || productId || 'Unknown',
-          dosage: displayDosage || dosage,
-          unitsSold: qty,
-          revenue: price * qty,
-        });
-      }
-    }
-  }
-
-  return Array.from(map.values());
-}
-
-const LOW_STOCK_THRESHOLD = 10;
-
-type StockFilter = 'needs' | 'all' | 'out';
-
-interface StockWatchRow {
-  key: string;
-  productName: string;
-  dosageLabel: string;
-  inStock: boolean;
-  stockQuantity: number;
-  level: 'out' | 'low' | 'ok';
-}
-
-function dosageDisplayLabel(d: { mg?: unknown; unit?: string | null }): string {
-  const mg = d.mg;
-  const unit = (d.unit || 'MG').toString().trim();
-  if (mg == null || mg === '') return '—';
-  return `${mg}${unit ? ` ${unit}` : ''}`.trim();
-}
-
-// Overview Section
-function OverviewSection() {
-  const [stats, setStats] = useState({
-    totalOrders: 0,
-    pendingPayment: 0,
-    totalRevenue: 0,
-    totalUsers: 0,
-    totalProducts: 0
-  });
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [allOrderItems, setAllOrderItems] = useState<Array<{ items: any[]; created_at: string; status: string }>>([]);
-  const [stockRows, setStockRows] = useState<StockWatchRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [bsTime, setBsTime] = useState<BsTimeFilter>('30d');
-  const [bsSort, setBsSort] = useState<BsSortBy>('units');
-  const [stockFilter, setStockFilter] = useState<StockFilter>('needs');
-  const [stockExpanded, setStockExpanded] = useState(false);
-  const [sellersExpanded, setSellersExpanded] = useState(false);
-  const [weeklyRevenue, setWeeklyRevenue] = useState<WeeklyRevenueRow[]>([]);
-
-  const PREVIEW_ROWS = 12;
-
-  useEffect(() => {
-    loadStats();
-    const onOrdersUpdated = () => {
-      void loadStats(true);
-    };
-    window.addEventListener('peplab:orders-updated', onOrdersUpdated);
-    return () => window.removeEventListener('peplab:orders-updated', onOrdersUpdated);
-  }, []);
-
-  const loadStats = async (bust = false) => {
-    if (bust) invalidateCache('admin:overview:v4');
-    setLoading(true);
-    try {
-      const result = await cached('admin:overview:v4', async () => {
-        const [
-          orderStatusTotals,
-          { data: recent },
-          orderCount,
-          userCount,
-          { count: productCount },
-          itemOrders,
-          { data: productsWithStock },
-        ] = await Promise.all([
-          fetchSupabasePages((from, to) =>
-            supabase.from('orders').select('status, total, created_at').order('id', { ascending: true }).range(from, to),
-          ),
-          supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5),
-          fetchOrdersCount(),
-          fetchUsersCount(),
-          supabase.from('products').select('*', { count: 'exact', head: true }),
-          fetchSupabasePages((from, to) =>
-            supabase
-              .from('orders')
-              .select('items, created_at, status')
-              .neq('status', 'cancelled')
-              .order('created_at', { ascending: false })
-              .range(from, to),
-          ),
-          supabase
-            .from('products')
-            .select('id, name, slug, product_dosages(id, mg, unit, in_stock, stock_quantity)')
-            .order('name', { ascending: true }),
-        ]);
-        return {
-          orderStatusTotals,
-          recent: recent || [],
-          orderCount,
-          userCount,
-          productCount: productCount || 0,
-          itemOrders,
-          productsWithStock: productsWithStock || [],
-        };
-      }, TTL_ADMIN_OVERVIEW);
-
-      setStats({
-        totalOrders: result.orderCount,
-        pendingPayment: result.orderStatusTotals.filter((o) => o.status === 'pending_payment').length,
-        totalRevenue: sumOrdersRevenue(result.orderStatusTotals),
-        totalUsers: result.userCount,
-        totalProducts: result.productCount,
-      });
-      setRecentOrders(result.recent);
-      setAllOrderItems(result.itemOrders as Array<{ items: any[]; created_at: string; status: string }>);
-      setWeeklyRevenue(aggregateWeeklyRevenue(result.orderStatusTotals, 8));
-
-      const rows: StockWatchRow[] = [];
-      for (const product of result.productsWithStock as Array<{
-        id: string;
-        name: string;
-        slug?: string;
-        product_dosages?: Array<{
-          id: string;
-          mg?: unknown;
-          unit?: string | null;
-          in_stock?: boolean | null;
-          stock_quantity?: number | null;
-        }>;
-      }>) {
-        const dosages = product.product_dosages ?? [];
-        if (dosages.length === 0) {
-          rows.push({
-            key: `${product.id}-none`,
-            productName: product.name,
-            dosageLabel: 'No sizes',
-            inStock: false,
-            stockQuantity: 0,
-            level: 'out',
-          });
-          continue;
-        }
-        for (const d of dosages) {
-          const rawQty = d.stock_quantity;
-          const qty =
-            rawQty == null || Number.isNaN(Number(rawQty)) ? null : Number(rawQty);
-          const markedInStock = d.in_stock !== false;
-          const level: StockWatchRow['level'] =
-            !markedInStock || qty === 0
-              ? 'out'
-              : qty != null && qty <= LOW_STOCK_THRESHOLD
-                ? 'low'
-                : 'ok';
-          rows.push({
-            key: d.id || `${product.id}-${dosageDisplayLabel(d)}`,
-            productName: product.name,
-            dosageLabel: dosageDisplayLabel(d),
-            inStock: markedInStock && qty !== 0,
-            stockQuantity: qty ?? 0,
-            level,
-          });
-        }
-      }
-      const levelRank = { out: 0, low: 1, ok: 2 } as const;
-      rows.sort((a, b) => {
-        const byLevel = levelRank[a.level] - levelRank[b.level];
-        if (byLevel !== 0) return byLevel;
-        if (a.stockQuantity !== b.stockQuantity) return a.stockQuantity - b.stockQuantity;
-        return a.productName.localeCompare(b.productName, undefined, { sensitivity: 'base' });
-      });
-      setStockRows(rows);
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Hooks must always be called unconditionally — these must come before any early return.
-  const bestSellers = useMemo<BestSellerItem[]>(() => {
-    const all = aggregateBestSellers(allOrderItems, bsTime);
-    return all.sort((a, b) =>
-      bsSort === 'revenue' ? b.revenue - a.revenue : b.unitsSold - a.unitsSold,
-    );
-  }, [allOrderItems, bsTime, bsSort]);
-
-  const bsMax = useMemo(
-    () => (bestSellers.length ? (bsSort === 'revenue' ? bestSellers[0].revenue : bestSellers[0].unitsSold) : 1),
-    [bestSellers, bsSort],
-  );
-
-  const filteredStockRows = useMemo(() => {
-    if (stockFilter === 'all') return stockRows;
-    if (stockFilter === 'out') return stockRows.filter((r) => r.level === 'out');
-    return stockRows.filter((r) => r.level === 'out' || r.level === 'low');
-  }, [stockRows, stockFilter]);
-
-  const stockCounts = useMemo(() => {
-    let out = 0;
-    let low = 0;
-    for (const r of stockRows) {
-      if (r.level === 'out') out += 1;
-      else if (r.level === 'low') low += 1;
-    }
-    return { out, low, ok: stockRows.length - out - low, total: stockRows.length, needs: out + low };
-  }, [stockRows]);
-
-  useEffect(() => {
-    setStockExpanded(false);
-  }, [stockFilter]);
-
-  useEffect(() => {
-    setSellersExpanded(false);
-  }, [bsTime, bsSort]);
-
-  const visibleBestSellers = sellersExpanded ? bestSellers : bestSellers.slice(0, PREVIEW_ROWS);
-  const visibleStockRows = stockExpanded ? filteredStockRows : filteredStockRows.slice(0, PREVIEW_ROWS);
-
-  const thisWeek = weeklyRevenue[0];
-  const lastWeek = weeklyRevenue[1];
-  const weeklyMax = Math.max(...weeklyRevenue.map((row) => row.revenue), 1);
-  const weekChange =
-    thisWeek && lastWeek && lastWeek.revenue > 0
-      ? ((thisWeek.revenue - lastWeek.revenue) / lastWeek.revenue) * 100
-      : null;
-  const formatAud = (value: number) => `$${Math.round(value).toLocaleString('en-AU')}`;
-
-  if (loading) {
-    return (
-      <div className="space-y-5">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)] space-y-3">
-              <Skeleton className="h-5 w-5 rounded" />
-              <Skeleton className="h-8 w-16 rounded" />
-              <Skeleton className="h-3 w-24 rounded" />
-            </div>
-          ))}
-        </div>
-        <Skeleton className="h-12 w-full rounded-2xl" />
-        <div className="p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(245,158,11,0.25)] space-y-3">
-          <Skeleton className="h-6 w-48 rounded" />
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between gap-3">
-              <div className="space-y-1.5 flex-1">
-                <Skeleton className="h-4 w-36 rounded" />
-                <Skeleton className="h-3 w-20 rounded" />
-              </div>
-              <Skeleton className="h-6 w-16 rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-5">
-      {thisWeek && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[rgba(34,197,94,0.12)] to-[rgba(46,209,180,0.08)] border border-[rgba(34,197,94,0.28)]">
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-            <div>
-              <h3 className="text-base font-semibold text-[#F4F6FA] flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-[#22C55E]" />
-                Weekly earnings
-              </h3>
-              <p className="text-[11px] text-[#6B7280] mt-1">
-                Paid orders · Monday–Sunday · Australia/Sydney
-              </p>
-            </div>
-            {weekChange != null && (
-              <span
-                className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${
-                  weekChange >= 0
-                    ? 'bg-[rgba(34,197,94,0.15)] text-[#22C55E]'
-                    : 'bg-[rgba(239,68,68,0.15)] text-[#EF4444]'
-                }`}
-              >
-                {weekChange >= 0 ? '+' : ''}
-                {weekChange.toFixed(0)}% vs last week
-              </span>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="p-3 rounded-xl bg-[rgba(7,10,18,0.45)]">
-              <p className="text-[11px] text-[#A9B3C7]">This week</p>
-              <p className="text-2xl sm:text-3xl font-bold text-[#F4F6FA] leading-tight mt-0.5">
-                {formatAud(thisWeek.revenue)}
-              </p>
-              <p className="text-[11px] text-[#6B7280] mt-1">
-                {thisWeek.orders} order{thisWeek.orders === 1 ? '' : 's'} · {thisWeek.label}
-              </p>
-            </div>
-            {lastWeek && (
-              <div className="p-3 rounded-xl bg-[rgba(7,10,18,0.45)]">
-                <p className="text-[11px] text-[#A9B3C7]">Last week</p>
-                <p className="text-2xl sm:text-3xl font-bold text-[#F4F6FA] leading-tight mt-0.5">
-                  {formatAud(lastWeek.revenue)}
-                </p>
-                <p className="text-[11px] text-[#6B7280] mt-1">
-                  {lastWeek.orders} order{lastWeek.orders === 1 ? '' : 's'} · {lastWeek.label}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            {weeklyRevenue.map((row) => (
-              <div key={row.weekStart} className="flex items-center gap-3">
-                <p className={`w-[7.5rem] sm:w-44 shrink-0 text-[11px] sm:text-xs ${row.isCurrent ? 'text-[#F4F6FA] font-medium' : 'text-[#A9B3C7]'}`}>
-                  {row.isCurrent ? 'This week' : row.label}
-                </p>
-                <div className="flex-1 h-2 rounded-full bg-[rgba(244,246,250,0.08)] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#22C55E]"
-                    style={{ width: `${Math.max((row.revenue / weeklyMax) * 100, row.revenue > 0 ? 4 : 0)}%` }}
-                  />
-                </div>
-                <p className="w-16 sm:w-20 text-right text-xs font-semibold text-[#F4F6FA] tabular-nums">
-                  {formatAud(row.revenue)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Total Orders" value={stats.totalOrders.toString()} icon={ShoppingCart} color="#8B5CF6" />
-        <StatCard label="Awaiting Payment" value={stats.pendingPayment.toString()} icon={CreditCard} color="#F59E0B" />
-        <StatCard label="Revenue" value={`$${stats.totalRevenue.toFixed(0)}`} icon={DollarSign} color="#22C55E" />
-        <StatCard label="Users" value={stats.totalUsers.toString()} icon={Users} color="#3B82F6" />
-        <StatCard label="Products" value={stats.totalProducts.toString()} icon={Package} color="#2ED1B4" />
-      </div>
-
-      {/* Stock to Restock — preview first, expand for full list */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(245,158,11,0.25)]">
-        <div className="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h3 className="text-base font-semibold text-[#F4F6FA] flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-[#F59E0B]" />
-              Stock to Restock
-            </h3>
-            <p className="text-[11px] text-[#6B7280] mt-1">
-              {stockCounts.out} out · {stockCounts.low} low (≤{LOW_STOCK_THRESHOLD}) · {stockCounts.ok} OK
-            </p>
-          </div>
-
-          <div className="flex rounded-xl overflow-hidden border border-[rgba(244,246,250,0.08)]">
-            {(
-              [
-                { id: 'needs' as const, label: 'Needs restock' },
-                { id: 'out' as const, label: 'Out' },
-                { id: 'all' as const, label: 'All' },
-              ] as const
-            ).map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setStockFilter(opt.id)}
-                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  stockFilter === opt.id
-                    ? 'bg-[rgba(245,158,11,0.2)] text-[#F59E0B]'
-                    : 'text-[#6B7280] hover:text-[#A9B3C7]'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {filteredStockRows.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-10 text-[#5A667E]">
-            <Package className="w-8 h-8 opacity-40" />
-            <p className="text-sm">
-              {stockFilter === 'all'
-                ? 'No product dosages found.'
-                : stockFilter === 'out'
-                  ? 'Nothing is out of stock.'
-                  : 'Everything looks stocked — nothing urgent to restock.'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="rounded-xl border border-[rgba(244,246,250,0.06)] overflow-x-auto">
-              <table className="w-full text-left min-w-[320px]">
-                <thead className="bg-[rgba(7,10,18,0.65)] border-b border-[rgba(244,246,250,0.08)]">
-                  <tr className="text-[10px] uppercase tracking-wide text-[#6B7280]">
-                    <th className="px-3 py-2 font-semibold">Product</th>
-                    <th className="px-3 py-2 font-semibold">Size</th>
-                    <th className="px-3 py-2 font-semibold text-right">Qty</th>
-                    <th className="px-3 py-2 font-semibold text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleStockRows.map((row) => (
-                    <tr
-                      key={row.key}
-                      className="border-b border-[rgba(244,246,250,0.04)] last:border-0 hover:bg-[rgba(244,246,250,0.02)]"
-                    >
-                      <td className="px-3 py-2 text-sm font-semibold text-[#F4F6FA] max-w-[12rem] sm:max-w-none truncate">
-                        {row.productName}
-                      </td>
-                      <td className="px-3 py-2 text-xs font-mono text-[#A9B3C7] whitespace-nowrap">
-                        {row.dosageLabel}
-                      </td>
-                      <td className="px-3 py-2 text-sm font-bold text-right tabular-nums text-[#F4F6FA]">
-                        {row.stockQuantity}
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide ${
-                            row.level === 'out'
-                              ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444]'
-                              : row.level === 'low'
-                                ? 'bg-[rgba(245,158,11,0.15)] text-[#F59E0B]'
-                                : 'bg-[rgba(34,197,94,0.12)] text-[#4ADE80]'
-                          }`}
-                        >
-                          {row.level === 'out' ? 'Out' : row.level === 'low' ? 'Low' : 'OK'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {filteredStockRows.length > PREVIEW_ROWS && (
-              <button
-                type="button"
-                onClick={() => setStockExpanded((v) => !v)}
-                className="mt-3 w-full py-2.5 rounded-xl border border-[rgba(244,246,250,0.08)] text-xs font-semibold text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.04)] transition-colors"
-              >
-                {stockExpanded
-                  ? 'Show less'
-                  : `Show all ${filteredStockRows.length} sizes`}
-              </button>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Best Sellers */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
-        <div className="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4">
-          <h3 className="text-base font-semibold text-[#F4F6FA] flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-[#2ED1B4]" />
-            Best Sellers
-          </h3>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-xl overflow-hidden border border-[rgba(244,246,250,0.08)]">
-              {(['7d', '30d', '90d', 'all'] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setBsTime(t)}
-                  className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    bsTime === t
-                      ? 'bg-[rgba(46,209,180,0.2)] text-[#2ED1B4]'
-                      : 'text-[#6B7280] hover:text-[#A9B3C7]'
-                  }`}
-                >
-                  {t === 'all' ? 'All' : t}
-                </button>
-              ))}
-            </div>
-            <div className="flex rounded-xl overflow-hidden border border-[rgba(244,246,250,0.08)]">
-              <button
-                type="button"
-                onClick={() => setBsSort('units')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  bsSort === 'units'
-                    ? 'bg-[rgba(139,92,246,0.2)] text-[#8B5CF6]'
-                    : 'text-[#6B7280] hover:text-[#A9B3C7]'
-                }`}
-              >
-                <BarChart2 className="w-3.5 h-3.5" />
-                Units
-              </button>
-              <button
-                type="button"
-                onClick={() => setBsSort('revenue')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  bsSort === 'revenue'
-                    ? 'bg-[rgba(34,197,94,0.2)] text-[#22C55E]'
-                    : 'text-[#6B7280] hover:text-[#A9B3C7]'
-                }`}
-              >
-                <DollarSign className="w-3.5 h-3.5" />
-                $
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {bestSellers.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-10 text-[#5A667E]">
-            <FlaskConical className="w-8 h-8 opacity-40" />
-            <p className="text-sm">No sales data for this period yet.</p>
-          </div>
-        ) : (
-          <>
-            <ol className="space-y-2.5">
-              {visibleBestSellers.map((item, idx) => {
-                const barPct = bsMax > 0 ? (bsSort === 'revenue' ? item.revenue : item.unitsSold) / bsMax : 0;
-                const rankColors = ['#2ED1B4', '#8B5CF6', '#3B82F6', '#F59E0B', '#22C55E'];
-                const rankColor = rankColors[idx] ?? '#6B7280';
-
-                return (
-                  <li key={item.key} className="flex items-center gap-3">
-                    <span
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
-                      style={{ background: `${rankColor}18`, color: rankColor, border: `1px solid ${rankColor}30` }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline justify-between gap-2 mb-1">
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-[#F4F6FA] truncate block leading-tight">
-                            {item.name}
-                          </span>
-                          {item.dosage && (
-                            <span className="text-[11px] text-[#6B7280] font-mono">{item.dosage}</span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0 text-right">
-                          <span className="text-xs text-[#A9B3C7] whitespace-nowrap">
-                            {item.unitsSold}u
-                          </span>
-                          <span className="text-sm font-bold whitespace-nowrap" style={{ color: rankColor }}>
-                            ${item.revenue.toFixed(0)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-[rgba(244,246,250,0.06)] overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{ width: `${(barPct * 100).toFixed(1)}%`, background: rankColor, opacity: 0.75 }}
-                        />
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-            {bestSellers.length > PREVIEW_ROWS && (
-              <button
-                type="button"
-                onClick={() => setSellersExpanded((v) => !v)}
-                className="mt-3 w-full py-2.5 rounded-xl border border-[rgba(244,246,250,0.08)] text-xs font-semibold text-[#A9B3C7] hover:text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.04)] transition-colors"
-              >
-                {sellersExpanded ? 'Show less' : `Show all ${bestSellers.length} SKUs`}
-              </button>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Bank Details */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[rgba(46,209,180,0.1)] to-[rgba(139,92,246,0.1)] border border-[rgba(46,209,180,0.2)]">
-        <h3 className="text-base font-semibold text-[#F4F6FA] mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-[#2ED1B4]" />
-          Bank Account Details
-        </h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="p-3 rounded-lg bg-[rgba(7,10,18,0.5)]">
-            <p className="text-[10px] text-[#A9B3C7] uppercase">Mobile PAYID</p>
-            <p className="text-sm font-mono text-[#F4F6FA]">{CONFIG.BANK_DETAILS.PAYID_MOBILE}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-[rgba(7,10,18,0.5)]">
-            <p className="text-[10px] text-[#A9B3C7] uppercase">ABN PAYID</p>
-            <p className="text-sm font-mono text-[#F4F6FA]">{CONFIG.BANK_DETAILS.PAYID}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-[rgba(7,10,18,0.5)]">
-            <p className="text-[10px] text-[#A9B3C7] uppercase">BSB</p>
-            <p className="text-sm font-mono text-[#F4F6FA]">{CONFIG.BANK_DETAILS.BSB}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-[rgba(7,10,18,0.5)]">
-            <p className="text-[10px] text-[#A9B3C7] uppercase">Account</p>
-            <p className="text-sm font-mono text-[#F4F6FA]">{CONFIG.BANK_DETAILS.ACCOUNT_NUMBER}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-[rgba(7,10,18,0.5)]">
-            <p className="text-[10px] text-[#A9B3C7] uppercase">Account Name</p>
-            <p className="text-sm text-[#F4F6FA]">{CONFIG.BANK_DETAILS.ACCOUNT_NAME}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Orders */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
-        <h3 className="text-base font-semibold text-[#F4F6FA] mb-3">Recent Orders</h3>
-        {recentOrders.length === 0 ? (
-          <p className="text-[#A9B3C7] text-center py-8">No orders yet</p>
-        ) : (
-          <div className="space-y-2">
-            {recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(7,10,18,0.5)]">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="text-sm font-semibold text-[#F4F6FA] font-mono leading-tight">
-                      #{formatOrderNumberDisplay(order.order_number)}
-                    </p>
-                    {orderIsPreorderRow(order) && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide bg-[#7F1D1D] text-[#FECACA] border border-[#EF4444]/45">
-                        Preorder
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-[#A9B3C7] truncate mt-0.5">{order.customer_email}</p>
-                </div>
-                <div className="shrink-0 flex flex-col items-end gap-1">
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold leading-tight whitespace-nowrap ${getStatusColor(order.status)}`}>
-                    {order.status.replace(/_/g, ' ')}
-                  </span>
-                  <span className="text-sm font-bold text-[#2ED1B4]">${order.total?.toFixed(2)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function isLikelyNetworkFailure(err: unknown): boolean {
   const m =
@@ -1604,6 +913,33 @@ function formatOrderShippingAddressOneLine(
   if (!suburbLine) return street;
   return `${street}, ${suburbLine}`;
 }
+
+type AdminShippingDraft = {
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_email: string;
+  customer_phone: string;
+  shipping_address: string;
+  shipping_suburb: string;
+  shipping_state: string;
+  shipping_postcode: string;
+};
+
+function shippingDraftFromOrder(order: Order): AdminShippingDraft {
+  return {
+    customer_first_name: order.customer_first_name || '',
+    customer_last_name: order.customer_last_name || '',
+    customer_email: order.customer_email || '',
+    customer_phone: order.customer_phone || '',
+    shipping_address: order.shipping_address || '',
+    shipping_suburb: order.shipping_suburb || '',
+    shipping_state: (order.shipping_state || '').toUpperCase(),
+    shipping_postcode: (order.shipping_postcode || '').replace(/\D/g, '').slice(0, 4),
+  };
+}
+
+const ADMIN_SHIPPING_INPUT =
+  'w-full px-3 py-2 rounded-lg bg-[rgba(0,0,0,0.35)] border border-[rgba(244,246,250,0.12)] text-sm text-[#F4F6FA] outline-none focus:border-[#2ED1B4]';
 
 function formatAdminLabelMoney(value: number | string | null | undefined): string {
   const n = Number(value);
@@ -1802,6 +1138,10 @@ function OrdersSection() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState('');
   const [copiedShippingField, setCopiedShippingField] = useState<string | null>(null);
+  const [editingShipping, setEditingShipping] = useState(false);
+  const [shippingDraft, setShippingDraft] = useState<AdminShippingDraft | null>(null);
+  const [isSavingShipping, setIsSavingShipping] = useState(false);
+  const [shippingSaveError, setShippingSaveError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCreatingAusPostLabel, setIsCreatingAusPostLabel] = useState(false);
   const [isSyncingDeliveries, setIsSyncingDeliveries] = useState(false);
@@ -1835,6 +1175,9 @@ function OrdersSection() {
     if (showOrderModal) {
       setTrackingNumber('');
       setCopiedShippingField(null);
+      setEditingShipping(false);
+      setShippingDraft(null);
+      setShippingSaveError(null);
     }
   }, [showOrderModal, selectedOrder?.id]);
 
@@ -2625,6 +1968,86 @@ function OrdersSection() {
     if (ok) {
       setCopiedShippingField(key);
       window.setTimeout(() => setCopiedShippingField((prev) => (prev === key ? null : prev)), 2000);
+    }
+  };
+
+  const beginEditShipping = () => {
+    if (!selectedOrder) return;
+    setShippingDraft(shippingDraftFromOrder(selectedOrder));
+    setShippingSaveError(null);
+    setEditingShipping(true);
+  };
+
+  const cancelEditShipping = () => {
+    setEditingShipping(false);
+    setShippingDraft(null);
+    setShippingSaveError(null);
+  };
+
+  const saveShippingDetails = async () => {
+    if (!selectedOrder || !shippingDraft) return;
+    const firstName = shippingDraft.customer_first_name.trim();
+    const lastName = shippingDraft.customer_last_name.trim();
+    const email = shippingDraft.customer_email.trim();
+    const phone = shippingDraft.customer_phone.trim();
+    const address = shippingDraft.shipping_address.trim();
+    const suburb = shippingDraft.shipping_suburb.trim();
+    const state = shippingDraft.shipping_state.trim().toUpperCase();
+    const postcode = shippingDraft.shipping_postcode.replace(/\D/g, '').slice(0, 4);
+
+    if (!firstName || !lastName) {
+      setShippingSaveError('First and last name are required.');
+      return;
+    }
+    if (!email) {
+      setShippingSaveError('Customer email is required.');
+      return;
+    }
+    if (!address) {
+      setShippingSaveError('Street / delivery address is required.');
+      return;
+    }
+    if (suburb.length < 2) {
+      setShippingSaveError('Suburb is required.');
+      return;
+    }
+    if (!state) {
+      setShippingSaveError('State is required.');
+      return;
+    }
+    if (!/^\d{4}$/.test(postcode)) {
+      setShippingSaveError('Postcode must be 4 digits.');
+      return;
+    }
+
+    setIsSavingShipping(true);
+    setShippingSaveError(null);
+    try {
+      const updates = {
+        customer_first_name: firstName,
+        customer_last_name: lastName,
+        customer_email: email,
+        customer_phone: phone,
+        shipping_address: address,
+        shipping_suburb: suburb,
+        shipping_state: state,
+        shipping_postcode: postcode,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await supabase.from('orders').update(updates).eq('id', selectedOrder.id);
+      if (error) throw error;
+
+      const merged: Order = { ...selectedOrder, ...updates };
+      setSelectedOrder(merged);
+      setOrders((prev) => prev.map((o) => (o.id === merged.id ? { ...o, ...updates } : o)));
+      setEditingShipping(false);
+      setShippingDraft(null);
+      invalidateCache('admin:orders');
+    } catch (err) {
+      console.error('Failed to save shipping details:', err);
+      setShippingSaveError(err instanceof Error ? err.message : 'Could not save address.');
+    } finally {
+      setIsSavingShipping(false);
     }
   };
 
@@ -3510,12 +2933,15 @@ function OrdersSection() {
             )}
 
             <div className="p-4 rounded-xl bg-[rgba(7,10,18,0.55)] border border-[rgba(244,246,250,0.1)] mb-6">
+              <p className="text-[11px] text-[#A9B3C7] mb-3 leading-snug">
+                Review the delivery address below before creating a label. Use <span className="text-[#F4F6FA] font-medium">Edit address</span> if suburb, state, or postcode need fixing.
+              </p>
               <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => void createAusPostLabelForOrder(selectedOrder, { weightKg: 0.25 })}
-                    disabled={isCreatingAusPostLabel || isUpdating}
+                    disabled={isCreatingAusPostLabel || isUpdating || editingShipping}
                     className="px-4 py-2 rounded-lg bg-[#F59E0B] text-[#070A12] text-sm font-semibold hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                     title="Create Australia Post label at 0.250 kg"
                   >
@@ -3525,7 +2951,7 @@ function OrdersSection() {
                   <button
                     type="button"
                     onClick={() => void createAusPostLabelForOrder(selectedOrder, { weightKg: 0.5 })}
-                    disabled={isCreatingAusPostLabel || isUpdating}
+                    disabled={isCreatingAusPostLabel || isUpdating || editingShipping}
                     className="px-4 py-2 rounded-lg bg-[#F59E0B] text-[#070A12] text-sm font-semibold hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                     title="Create Australia Post label at 0.5 kg"
                   >
@@ -3540,7 +2966,7 @@ function OrdersSection() {
                         weightKg: 0.5,
                       })
                     }
-                    disabled={isCreatingAusPostLabel || isUpdating}
+                    disabled={isCreatingAusPostLabel || isUpdating || editingShipping}
                     className="px-4 py-2 rounded-lg bg-[#0EA5E9] text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                     title="Force AusPost address type PARCEL_LOCKER (requires customer email)"
                   >
@@ -3598,30 +3024,232 @@ function OrdersSection() {
                 </div>
                 <hr className="border-0 border-t border-[rgba(244,246,250,0.2)]" />
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#A9B3C7] mb-2">To</p>
-                  <div className="space-y-2">
-                    <AdminCopyBox
-                      label="Name"
-                      value={`${selectedOrder.customer_first_name} ${selectedOrder.customer_last_name}`.trim()}
-                      copiedKey="name"
-                      activeCopiedKey={copiedShippingField}
-                      onCopy={copyShippingField}
-                    />
-                    <AdminCopyBox
-                      label="Address"
-                      value={formatOrderShippingAddressOneLine(selectedOrder)}
-                      copiedKey="address"
-                      activeCopiedKey={copiedShippingField}
-                      onCopy={copyShippingField}
-                    />
-                    <AdminCopyBox
-                      label="Email"
-                      value={selectedOrder.customer_email}
-                      copiedKey="email"
-                      activeCopiedKey={copiedShippingField}
-                      onCopy={copyShippingField}
-                    />
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#A9B3C7] flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                      Delivery address
+                    </p>
+                    {!editingShipping ? (
+                      <button
+                        type="button"
+                        onClick={beginEditShipping}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[rgba(244,246,250,0.12)] text-[11px] font-semibold text-[#A9B3C7] hover:text-[#F4F6FA] hover:border-[#8B5CF6]/50"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit address
+                      </button>
+                    ) : null}
                   </div>
+
+                  {editingShipping && shippingDraft ? (
+                    <div className="space-y-2.5">
+                      <p className="text-[11px] text-[#A9B3C7] leading-snug">
+                        Fix suburb / state / postcode here if checkout was incomplete — then create the AusPost label.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">First name</span>
+                          <input
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.customer_first_name}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, customer_first_name: e.target.value } : prev,
+                              )
+                            }
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Last name</span>
+                          <input
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.customer_last_name}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, customer_last_name: e.target.value } : prev,
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                      <label className="block">
+                        <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Street / PO Box / Parcel Locker</span>
+                        <input
+                          className={ADMIN_SHIPPING_INPUT}
+                          value={shippingDraft.shipping_address}
+                          onChange={(e) =>
+                            setShippingDraft((prev) =>
+                              prev ? { ...prev, shipping_address: e.target.value } : prev,
+                            )
+                          }
+                        />
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label className="block sm:col-span-2">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Suburb</span>
+                          <input
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.shipping_suburb}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, shipping_suburb: e.target.value } : prev,
+                              )
+                            }
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">State</span>
+                          <select
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.shipping_state}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, shipping_state: e.target.value } : prev,
+                              )
+                            }
+                          >
+                            <option value="">—</option>
+                            {['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'].map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Postcode</span>
+                          <input
+                            className={ADMIN_SHIPPING_INPUT}
+                            inputMode="numeric"
+                            maxLength={4}
+                            value={shippingDraft.shipping_postcode}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      shipping_postcode: e.target.value.replace(/\D/g, '').slice(0, 4),
+                                    }
+                                  : prev,
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Phone</span>
+                          <input
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.customer_phone}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, customer_phone: e.target.value } : prev,
+                              )
+                            }
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[10px] uppercase tracking-wide text-[#6B7280] mb-1 block">Email</span>
+                          <input
+                            type="email"
+                            className={ADMIN_SHIPPING_INPUT}
+                            value={shippingDraft.customer_email}
+                            onChange={(e) =>
+                              setShippingDraft((prev) =>
+                                prev ? { ...prev, customer_email: e.target.value } : prev,
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                      {shippingSaveError && (
+                        <p className="text-[11px] text-[#F87171] leading-snug">{shippingSaveError}</p>
+                      )}
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => void saveShippingDetails()}
+                          disabled={isSavingShipping}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2ED1B4] text-[#070A12] text-xs font-semibold hover:opacity-90 disabled:opacity-50"
+                        >
+                          <Save className="w-3.5 h-3.5" />
+                          {isSavingShipping ? 'Saving…' : 'Save address'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEditShipping}
+                          disabled={isSavingShipping}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(244,246,250,0.12)] text-xs font-semibold text-[#A9B3C7] hover:text-[#F4F6FA] disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <AdminCopyBox
+                        label="Name"
+                        value={`${selectedOrder.customer_first_name} ${selectedOrder.customer_last_name}`.trim()}
+                        copiedKey="name"
+                        activeCopiedKey={copiedShippingField}
+                        onCopy={copyShippingField}
+                      />
+                      <AdminCopyBox
+                        label="Street"
+                        value={selectedOrder.shipping_address || ''}
+                        copiedKey="street"
+                        activeCopiedKey={copiedShippingField}
+                        onCopy={copyShippingField}
+                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <AdminCopyBox
+                          label="Suburb"
+                          value={selectedOrder.shipping_suburb || ''}
+                          copiedKey="suburb"
+                          activeCopiedKey={copiedShippingField}
+                          onCopy={copyShippingField}
+                        />
+                        <AdminCopyBox
+                          label="State"
+                          value={selectedOrder.shipping_state || ''}
+                          copiedKey="state"
+                          activeCopiedKey={copiedShippingField}
+                          onCopy={copyShippingField}
+                        />
+                        <AdminCopyBox
+                          label="Postcode"
+                          value={selectedOrder.shipping_postcode || ''}
+                          copiedKey="postcode"
+                          activeCopiedKey={copiedShippingField}
+                          onCopy={copyShippingField}
+                        />
+                      </div>
+                      <AdminCopyBox
+                        label="Full address (copy)"
+                        value={formatOrderShippingAddressOneLine(selectedOrder)}
+                        copiedKey="address"
+                        activeCopiedKey={copiedShippingField}
+                        onCopy={copyShippingField}
+                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <AdminCopyBox
+                          label="Phone"
+                          value={selectedOrder.customer_phone || ''}
+                          copiedKey="phone"
+                          activeCopiedKey={copiedShippingField}
+                          onCopy={copyShippingField}
+                        />
+                        <AdminCopyBox
+                          label="Email"
+                          value={selectedOrder.customer_email}
+                          copiedKey="email"
+                          activeCopiedKey={copiedShippingField}
+                          onCopy={copyShippingField}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <hr className="border-0 border-t border-[rgba(244,246,250,0.2)]" />
                 <div className="text-sm space-y-1 text-[#A9B3C7]">
@@ -3651,18 +3279,6 @@ function OrdersSection() {
                   )}
                 </div>
               </div>
-
-              {selectedOrder.customer_phone ? (
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                  <AdminCopyBox
-                    label="Phone"
-                    value={selectedOrder.customer_phone}
-                    copiedKey="phone"
-                    activeCopiedKey={copiedShippingField}
-                    onCopy={copyShippingField}
-                  />
-                </div>
-              ) : null}
             </div>
 
             {/* Order Items */}
@@ -5253,6 +4869,8 @@ function ProductsSection() {
 
   return (
     <div className="space-y-6">
+      <StockInventorySection />
+
       <div className="flex flex-wrap justify-between items-center gap-3">
         <h2 className="text-xl font-bold text-[#F4F6FA] flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <span>Products</span>
