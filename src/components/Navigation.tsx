@@ -19,7 +19,7 @@ import { useAffiliate } from '@/context/AffiliateContext';
 import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
-import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH } from '@/lib/routes';
+import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
 
 type NavigationProps = {
   /** Render inside a parent fixed header (e.g. below announce bar on /landing). */
@@ -124,6 +124,7 @@ export default function Navigation({ embedded = false }: NavigationProps) {
   const navEntries: ReadonlyArray<NavAnchor> = [
     { label: 'Shop', href: SHOP_PATH },
     { label: 'Research', href: RESEARCH_PATH },
+    { label: 'Blog', href: BLOG_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },
     { label: 'Calculator', href: CALCULATOR_PATH },
     { label: 'About', href: '/standards' },

@@ -1375,6 +1375,23 @@ html[data-theme-preview="home"] [class*="rounded-2xl"][class*="bg-[#111827]"] {
   box-shadow: 0 6px 25px rgba(16, 24, 40, 0.045);
 }
 
+html[data-theme-preview="home"] .home-blog-card {
+  background: #ffffff !important;
+  border-color: #e4e7ec !important;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.05);
+}
+html[data-theme-preview="home"] .home-blog-card:hover {
+  border-color: #c4b5fd !important;
+}
+html[data-theme-preview="home"] .home-blog h2,
+html[data-theme-preview="home"] .home-blog-card h3 {
+  color: #101828 !important;
+}
+html[data-theme-preview="home"] .home-blog p,
+html[data-theme-preview="home"] .home-blog-card p {
+  color: #667085 !important;
+}
+
 html[data-theme-preview="home"] #reviews,
 html[data-theme-preview="home"] #bulk-sales,
 html[data-theme-preview="home"] #leaderboard-top3,

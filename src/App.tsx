@@ -23,6 +23,7 @@ import { handoffToMainApp } from '@/lib/login-redirect';
 
 import Catalog from '@/sections/Catalog';
 import BulkSales from '@/sections/BulkSales';
+import HomeBlog from '@/sections/HomeBlog';
 import Quality from '@/sections/Quality';
 import TrustpilotReviews from '@/sections/TrustpilotReviews';
 import LeaderboardTop3 from '@/sections/LeaderboardTop3';
@@ -143,6 +144,9 @@ function HomePage() {
 
         {/* Trustpilot reviews */}
         <TrustpilotReviews />
+
+        {/* Blog teaser — crawlable links from homepage to /blog posts */}
+        <HomeBlog />
 
         {/* Promoter Leaderboard — Top 3 podium with CTA to full /leaderboard */}
         <LeaderboardTop3 />
