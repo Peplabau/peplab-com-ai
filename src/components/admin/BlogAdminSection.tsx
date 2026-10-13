@@ -3,6 +3,8 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  ImagePlus,
+  Loader2,
   Pencil,
   RefreshCw,
   Save,
@@ -22,6 +24,7 @@ import {
   type BlogPostStatus,
 } from '@/lib/blog-posts';
 import {
+  generateBlogCover,
   generateBlogPostFromTopic,
   suggestBlogTopics,
   type BlogTopicSuggestion,
@@ -67,6 +70,8 @@ export default function BlogAdminSection() {
   const [topicSeed, setTopicSeed] = useState('');
   const [customTopic, setCustomTopic] = useState('');
   const [selectedTopic, setSelectedTopic] = useState<BlogTopicSuggestion | null>(null);
+  const [coverGenerating, setCoverGenerating] = useState(false);
+  const [rowCoverId, setRowCoverId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -159,6 +164,45 @@ export default function BlogAdminSection() {
     });
     setStep('edit');
     setMessage('Draft generated. Review SEO and body, then save as draft or publish.');
+  };
+
+  const handleGenerateCover = async () => {
+    if (!editing) return;
+    setCoverGenerating(true);
+    setError(null);
+    setMessage(null);
+    const result = await generateBlogCover({
+      title: editing.title,
+      excerpt: editing.excerpt,
+      slug: editing.slug,
+    });
+    setCoverGenerating(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    patch({ cover_image_url: result.coverImageUrl });
+    setMessage('Cover image generated. Save or publish to keep it.');
+  };
+
+  const handleRowCover = async (post: BlogPost) => {
+    if (
+      post.cover_image_url &&
+      !window.confirm(`Replace the current cover image for “${post.title}” with a new AI image?`)
+    ) {
+      return;
+    }
+    setRowCoverId(post.id);
+    setError(null);
+    setMessage(null);
+    const result = await generateBlogCover({ postId: post.id });
+    setRowCoverId(null);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setMessage(`New cover image saved for “${post.title}”.`);
+    await load();
   };
 
   const handleSave = async (status: BlogPostStatus) => {
@@ -281,18 +325,31 @@ export default function BlogAdminSection() {
             <thead className="border-b border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.8)] text-[#A9B3C7]">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Slug</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Updated</th>
-                <th className="px-4 py-3 font-medium text-right">Actions</th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">Status</th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">Updated</th>
+                <th className="px-4 py-3 font-medium text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
               {posts.map((post) => (
                 <tr key={post.id} className="border-b border-[rgba(244,246,250,0.06)]">
-                  <td className="px-4 py-3 text-[#F4F6FA]">{post.title}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-[#A9B3C7]">{post.slug}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-[#F4F6FA]">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {post.cover_image_url ? (
+                        <img
+                          src={post.cover_image_url}
+                          alt=""
+                          className="h-10 w-16 shrink-0 rounded-md border border-[rgba(244,246,250,0.1)] object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-16 shrink-0 items-center justify-center rounded-md border border-dashed border-[rgba(244,246,250,0.15)] text-[#4B5468]">
+                          <ImagePlus className="h-4 w-4" />
+                        </div>
+                      )}
+                      <span className="truncate font-medium">{post.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${
                         post.status === 'published'
@@ -303,13 +360,13 @@ export default function BlogAdminSection() {
                       {post.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-[#A9B3C7]">
+                  <td className="px-4 py-3 text-[#A9B3C7] whitespace-nowrap">
                     {post.updated_at
                       ? new Date(post.updated_at).toLocaleDateString('en-AU')
                       : '—'}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex flex-nowrap items-center justify-end gap-1">
                       <button
                         type="button"
                         onClick={() => openEdit(post)}
@@ -317,6 +374,19 @@ export default function BlogAdminSection() {
                         title="Edit"
                       >
                         <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={rowCoverId !== null}
+                        onClick={() => void handleRowCover(post)}
+                        className="rounded-lg p-2 text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.06)] hover:text-[#C4B5FD] disabled:opacity-40"
+                        title={post.cover_image_url ? 'Regenerate AI cover image' : 'Generate AI cover image'}
+                      >
+                        {rowCoverId === post.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ImagePlus className="h-4 w-4" />
+                        )}
                       </button>
                       <button
                         type="button"
@@ -330,7 +400,7 @@ export default function BlogAdminSection() {
                           <Eye className="h-4 w-4" />
                         )}
                       </button>
-                      {post.status === 'published' && (
+                      {post.status === 'published' ? (
                         <a
                           href={blogPostPath(post.slug)}
                           target="_blank"
@@ -340,7 +410,7 @@ export default function BlogAdminSection() {
                         >
                           <ExternalLink className="h-4 w-4" />
                         </a>
-                      )}
+                      ) : null}
                       <button
                         type="button"
                         onClick={() => void handleDelete(post)}
@@ -513,13 +583,42 @@ export default function BlogAdminSection() {
                       onChange={(e) => patch({ seo_description: e.target.value })}
                     />
                   </Field>
-                  <Field label="Cover image URL" hint="optional">
-                    <input
-                      className={inputClass}
-                      value={editing.cover_image_url}
-                      onChange={(e) => patch({ cover_image_url: e.target.value })}
-                      placeholder="https://…"
-                    />
+                  <Field label="Cover image" hint="paste a URL or generate with AI">
+                    <div className="flex gap-2">
+                      <input
+                        className={inputClass}
+                        value={editing.cover_image_url}
+                        onChange={(e) => patch({ cover_image_url: e.target.value })}
+                        placeholder="https://…"
+                      />
+                      <button
+                        type="button"
+                        disabled={coverGenerating || !editing.title.trim()}
+                        onClick={() => void handleGenerateCover()}
+                        className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                      >
+                        {coverGenerating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ImagePlus className="h-4 w-4" />
+                        )}
+                        {coverGenerating
+                          ? 'Generating…'
+                          : editing.cover_image_url
+                            ? 'Regenerate'
+                            : 'Generate with AI'}
+                      </button>
+                    </div>
+                    {coverGenerating ? (
+                      <p className="mt-2 text-xs text-[#6B7280]">This usually takes 20–60 seconds.</p>
+                    ) : null}
+                    {editing.cover_image_url ? (
+                      <img
+                        src={editing.cover_image_url}
+                        alt="Cover preview"
+                        className="mt-3 aspect-[16/9] w-full rounded-xl border border-[rgba(244,246,250,0.1)] object-cover"
+                      />
+                    ) : null}
                   </Field>
                   <Field label="Author">
                     <input

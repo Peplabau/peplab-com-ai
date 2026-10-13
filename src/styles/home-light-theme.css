@@ -1152,29 +1152,47 @@ html[data-theme-preview="home"] .pc-chip.oos.active {
   border-color: #f79009;
   color: #b54708;
 }
+html[data-theme-preview="home"] .pc-dosage-label {
+  color: #667085;
+}
 html[data-theme-preview="home"] .pc-dd-btn {
-  background: #f8fafc;
-  border-color: #e4e7ec;
+  background: #f0fdfa;
+  border-color: #5eead4;
   color: #101828;
 }
-html[data-theme-preview="home"] .pc-dd-btn svg {
-  color: #98a2b3 !important;
+html[data-theme-preview="home"] .pc-dd-btn:hover,
+html[data-theme-preview="home"] .pc-dd-btn.open {
+  border-color: #14b8a6;
+  background: #ccfbf1;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
 }
+html[data-theme-preview="home"] .pc-dd-size { color: #101828; }
+html[data-theme-preview="home"] .pc-dd-stock.in {
+  color: #027a48;
+  background: #ecfdf3;
+}
+html[data-theme-preview="home"] .pc-dd-stock.out {
+  color: #b42318;
+  background: #fef3f2;
+}
+html[data-theme-preview="home"] .pc-dd-chev { color: #0d9488; }
 html[data-theme-preview="home"] .pc-dd-menu {
   background: #ffffff;
-  border-color: #e4e7ec;
-  box-shadow: 0 14px 40px rgba(16, 24, 40, 0.12);
+  border-color: #99f6e4;
+  box-shadow: 0 18px 48px rgba(16, 24, 40, 0.12);
 }
-html[data-theme-preview="home"] .pc-dd-opt {
-  color: #101828;
-}
-html[data-theme-preview="home"] .pc-dd-opt:hover {
-  background: #f4f1ff;
-}
+html[data-theme-preview="home"] .pc-dd-opt { color: #101828; }
+html[data-theme-preview="home"] .pc-dd-opt:hover,
 html[data-theme-preview="home"] .pc-dd-opt.ac {
-  background: #f4f1ff;
-  color: #6847f5;
+  background: #f0fdfa;
 }
+html[data-theme-preview="home"] .pc-dd-opt-size { color: #101828; }
+html[data-theme-preview="home"] .pc-dd-opt.ac .pc-dd-opt-size { color: #0f766e; }
+html[data-theme-preview="home"] .pc-dd-opt-stock.in { color: #027a48; }
+html[data-theme-preview="home"] .pc-dd-opt-stock.out { color: #b42318; }
+html[data-theme-preview="home"] .pc-dd-opt-price { color: #667085; }
+html[data-theme-preview="home"] .pc-dd-opt.ac .pc-dd-opt-price { color: #0f766e; }
+html[data-theme-preview="home"] .pc-dd-opt-check { color: #0d9488; }
 html[data-theme-preview="home"] .pc-price-strike {
   color: #98a2b3;
 }
@@ -1283,7 +1301,7 @@ html[data-theme-preview="home"] .pc-divider {
   html[data-theme-preview="home"] .pc-rating-row {
     margin-bottom: 6px;
   }
-  html[data-theme-preview="home"] .pc-dosage-desktop {
+  html[data-theme-preview="home"] .pc-dosage {
     margin-bottom: 8px;
   }
   html[data-theme-preview="home"] .pc-chip {

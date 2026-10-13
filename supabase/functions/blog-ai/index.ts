@@ -4,8 +4,11 @@
  * Admin blog CMS helpers:
  *   - suggest_topics → topic cards for the editor to pick
  *   - generate_post  → full blog draft from a chosen topic
+ *   - generate_cover → AI cover image, stored in the public `blog-covers` bucket;
+ *                      pass post_id to also save it onto an existing post
  *
- * Secrets: OPENAI_API_KEY (required), OPENAI_MODEL (optional, default gpt-4o-mini)
+ * Secrets: OPENAI_API_KEY (required), OPENAI_MODEL (optional, default gpt-4o-mini),
+ *          OPENAI_IMAGE_MODEL (optional, default gpt-image-1)
  * Auth: signed-in admin JWT (profiles.is_admin = true), verified inside this function.
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
@@ -127,6 +130,74 @@ async function openAiJson(
   } catch {
     return { ok: false, error: "Failed to parse AI JSON response" };
   }
+}
+
+const COVER_BUCKET = "blog-covers";
+
+function buildCoverPrompt(title: string, excerpt: string): string {
+  return [
+    "Editorial blog cover illustration for PEPLAB, an Australian laboratory research supplier.",
+    `Article: "${title}".`,
+    excerpt ? `Summary: ${excerpt}` : null,
+    "Visual style: premium, modern scientific still life or abstract render. Deep navy-black background (#070A12),",
+    "soft violet (#8B5CF6) and teal (#2ED1B4) rim lighting, subtle glow, shallow depth of field, clean composition",
+    "with negative space. Laboratory glassware, chromatography columns, molecular structures or analytical",
+    "instruments that relate to the article topic.",
+    "Strictly no text, letters, numbers, logos, labels, watermarks, people, hands, syringes, needles, pills or medical imagery.",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function base64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function openAiImage(
+  openaiKey: string,
+  model: string,
+  prompt: string,
+): Promise<{ ok: true; bytes: Uint8Array; contentType: string; ext: string } | { ok: false; error: string }> {
+  const isDalle = model.startsWith("dall-e");
+  const payload: Record<string, unknown> = isDalle
+    ? { model, prompt, n: 1, size: "1792x1024", quality: "hd", response_format: "b64_json" }
+    : { model, prompt, n: 1, size: "1536x1024", quality: "medium", output_format: "webp", output_compression: 85 };
+
+  const res = await fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${openaiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    return {
+      ok: false,
+      error: String(json?.error?.message || json?.error || `OpenAI image request failed (${res.status})`),
+    };
+  }
+  const b64 = json?.data?.[0]?.b64_json;
+  if (!b64 || typeof b64 !== "string") {
+    return { ok: false, error: "OpenAI returned no image data" };
+  }
+  return isDalle
+    ? { ok: true, bytes: base64ToBytes(b64), contentType: "image/png", ext: "png" }
+    : { ok: true, bytes: base64ToBytes(b64), contentType: "image/webp", ext: "webp" };
+}
+
+function coverFileSlug(value: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 60) || "post"
+  );
 }
 
 const SUGGEST_SYSTEM = `You are a content strategist for PEPLAB Australia (peplab.com.au), an independent Australian research peptide supplier.
@@ -270,8 +341,62 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, post, model });
     }
 
+    if (action === "generate_cover") {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!.trim();
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!.trim();
+      const db = createClient(supabaseUrl, serviceKey);
+
+      const postId = String(body?.post_id ?? "").trim();
+      let title = String(body?.title ?? "").trim();
+      let excerpt = String(body?.excerpt ?? "").trim();
+      let slug = String(body?.slug ?? "").trim();
+
+      if (postId) {
+        const { data: row, error: rowErr } = await db
+          .from("blog_posts")
+          .select("title, excerpt, slug")
+          .eq("id", postId)
+          .maybeSingle();
+        if (rowErr || !row) return jsonResponse({ error: "Blog post not found" }, 404);
+        title = title || String(row.title ?? "");
+        excerpt = excerpt || String(row.excerpt ?? "");
+        slug = slug || String(row.slug ?? "");
+      }
+      if (!title) return jsonResponse({ error: "title is required" }, 400);
+
+      const imageModel = Deno.env.get("OPENAI_IMAGE_MODEL")?.trim() || "gpt-image-1";
+      const image = await openAiImage(openaiKey, imageModel, buildCoverPrompt(title, excerpt));
+      if (!image.ok) return jsonResponse({ error: image.error }, 502);
+
+      const { data: bucket } = await db.storage.getBucket(COVER_BUCKET);
+      if (!bucket) {
+        const { error: bucketErr } = await db.storage.createBucket(COVER_BUCKET, { public: true });
+        if (bucketErr && !/already exists/i.test(bucketErr.message)) {
+          return jsonResponse({ error: `Could not create storage bucket: ${bucketErr.message}` }, 500);
+        }
+      }
+
+      const path = `${coverFileSlug(slug || title)}-${Date.now()}.${image.ext}`;
+      const { error: uploadErr } = await db.storage
+        .from(COVER_BUCKET)
+        .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
+      if (uploadErr) return jsonResponse({ error: `Upload failed: ${uploadErr.message}` }, 500);
+
+      const coverUrl = db.storage.from(COVER_BUCKET).getPublicUrl(path).data.publicUrl;
+
+      if (postId) {
+        const { error: updateErr } = await db
+          .from("blog_posts")
+          .update({ cover_image_url: coverUrl })
+          .eq("id", postId);
+        if (updateErr) return jsonResponse({ error: `Saved image but could not update post: ${updateErr.message}` }, 500);
+      }
+
+      return jsonResponse({ ok: true, cover_image_url: coverUrl, model: imageModel, saved: Boolean(postId) });
+    }
+
     return jsonResponse(
-      { error: 'Unknown action. Use "suggest_topics" or "generate_post".' },
+      { error: 'Unknown action. Use "suggest_topics", "generate_post" or "generate_cover".' },
       400,
     );
   } catch (err) {

@@ -20,9 +20,58 @@ function inlineMarkdown(text: string): string {
   return html;
 }
 
+function slugifyHeading(text: string): string {
+  return (
+    text
+      .replace(/[`*_[\]()]/g, '')
+      .toLowerCase()
+      .replace(/&[a-z]+;/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 80) || 'section'
+  );
+}
+
+export type MarkdownHeading = { id: string; text: string; level: 2 | 3 };
+
+function createHeadingIdFactory() {
+  const seen = new Map<string, number>();
+  return (text: string) => {
+    const base = slugifyHeading(text);
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count + 1}`;
+  };
+}
+
+/** h2/h3 headings in document order; ids match those emitted by `markdownToHtml`. */
+export function extractMarkdownHeadings(markdown: string): MarkdownHeading[] {
+  const nextId = createHeadingIdFactory();
+  const headings: MarkdownHeading[] = [];
+  let inCode = false;
+  for (const raw of (markdown || '').replace(/\r\n/g, '\n').split('\n')) {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith('```')) {
+      inCode = !inCode;
+      continue;
+    }
+    if (inCode) continue;
+    const m = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (!m) continue;
+    const id = nextId(m[2]);
+    if (m[1].length === 2 || m[1].length === 3) {
+      headings.push({ id, text: m[2].replace(/[`*_]/g, ''), level: m[1].length as 2 | 3 });
+    }
+  }
+  return headings;
+}
+
 export function markdownToHtml(markdown: string): string {
   const lines = (markdown || '').replace(/\r\n/g, '\n').split('\n');
   const out: string[] = [];
+  const nextId = createHeadingIdFactory();
   let i = 0;
 
   const flushParagraph = (buf: string[]) => {
@@ -43,7 +92,7 @@ export function markdownToHtml(markdown: string): string {
     const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
     if (heading) {
       const level = heading[1].length;
-      out.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
+      out.push(`<h${level} id="${nextId(heading[2])}">${inlineMarkdown(heading[2])}</h${level}>`);
       i += 1;
       continue;
     }

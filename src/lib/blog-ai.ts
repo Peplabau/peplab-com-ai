@@ -153,6 +153,29 @@ export async function suggestBlogTopics(opts?: {
   };
 }
 
+/** Pass `postId` to also save the cover onto that post server-side. */
+export async function generateBlogCover(input: {
+  title?: string;
+  excerpt?: string;
+  slug?: string;
+  postId?: string;
+}): Promise<{ ok: true; coverImageUrl: string; saved: boolean } | { ok: false; error: string }> {
+  if (!input.postId && !input.title?.trim()) {
+    return { ok: false, error: 'Add a title before generating a cover image.' };
+  }
+  const result = await callBlogAi({
+    action: 'generate_cover',
+    post_id: input.postId || undefined,
+    title: input.title?.trim() || undefined,
+    excerpt: input.excerpt?.trim() || undefined,
+    slug: input.slug?.trim() || undefined,
+  });
+  if (!result.ok) return result;
+  const url = asString(result.payload.cover_image_url);
+  if (!url) return { ok: false, error: 'AI did not return a cover image.' };
+  return { ok: true, coverImageUrl: url, saved: result.payload.saved === true };
+}
+
 export async function generateBlogPostFromTopic(topic: {
   title: string;
   angle?: string;

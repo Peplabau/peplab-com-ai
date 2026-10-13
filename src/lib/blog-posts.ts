@@ -48,6 +48,18 @@ export function blogPostPath(slug: string): string {
   return `${BLOG_PATH}/${s}`;
 }
 
+export function blogReadingMinutes(markdown: string): number {
+  const words = (markdown || '').replace(/[#>*`_[\]()-]/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
+export function formatBlogDate(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export function normalizeBlogPost(row: Record<string, unknown>): BlogPost {
   const topicSource = String(row.topic_source ?? 'custom');
   return {

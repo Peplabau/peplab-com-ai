@@ -10,6 +10,8 @@ import {
   Beaker,
   Plus,
   ArrowUpRight,
+  Check,
+  Clock,
 } from "lucide-react";
 import { shopUrl, coaArchiveUrl } from "@/landing/lib/site";
 import { productExcludesVolumeBundle } from "@/landing/utils/pricing";
@@ -143,6 +145,8 @@ export default function LandingProductCard({
   const tiers = [
     { q: 2, l: getBundleLabel(2), pct: b2, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b2), t: getStorefrontBundleTotal(sel.originalPrice, 2, dEn, dP, b2) },
     { q: 3, l: getBundleLabel(3), pct: b3, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b3), t: getStorefrontBundleTotal(sel.originalPrice, 3, dEn, dP, b3) },
+    // Cart applies the Buy 3+ rate to any quantity >= 3, so 10x must use b3 to match checkout.
+    { q: 10, l: getBundleLabel(10), pct: b3, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b3), t: getStorefrontBundleTotal(sel.originalPrice, 10, dEn, dP, b3) },
   ];
 
   const noVolBundle = productExcludesVolumeBundle(product.id, product.name);
@@ -338,47 +342,52 @@ export default function LandingProductCard({
             </span>
           </div>
 
-          {/* Dosage: mobile = dropdown, desktop = chips */}
-          {/* Desktop chips */}
-          <div className="pc-dosage-desktop">
+          {/* Size dropdown — mobile + desktop */}
+          <div className="pc-dosage" ref={ddRef} data-no-navigate>
             <span className="pc-dosage-label">Size</span>
-            <div className="pc-dosage-chips">
-              {dosages.map((d) => {
-                const ac = String(sel.mg) === String(d.mg) && (sel.unit ?? "MG") === (d.unit ?? "MG");
-                return (
-                  <button
-                    key={`${d.mg}-${d.unit ?? "MG"}`}
-                    type="button"
-                    className={`pc-chip ${ac ? "active" : ""} ${!d.inStock ? "oos" : ""}`}
-                    onClick={(e) => { e.preventDefault(); setSel(d); }}
-                  >
-                    {formatDosageLabel(d.mg, d.unit)}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Mobile dropdown */}
-          <div className="pc-dosage-mobile" ref={ddRef}>
-            <button type="button" className="pc-dd-btn" onClick={() => setDdOpen(!ddOpen)}>
-              <span>{formatDosageLabel(sel.mg, sel.unit)}</span>
-              <ChevronDown size={11} style={{ color: "rgba(255,255,255,0.3)", transition: "transform .2s", transform: ddOpen ? "rotate(180deg)" : "none", flexShrink: 0 }} />
+            <button
+              type="button"
+              className={`pc-dd-btn ${ddOpen ? "open" : ""}`}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDdOpen(!ddOpen); }}
+              aria-haspopup="listbox"
+              aria-expanded={ddOpen}
+            >
+              <span className="pc-dd-main">
+                <span className="pc-dd-size">{formatDosageLabel(sel.mg, sel.unit)}</span>
+                <span className={`pc-dd-stock ${sel.inStock ? "in" : "out"}`}>
+                  {sel.inStock ? "In stock" : "Out of stock"}
+                </span>
+              </span>
+              <ChevronDown className="pc-dd-chev" size={14} style={{ transform: ddOpen ? "rotate(180deg)" : "none" }} />
             </button>
             {ddOpen && (
-              <div className="pc-dd-menu">
+              <div className="pc-dd-menu" role="listbox">
                 {dosages.map((d) => {
                   const ac = String(sel.mg) === String(d.mg) && (sel.unit ?? "MG") === (d.unit ?? "MG");
+                  const optPrice = getStorefrontPrice(d.originalPrice, dEn, dP);
                   return (
                     <button
                       type="button"
                       key={`${d.mg}-${d.unit ?? "MG"}`}
+                      role="option"
+                      aria-selected={ac}
                       className={`pc-dd-opt ${ac ? "ac" : ""} ${!d.inStock ? "oos" : ""}`}
-                      onClick={() => { setSel(d); setDdOpen(false); }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSel(d);
+                        setDdOpen(false);
+                      }}
                     >
-                      <span>{formatDosageLabel(d.mg, d.unit)}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: d.inStock ? "#22C55E" : "#EF4444" }}>
-                        {d.inStock ? "✓" : "✕"}
+                      <span className="pc-dd-opt-l">
+                        <span className="pc-dd-opt-size">{formatDosageLabel(d.mg, d.unit)}</span>
+                        <span className={`pc-dd-opt-stock ${d.inStock ? "in" : "out"}`}>
+                          {d.inStock ? "In stock" : "Out of stock"}
+                        </span>
+                      </span>
+                      <span className="pc-dd-opt-r">
+                        <span className="pc-dd-opt-price">${optPrice.toFixed(2)}</span>
+                        {ac ? <Check size={12} className="pc-dd-opt-check" /> : null}
                       </span>
                     </button>
                   );
@@ -632,94 +641,80 @@ const STYLES = `
 .pc-stk-dot.out { background: #EF4444; }
 @keyframes pcP { 0%,100%{box-shadow:0 0 3px rgba(34,197,94,0.2)} 50%{box-shadow:0 0 9px rgba(34,197,94,0.5)} }
 
-/* ── DOSAGE ── */
-/* Desktop chips — hidden mobile */
-.pc-dosage-desktop { display: none; }
+/* ── DOSAGE DROPDOWN ── */
+.pc-dosage { position: relative; margin-bottom: 8px; z-index: 2; }
 .pc-dosage-label {
   display: block; margin-bottom: 6px;
   font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.4);
 }
-.pc-dosage-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.pc-chip {
-  padding: 6px 14px; border-radius: 8px;
-  font-size: 12px; font-weight: 600;
-  border: 1px solid rgba(255,255,255,0.07);
-  background: rgba(255,255,255,0.02);
-  color: rgba(255,255,255,0.45);
-  cursor: pointer; transition: all 0.2s;
+.pc-dd-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 9px 11px; border-radius: 10px;
+  border: 1px solid rgba(46,209,180,0.4);
+  background: rgba(46,209,180,0.08);
+  color: #EDF0F7; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
   font-family: 'Outfit', sans-serif;
 }
-.pc-chip:hover { border-color: rgba(46,209,180,0.3); color: rgba(255,255,255,0.6); }
-.pc-chip.active {
-  background: rgba(46,209,180,0.1); border-color: rgba(46,209,180,0.35);
-  color: #5EEAD4; box-shadow: 0 0 12px rgba(46,209,180,0.1);
+.pc-dd-btn:hover, .pc-dd-btn.open {
+  border-color: rgba(46,209,180,0.7);
+  background: rgba(46,209,180,0.12);
+  box-shadow: 0 0 0 3px rgba(46,209,180,0.1);
 }
-.pc-chip.oos {
-  border-style: dashed;
-  border-color: rgba(251,191,36,0.22);
-  color: rgba(255,255,255,0.45);
+.pc-dd-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pc-dd-size {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; font-weight: 700; color: #F4F6FA; letter-spacing: 0.02em;
 }
-.pc-chip.oos:hover { border-color: rgba(251,191,36,0.4); color: rgba(253,230,138,0.85); }
-.pc-chip.oos.active {
-  border-style: solid;
-  border-color: rgba(251,191,36,0.55);
-  background: rgba(251,191,36,0.1);
-  color: #FBBF24;
-  box-shadow: 0 0 12px rgba(245,158,11,0.12);
+.pc-dd-stock {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 999px;
 }
-
-/* Mobile dropdown */
-.pc-dosage-mobile { position: relative; margin-bottom: 8px; }
-.pc-dd-btn {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 6px 8px; border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.03);
-  color: #EDF0F7; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  cursor: pointer; transition: border-color 0.2s;
-}
-.pc-dd-btn:hover { border-color: rgba(46,209,180,0.3); }
-.pc-dd-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.pc-dd-stock.in { color: #4ADE80; background: rgba(74,222,128,0.12); }
+.pc-dd-stock.out { color: #F87171; background: rgba(248,113,113,0.12); }
+.pc-dd-chev { color: #2ED1B4; flex-shrink: 0; transition: transform 0.2s; }
 
 .pc-dd-menu {
-  position: absolute; top: calc(100% + 3px); left: 0; right: 0; z-index: 60;
-  border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(10,14,28,0.96); backdrop-filter: blur(24px);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.55); overflow: hidden;
-}
-
-/* ── Mobile-only dropdown fixes ── */
-/* When dropdown is open, let the card overflow so the menu isn't clipped. */
-@media (max-width: 767px) {
-  .pc.pc-dd-open { overflow: visible; }
-  /* Keep the non-dropdown parts of the card clipped (image, accent line, etc.)
-     by re-hiding the inner content wrapper – only the dropdown escapes. */
-  .pc.pc-dd-open .pc-inner { overflow: visible; }
-  .pc-dd-menu {
-    z-index: 9999;
-    /* Scroll within the menu itself so it never needs to escape the viewport. */
-    max-height: 220px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* Slim scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(46,209,180,0.35) transparent;
-  }
-  .pc-dd-menu::-webkit-scrollbar { width: 3px; }
-  .pc-dd-menu::-webkit-scrollbar-track { background: transparent; }
-  .pc-dd-menu::-webkit-scrollbar-thumb { background: rgba(46,209,180,0.35); border-radius: 3px; }
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 80;
+  border-radius: 12px; border: 1px solid rgba(46,209,180,0.25);
+  background: rgba(10,14,28,0.98); backdrop-filter: blur(24px);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.55);
+  overflow: hidden; padding: 4px;
 }
 .pc-dd-opt {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 10px; border: none; background: none;
-  color: #EDF0F7; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 10px 11px; border: none; border-radius: 8px;
+  background: transparent; color: #EDF0F7; cursor: pointer;
+  transition: background 0.15s; font-family: 'Outfit', sans-serif; text-align: left;
 }
-.pc-dd-opt:hover { background: rgba(46,209,180,0.08); }
-.pc-dd-opt.ac { background: rgba(46,209,180,0.1); color: #2ED1B4; }
-.pc-dd-opt.oos { background: rgba(251,191,36,0.04); }
-.pc-dd-opt + .pc-dd-opt { border-top: 1px solid rgba(255,255,255,0.05); }
+.pc-dd-opt:hover { background: rgba(46,209,180,0.1); }
+.pc-dd-opt.ac { background: rgba(46,209,180,0.14); }
+.pc-dd-opt.oos { opacity: 0.85; }
+.pc-dd-opt-l { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pc-dd-opt-size {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 700; color: #F4F6FA;
+}
+.pc-dd-opt.ac .pc-dd-opt-size { color: #5EEAD4; }
+.pc-dd-opt-stock { font-size: 9px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.pc-dd-opt-stock.in { color: #4ADE80; }
+.pc-dd-opt-stock.out { color: #F87171; }
+.pc-dd-opt-r { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pc-dd-opt-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
+}
+.pc-dd-opt.ac .pc-dd-opt-price { color: #A7F3D0; }
+.pc-dd-opt-check { color: #2ED1B4; }
+
+@media (max-width: 767px) {
+  .pc.pc-dd-open { overflow: visible; z-index: 200; }
+  .pc.pc-dd-open .pc-body,
+  .pc.pc-dd-open .pc-inner { overflow: visible; }
+  .pc.pc-dd-open .pc-dosage { z-index: 210; }
+  .pc-dd-menu { z-index: 220; max-height: 260px; overflow-y: auto; }
+}
 
 /* ── PRICE ── */
 .pc-price { margin-bottom: 8px; }
@@ -889,10 +884,12 @@ const STYLES = `
   /* Hide mobile-only elements */
   .pc-ruo-mobile { display: none; }
   .pc-stock-mobile { display: none; }
-  .pc-dosage-mobile { display: none; }
-
-  /* Show desktop elements */
-  .pc-dosage-desktop { display: block; margin-bottom: 14px; }
+  .pc-dosage { margin-bottom: 14px; }
+  .pc-dd-btn { padding: 11px 13px; border-radius: 12px; }
+  .pc-dd-size { font-size: 14px; }
+  .pc-dd-opt { padding: 11px 12px; }
+  .pc-dd-opt-size { font-size: 13px; }
+  .pc-dd-opt-price { font-size: 12px; }
   .pc-divider {
     display: block; height: 1px; margin-bottom: 12px;
     background: linear-gradient(90deg, rgba(46,209,180,0.1), rgba(255,255,255,0.04), transparent);
