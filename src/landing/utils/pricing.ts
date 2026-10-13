@@ -45,7 +45,7 @@ export function getCartLineUnitPrice(
 /** Fields used for stacked bundle pricing (Buy 1 off list, then extra % off subtotal). */
 export type BundleDiscountConfig = Pick<
   DiscountSettings,
-  'discount_enabled' | 'discount_percentage' | 'buy2_percentage' | 'buy3_percentage' | 'buy10_percentage'
+  'discount_enabled' | 'discount_percentage' | 'buy2_percentage' | 'buy3_percentage'
 >;
 
 function resolveBundleConfig(overrides?: Partial<BundleDiscountConfig>): BundleDiscountConfig {
@@ -54,7 +54,6 @@ function resolveBundleConfig(overrides?: Partial<BundleDiscountConfig>): BundleD
     discount_percentage: overrides?.discount_percentage ?? DEFAULT_DISCOUNT_SETTINGS.discount_percentage,
     buy2_percentage: overrides?.buy2_percentage ?? DEFAULT_DISCOUNT_SETTINGS.buy2_percentage,
     buy3_percentage: overrides?.buy3_percentage ?? DEFAULT_DISCOUNT_SETTINGS.buy3_percentage,
-    buy10_percentage: overrides?.buy10_percentage ?? DEFAULT_DISCOUNT_SETTINGS.buy10_percentage ?? 30,
   };
 }
 
@@ -69,10 +68,7 @@ export function getBuy1UnitPrice(originalPrice: number, config?: Partial<BundleD
  * Stacked bundle model (matches storefront quick-add / ProductCard):
  * - Buy 1: `discount_percentage` off list price.
  * - Buy 2: extra `buy2_percentage` off the **subtotal** at Buy 1 unit price: (buy1×2)×(1−buy2%).
- * - Buy 3–9: extra `buy3_percentage` off the subtotal: (buy1×qty)×(1−buy3%).
- * - Buy 10+: `buy10_percentage` off the **original list** price (not stacked).
- *
- * Example: list $138. Buy 10 at 30% off list → $96.60/ea.
+ * - Buy 3+: extra `buy3_percentage` off the subtotal: (buy1×qty)×(1−buy3%).
  */
 export function getStackedBundleUnitPrice(
   originalPrice: number,
@@ -81,9 +77,6 @@ export function getStackedBundleUnitPrice(
 ): number {
   const c = resolveBundleConfig(config);
   const q = Math.max(1, quantity);
-  if (q >= 10) {
-    return round2(originalPrice * (1 - (c.buy10_percentage ?? 30) / 100));
-  }
   const buy1 = getBuy1UnitPrice(originalPrice, c);
   if (q <= 1) return buy1;
   const subtotal = buy1 * q;
@@ -108,7 +101,6 @@ export interface BundlePrices {
   buy2: number;
   buy3: number;
   buy5: number;
-  buy10: number;
 }
 
 /**
@@ -124,7 +116,6 @@ export function getBundlePricing(
     buy2: calculatePrice(originalPrice, 2, c),
     buy3: calculatePrice(originalPrice, 3, c),
     buy5: calculatePrice(originalPrice, 5, c),
-    buy10: calculatePrice(originalPrice, 10, c),
   };
 }
 

@@ -4141,13 +4141,12 @@ function AddProductModal({
           {bundlePreview && (
             <div className="p-3 rounded-xl bg-[rgba(46,209,180,0.06)] border border-[rgba(46,209,180,0.2)]">
               <p className="text-xs font-bold text-[#2ED1B4] mb-2 uppercase tracking-wider">Bundle Pricing Preview</p>
-              <div className="grid grid-cols-5 gap-1 text-center">
+              <div className="grid grid-cols-4 gap-1 text-center">
                 {[
                   { label: 'Buy 1', price: bundlePreview.buy1, disc: previewDisc(1) },
                   { label: 'Buy 2', price: bundlePreview.buy2, disc: previewDisc(2) },
                   { label: 'Buy 3', price: bundlePreview.buy3, disc: previewDisc(3) },
                   { label: 'Buy 5', price: bundlePreview.buy5, disc: previewDisc(5) },
-                  { label: 'Buy 10', price: bundlePreview.buy10, disc: previewDisc(10) },
                 ].map(t => (
                   <div key={t.label} className="p-2 rounded-lg bg-[rgba(7,10,18,0.5)]">
                     <p className="text-[10px] text-[#A9B3C7]">{t.label}</p>
@@ -4682,7 +4681,6 @@ function EditProductModal({
                             { label: 'Buy 2', price: preview.buy2, disc: effDisc(2) },
                             { label: 'Buy 3', price: preview.buy3, disc: effDisc(3) },
                             { label: 'Buy 5', price: preview.buy5, disc: effDisc(5) },
-                            { label: 'Buy 10', price: preview.buy10, disc: effDisc(10) },
                           ].map(t => (
                             <div key={t.label} className="px-2 py-1.5 rounded-lg bg-[rgba(46,209,180,0.08)] text-center min-w-[50px]">
                               <p className="text-[9px] text-[#A9B3C7]">{t.label}</p>
@@ -7020,7 +7018,7 @@ function SettingsSection() {
             <p className="text-sm font-medium text-[#F4F6FA]">Discounts Enabled</p>
             <p className="text-xs text-[#A9B3C7] mt-0.5">
               {discountSettings.discount_enabled
-                ? `Active — Buy 1: ${discountSettings.discount_percentage ?? 20}% off list · Buy 2: extra ${discountSettings.buy2_percentage ?? 5}% · Buy 3–9: extra ${discountSettings.buy3_percentage ?? 10}% · Buy 10+: ${discountSettings.buy10_percentage ?? 30}% off list`
+                ? `Active — Buy 1: ${discountSettings.discount_percentage ?? 20}% off list · Buy 2: extra ${discountSettings.buy2_percentage ?? 5}% · Buy 3+: extra ${discountSettings.buy3_percentage ?? 10}%`
                 : 'Disabled — original list prices shown (no Buy 1 discount).'}
             </p>
           </div>
@@ -7061,19 +7059,11 @@ function SettingsSection() {
               },
               {
                 key: 'buy3_percentage' as const,
-                label: 'Buy 3–9',
+                label: 'Buy 3+',
                 sub: 'extra % off (after Buy 1 price × qty)',
                 default: 10,
                 color: '#2ED1B4',
                 presets: [5, 8, 10, 12, 15, 20],
-              },
-              {
-                key: 'buy10_percentage' as const,
-                label: 'Buy 10+',
-                sub: '% off original list price (e.g. $138 → 30% = $96.60)',
-                default: 30,
-                color: '#EC4899',
-                presets: [25, 30, 35, 40, 45, 50],
               },
             ] as const
           ).map(({ key, label, sub, default: def, color, presets }) => {

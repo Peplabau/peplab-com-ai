@@ -184,13 +184,12 @@ export const getDefaultStorefrontDosage = (product: Pick<Product, 'dosages'>): D
 const researchDesc = (compound: string, area: string) =>
   `${compound} is a research compound intended for ${area} and laboratory investigation purposes only.`;
 
-// Standard bundle pricing for all products (Buy 1 through Buy 10)
+// Standard bundle pricing for all products (Buy 1 / 2 / 3 / 5 — no Buy 10)
 const standardBundlePricing: BundlePricing[] = [
   { quantity: 1, label: 'Buy 1' },
   { quantity: 2, label: 'Buy 2' },
   { quantity: 3, label: 'Buy 3' },
   { quantity: 5, label: 'Buy 5' },
-  { quantity: 10, label: 'Buy 10' },
 ];
 
 // Individual product images with product names

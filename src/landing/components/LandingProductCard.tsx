@@ -34,8 +34,6 @@ const getStorefrontBundleUnitPrice = (o, e, m, b) => {
 };
 const getStorefrontBundleTotal = (o, q, e, m, b) =>
   +(getStorefrontBundleUnitPrice(o, e, m, b) * q).toFixed(2);
-const getListBundleUnitPrice = (o, pct) => +(o * (1 - pct / 100)).toFixed(2);
-const getListBundleTotal = (o, q, pct) => +(getListBundleUnitPrice(o, pct) * q).toFixed(2);
 // Default variant shown on the card:
 //   1. 5mg in-stock if available
 //   2. otherwise the smallest in-stock dosage
@@ -105,7 +103,6 @@ export default function LandingProductCard({
   const dP = discountSettings.discount_percentage ?? 20;
   const b2 = discountSettings.buy2_percentage ?? 5;
   const b3 = discountSettings.buy3_percentage ?? 10;
-  const b10 = discountSettings.buy10_percentage ?? 30;
 
   const price = getStorefrontPrice(sel.originalPrice, dEn, dP);
   const save = getStorefrontSavings(sel.originalPrice, dEn, dP);
@@ -148,8 +145,6 @@ export default function LandingProductCard({
   const tiers = [
     { q: 2, l: getBundleLabel(2), pct: b2, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b2), t: getStorefrontBundleTotal(sel.originalPrice, 2, dEn, dP, b2) },
     { q: 3, l: getBundleLabel(3), pct: b3, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b3), t: getStorefrontBundleTotal(sel.originalPrice, 3, dEn, dP, b3) },
-    // Buy 10: 30% off original list price (e.g. $138 → $96.60/ea).
-    { q: 10, l: getBundleLabel(10), pct: b10, u: getListBundleUnitPrice(sel.originalPrice, b10), t: getListBundleTotal(sel.originalPrice, 10, b10) },
   ];
 
   const noVolBundle = productExcludesVolumeBundle(product.id, product.name);

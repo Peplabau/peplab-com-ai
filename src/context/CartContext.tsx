@@ -58,13 +58,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const bundlePricingKey = useMemo(
     () =>
-      `${bundleDiscountSettings.discount_enabled}-${bundleDiscountSettings.discount_percentage}-${bundleDiscountSettings.buy2_percentage}-${bundleDiscountSettings.buy3_percentage}-${bundleDiscountSettings.buy10_percentage}`,
+      `${bundleDiscountSettings.discount_enabled}-${bundleDiscountSettings.discount_percentage}-${bundleDiscountSettings.buy2_percentage}-${bundleDiscountSettings.buy3_percentage}`,
     [
       bundleDiscountSettings.discount_enabled,
       bundleDiscountSettings.discount_percentage,
       bundleDiscountSettings.buy2_percentage,
       bundleDiscountSettings.buy3_percentage,
-      bundleDiscountSettings.buy10_percentage,
     ],
   );
 

@@ -170,7 +170,6 @@ const transformProductFromDB = (dbProduct: ProductFromDB): Product => {
       { quantity: 2,  label: 'Buy 2' },
       { quantity: 3,  label: 'Buy 3' },
       { quantity: 5,  label: 'Buy 5' },
-      { quantity: 10, label: 'Buy 10' },
     ],
     reviewCount: dbProduct.review_count,
     technicalSpecs: dbProduct.technical_specs ?? {
