@@ -8,7 +8,7 @@ import {
   ChevronUp, ChevronDown, Star, MessageSquare, Upload, Image as ImageIcon,
   Printer, ArrowUp, ArrowDown, MinusCircle, PlusCircle, Link2, Copy, Check,
   Cake, AlertTriangle, CheckSquare, Square, Clock, BookOpen, Newspaper,
-  MapPin,
+  MapPin, Undo2,
 } from 'lucide-react';
 import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -1484,6 +1484,95 @@ function OrdersSection() {
 
   const finalisePreorder = async (orderId: string) => {
     await updateOrderStatus(orderId, 'finalised');
+  };
+
+  /**
+   * Undo a mistaken ship: back to awaiting payment, clear tracking / AusPost fields,
+   * and revoke any points earned for this order.
+   */
+  const revertShippedToPendingPayment = async (order: Order) => {
+    if (order.status !== 'shipped') {
+      alert('Only Shipped orders can be reverted to pending payment.');
+      return;
+    }
+    const displayNo = formatOrderNumberDisplay(order.order_number);
+    const ok = window.confirm(
+      `Undo shipped for #${displayNo}?\n\nThis will:\n• Set status to Pending Payment\n• Set payment to pending\n• Clear tracking / AusPost label fields\n• Revoke any reward points for this order\n\nUse this if you shipped the wrong order.`,
+    );
+    if (!ok) return;
+
+    setIsUpdating(true);
+    const nowIso = new Date().toISOString();
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          status: 'pending_payment',
+          payment_status: 'pending',
+          paid_at: null,
+          shipped_at: null,
+          tracking_number: null,
+          additional_tracking_numbers: [],
+          auspost_shipment_id: null,
+          auspost_label_url: null,
+          shipped_email_sent: false,
+          updated_at: nowIso,
+        })
+        .eq('id', order.id);
+      if (error) throw error;
+
+      await loadOrders(true);
+      setSelectedOrder((prev) =>
+        prev && prev.id === order.id
+          ? {
+              ...prev,
+              status: 'pending_payment',
+              payment_status: 'pending',
+              paid_at: null as unknown as string,
+              shipped_at: null,
+              tracking_number: '',
+              additional_tracking_numbers: [],
+              auspost_shipment_id: null,
+              auspost_label_url: null,
+              shipped_email_sent: false,
+            }
+          : prev,
+      );
+      setTrackingNumber('');
+
+      void (async () => {
+        try {
+          if (!order.user_id) return;
+          const sum = await getOrderEarnedPointsSum(order.id);
+          if (sum > 0) {
+            await addUserPoints(
+              order.user_id,
+              -sum,
+              'revoked',
+              'Shipped undone — points removed',
+              order.id,
+            );
+          }
+        } catch (pointsErr) {
+          console.error('[revertShippedToPendingPayment] points revoke failed', pointsErr);
+        } finally {
+          window.dispatchEvent(new Event('peplab:points-updated'));
+        }
+      })();
+
+      void logAdminAction(
+        (await getCurrentUser())?.id || '',
+        'order_revert_shipped_to_pending_payment',
+        'order',
+        order.id,
+        { order_number: order.order_number },
+      );
+    } catch (error) {
+      console.error('Error reverting shipped order:', error);
+      alert('Failed to undo shipped: ' + adminRequestErrorMessage(error));
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   /** Mark shipped for pickup / hand delivery — no AusPost label or tracking email. */
@@ -3543,14 +3632,26 @@ function OrdersSection() {
                 </button>
               )}
               {selectedOrder.status === 'shipped' && (
-                <button
-                  onClick={() => updateOrderStatus(selectedOrder.id, 'delivered', selectedOrder)}
-                  disabled={isUpdating}
-                  className="flex-1 px-4 py-3 rounded-xl bg-[#22C55E] text-white hover:bg-[#16A34A] disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  Mark as Delivered
-                </button>
+                <>
+                  <button
+                    onClick={() => updateOrderStatus(selectedOrder.id, 'delivered', selectedOrder)}
+                    disabled={isUpdating}
+                    className="flex-1 px-4 py-3 rounded-xl bg-[#22C55E] text-white hover:bg-[#16A34A] disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    Mark as Delivered
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void revertShippedToPendingPayment(selectedOrder)}
+                    disabled={isUpdating}
+                    className="flex-1 px-4 py-3 rounded-xl border border-[#F59E0B] text-[#F59E0B] hover:bg-[rgba(245,158,11,0.1)] disabled:opacity-50 flex items-center justify-center gap-2"
+                    title="Undo accidental ship — back to awaiting payment"
+                  >
+                    <Undo2 className="w-5 h-5" />
+                    {isUpdating ? 'Updating…' : 'Undo Shipped → Pending Payment'}
+                  </button>
+                </>
               )}
               {selectedOrder.status === 'delivered' && selectedOrder.customer_email?.trim() && (
                 <button
