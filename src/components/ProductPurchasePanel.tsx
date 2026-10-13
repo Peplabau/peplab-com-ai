@@ -114,6 +114,7 @@ export default function ProductPurchasePanel({
     }
   };
 
+  const b10 = discountSettings.buy10_percentage ?? 30;
   const tiers = [
     {
       q: 2,
@@ -128,6 +129,13 @@ export default function ProductPurchasePanel({
       u: getStackedBundleUnitPrice(sel.originalPrice, 3, discountSettings),
       t: getBundleTotal(sel.originalPrice, 3, discountSettings),
       l: 'Save 10%',
+    },
+    {
+      q: 10,
+      pct: b10,
+      u: getStackedBundleUnitPrice(sel.originalPrice, 10, discountSettings),
+      t: getBundleTotal(sel.originalPrice, 10, discountSettings),
+      l: `Save ${b10}%`,
     },
   ];
 

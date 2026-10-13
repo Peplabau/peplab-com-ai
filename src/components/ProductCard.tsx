@@ -37,6 +37,9 @@ const getStorefrontBundleUnitPrice = (o, e, m, b) => {
 };
 const getStorefrontBundleTotal = (o, q, e, m, b) =>
   +(getStorefrontBundleUnitPrice(o, e, m, b) * q).toFixed(2);
+/** Buy 10+: % off original list price (not stacked on Buy 1). */
+const getListBundleUnitPrice = (o, pct) => +(o * (1 - pct / 100)).toFixed(2);
+const getListBundleTotal = (o, q, pct) => +(getListBundleUnitPrice(o, pct) * q).toFixed(2);
 // Default variant shown on the card:
 //   1. 5mg in-stock if available
 //   2. otherwise the smallest in-stock dosage
@@ -138,6 +141,7 @@ export default function ProductCard({
   const dP = discountSettings.discount_percentage ?? 20;
   const b2 = discountSettings.buy2_percentage ?? 5;
   const b3 = discountSettings.buy3_percentage ?? 10;
+  const b10 = discountSettings.buy10_percentage ?? 30;
 
   const price = getStorefrontPrice(sel.originalPrice, dEn, dP);
   const save = getStorefrontSavings(sel.originalPrice, dEn, dP);
@@ -181,8 +185,8 @@ export default function ProductCard({
   const tiers = [
     { q: 2, l: getBundleLabel(2), pct: b2, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b2), t: getStorefrontBundleTotal(sel.originalPrice, 2, dEn, dP, b2) },
     { q: 3, l: getBundleLabel(3), pct: b3, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b3), t: getStorefrontBundleTotal(sel.originalPrice, 3, dEn, dP, b3) },
-    // Cart applies the Buy 3+ rate to any quantity >= 3, so 10x must use b3 to match checkout.
-    { q: 10, l: getBundleLabel(10), pct: b3, u: getStorefrontBundleUnitPrice(sel.originalPrice, dEn, dP, b3), t: getStorefrontBundleTotal(sel.originalPrice, 10, dEn, dP, b3) },
+    // Buy 10: 30% off original list price (e.g. $138 → $96.60/ea).
+    { q: 10, l: getBundleLabel(10), pct: b10, u: getListBundleUnitPrice(sel.originalPrice, b10), t: getListBundleTotal(sel.originalPrice, 10, b10) },
   ];
 
   const noVolBundle = productExcludesVolumeBundle(product.id, product.name);
@@ -809,14 +813,26 @@ const STYLES = `
 
 /* ── PRICE ── */
 .pc-price { margin-bottom: 8px; }
-.pc-price-main-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.pc-price-strike { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.2); text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.1); }
-.pc-price-now { font-size: 20px; font-weight: 800; color: white; letter-spacing: -0.025em; line-height: 1; }
+.pc-price-main-row {
+  display: flex; align-items: baseline; gap: 5px;
+  flex-wrap: nowrap; min-width: 0;
+}
+.pc-price-strike {
+  font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.2);
+  text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.1);
+  flex-shrink: 0; white-space: nowrap;
+}
+.pc-price-now {
+  font-size: 18px; font-weight: 800; color: white;
+  letter-spacing: -0.025em; line-height: 1;
+  flex-shrink: 1; min-width: 0; white-space: nowrap;
+}
 .pc-price-now.accent { color: #2ED1B4; }
 .pc-price-save-pill {
-  font-size: 10px; font-weight: 600; color: #34D399;
-  padding: 2px 7px; border-radius: 5px;
+  font-size: 9px; font-weight: 600; color: #34D399;
+  padding: 2px 6px; border-radius: 5px;
   background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.1);
+  flex-shrink: 0; white-space: nowrap;
 }
 .pc-price-per { display: block; font-size: 10px; color: rgba(255,255,255,0.18); margin-top: 2px; }
 
@@ -1019,7 +1035,7 @@ const STYLES = `
   .pc-price { margin-bottom: 14px; }
   .pc-price-strike { font-size: 14px; }
   .pc-price-now { font-size: 24px; }
-  .pc-price-save-pill { font-size: 11px; }
+  .pc-price-save-pill { font-size: 11px; padding: 2px 7px; }
   .pc-price-per { font-size: 11px; }
 
   .pc-cta { padding: 13px; font-size: 13px; font-weight: 680; }

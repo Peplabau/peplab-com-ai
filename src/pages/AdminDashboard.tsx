@@ -6919,7 +6919,7 @@ function SettingsSection() {
             <p className="text-sm font-medium text-[#F4F6FA]">Discounts Enabled</p>
             <p className="text-xs text-[#A9B3C7] mt-0.5">
               {discountSettings.discount_enabled
-                ? `Active — Buy 1: ${discountSettings.discount_percentage ?? 20}% off list · Buy 2: extra ${discountSettings.buy2_percentage ?? 5}% off the 2× Buy 1 subtotal · Buy 3+: extra ${discountSettings.buy3_percentage ?? 10}% off the subtotal`
+                ? `Active — Buy 1: ${discountSettings.discount_percentage ?? 20}% off list · Buy 2: extra ${discountSettings.buy2_percentage ?? 5}% · Buy 3–9: extra ${discountSettings.buy3_percentage ?? 10}% · Buy 10+: ${discountSettings.buy10_percentage ?? 30}% off list`
                 : 'Disabled — original list prices shown (no Buy 1 discount).'}
             </p>
           </div>
@@ -6960,11 +6960,19 @@ function SettingsSection() {
               },
               {
                 key: 'buy3_percentage' as const,
-                label: 'Buy 3+',
+                label: 'Buy 3–9',
                 sub: 'extra % off (after Buy 1 price × qty)',
                 default: 10,
                 color: '#2ED1B4',
                 presets: [5, 8, 10, 12, 15, 20],
+              },
+              {
+                key: 'buy10_percentage' as const,
+                label: 'Buy 10+',
+                sub: '% off original list price (e.g. $138 → 30% = $96.60)',
+                default: 30,
+                color: '#EC4899',
+                presets: [25, 30, 35, 40, 45, 50],
               },
             ] as const
           ).map(({ key, label, sub, default: def, color, presets }) => {

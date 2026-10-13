@@ -25,6 +25,8 @@ export interface DiscountSettings {
   buy2_percentage: number;
   /** Buy 3 — extra percentage off after Buy 1 discount. */
   buy3_percentage: number;
+  /** Buy 10+ — percentage off the original list price (not stacked). */
+  buy10_percentage: number;
 }
 
 export interface FreeGiftSettings {
@@ -74,6 +76,7 @@ export const DEFAULT_DISCOUNT_SETTINGS: DiscountSettings = {
   discount_percentage: 20,
   buy2_percentage: 5,
   buy3_percentage: 10,
+  buy10_percentage: 30,
 };
 
 export const DEFAULT_FREE_GIFT_SETTINGS: FreeGiftSettings = {
