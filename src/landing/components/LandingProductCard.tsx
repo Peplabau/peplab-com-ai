@@ -340,35 +340,24 @@ export default function LandingProductCard({
             </span>
           </div>
 
-          {/* Size dropdown — mobile + desktop */}
-          <div className="pc-dosage" ref={ddRef} data-no-navigate>
-            <span className="pc-dosage-label">Size</span>
+          {/* Size dropdown — same compact control on mobile + desktop */}
+          <div className="pc-dosage-mobile" ref={ddRef} data-no-navigate>
             <button
               type="button"
-              className={`pc-dd-btn ${ddOpen ? "open" : ""}`}
+              className="pc-dd-btn"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDdOpen(!ddOpen); }}
-              aria-haspopup="listbox"
-              aria-expanded={ddOpen}
             >
-              <span className="pc-dd-main">
-                <span className="pc-dd-size">{formatDosageLabel(sel.mg, sel.unit)}</span>
-                <span className={`pc-dd-stock ${sel.inStock ? "in" : "out"}`}>
-                  {sel.inStock ? "In stock" : "Out of stock"}
-                </span>
-              </span>
-              <ChevronDown className="pc-dd-chev" size={14} style={{ transform: ddOpen ? "rotate(180deg)" : "none" }} />
+              <span>{formatDosageLabel(sel.mg, sel.unit)}</span>
+              <ChevronDown size={11} style={{ color: "rgba(255,255,255,0.3)", transition: "transform .2s", transform: ddOpen ? "rotate(180deg)" : "none", flexShrink: 0 }} />
             </button>
             {ddOpen && (
-              <div className="pc-dd-menu" role="listbox">
+              <div className="pc-dd-menu">
                 {dosages.map((d) => {
                   const ac = String(sel.mg) === String(d.mg) && (sel.unit ?? "MG") === (d.unit ?? "MG");
-                  const optPrice = getStorefrontPrice(d.originalPrice, dEn, dP);
                   return (
                     <button
                       type="button"
                       key={`${d.mg}-${d.unit ?? "MG"}`}
-                      role="option"
-                      aria-selected={ac}
                       className={`pc-dd-opt ${ac ? "ac" : ""} ${!d.inStock ? "oos" : ""}`}
                       onClick={(e) => {
                         e.preventDefault();
@@ -377,15 +366,9 @@ export default function LandingProductCard({
                         setDdOpen(false);
                       }}
                     >
-                      <span className="pc-dd-opt-l">
-                        <span className="pc-dd-opt-size">{formatDosageLabel(d.mg, d.unit)}</span>
-                        <span className={`pc-dd-opt-stock ${d.inStock ? "in" : "out"}`}>
-                          {d.inStock ? "In stock" : "Out of stock"}
-                        </span>
-                      </span>
-                      <span className="pc-dd-opt-r">
-                        <span className="pc-dd-opt-price">${optPrice.toFixed(2)}</span>
-                        {ac ? <Check size={12} className="pc-dd-opt-check" /> : null}
+                      <span>{formatDosageLabel(d.mg, d.unit)}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: d.inStock ? "#22C55E" : "#EF4444" }}>
+                        {d.inStock ? "✓" : "✗"}
                       </span>
                     </button>
                   );
@@ -639,80 +622,58 @@ const STYLES = `
 .pc-stk-dot.out { background: #EF4444; }
 @keyframes pcP { 0%,100%{box-shadow:0 0 3px rgba(34,197,94,0.2)} 50%{box-shadow:0 0 9px rgba(34,197,94,0.5)} }
 
-/* ── DOSAGE DROPDOWN ── */
-.pc-dosage { position: relative; margin-bottom: 8px; z-index: 2; }
+/* ── DOSAGE DROPDOWN (mobile + desktop) ── */
 .pc-dosage-label {
   display: block; margin-bottom: 6px;
   font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.2);
 }
+.pc-dosage-mobile { position: relative; margin-bottom: 8px; z-index: 2; }
 .pc-dd-btn {
-  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding: 9px 11px; border-radius: 10px;
-  border: 1px solid rgba(46,209,180,0.4);
-  background: rgba(46,209,180,0.08);
-  color: #EDF0F7; cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-  font-family: 'Outfit', sans-serif;
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: #EDF0F7; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  cursor: pointer; transition: border-color 0.2s;
 }
-.pc-dd-btn:hover, .pc-dd-btn.open {
-  border-color: rgba(46,209,180,0.7);
-  background: rgba(46,209,180,0.12);
-  box-shadow: 0 0 0 3px rgba(46,209,180,0.1);
-}
-.pc-dd-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.pc-dd-size {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px; font-weight: 700; color: #F4F6FA; letter-spacing: 0.02em;
-}
-.pc-dd-stock {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-  padding: 2px 6px; border-radius: 999px;
-}
-.pc-dd-stock.in { color: #4ADE80; background: rgba(74,222,128,0.12); }
-.pc-dd-stock.out { color: #F87171; background: rgba(248,113,113,0.12); }
-.pc-dd-chev { color: #2ED1B4; flex-shrink: 0; transition: transform 0.2s; }
+.pc-dd-btn:hover { border-color: rgba(46,209,180,0.3); }
+.pc-dd-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 .pc-dd-menu {
-  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 80;
-  border-radius: 12px; border: 1px solid rgba(46,209,180,0.25);
-  background: rgba(10,14,28,0.98); backdrop-filter: blur(24px);
-  box-shadow: 0 18px 48px rgba(0,0,0,0.55);
-  overflow: hidden; padding: 4px;
+  position: absolute; top: calc(100% + 3px); left: 0; right: 0; z-index: 60;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(10,14,28,0.96); backdrop-filter: blur(24px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.55); overflow: hidden;
+}
+
+.pc.pc-dd-open { overflow: visible; z-index: 200; }
+.pc.pc-dd-open .pc-inner { overflow: visible; }
+.pc.pc-dd-open .pc-dosage-mobile { position: relative; z-index: 210; }
+.pc-dd-menu { z-index: 220; }
+@media (max-width: 767px) {
+  .pc-dd-menu {
+    z-index: 9999;
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(46,209,180,0.35) transparent;
+  }
+  .pc-dd-menu::-webkit-scrollbar { width: 3px; }
+  .pc-dd-menu::-webkit-scrollbar-track { background: transparent; }
+  .pc-dd-menu::-webkit-scrollbar-thumb { background: rgba(46,209,180,0.35); border-radius: 3px; }
 }
 .pc-dd-opt {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  width: 100%; padding: 10px 11px; border: none; border-radius: 8px;
-  background: transparent; color: #EDF0F7; cursor: pointer;
-  transition: background 0.15s; font-family: 'Outfit', sans-serif; text-align: left;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 10px; border: none; background: none;
+  color: #EDF0F7; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  cursor: pointer; transition: background 0.15s;
 }
-.pc-dd-opt:hover { background: rgba(46,209,180,0.1); }
-.pc-dd-opt.ac { background: rgba(46,209,180,0.14); }
-.pc-dd-opt.oos { opacity: 0.85; }
-.pc-dd-opt-l { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.pc-dd-opt-size {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px; font-weight: 700; color: #F4F6FA;
-}
-.pc-dd-opt.ac .pc-dd-opt-size { color: #5EEAD4; }
-.pc-dd-opt-stock { font-size: 9px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-.pc-dd-opt-stock.in { color: #4ADE80; }
-.pc-dd-opt-stock.out { color: #F87171; }
-.pc-dd-opt-r { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.pc-dd-opt-price {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
-}
-.pc-dd-opt.ac .pc-dd-opt-price { color: #A7F3D0; }
-.pc-dd-opt-check { color: #2ED1B4; }
-
-@media (max-width: 767px) {
-  .pc.pc-dd-open { overflow: visible; z-index: 200; }
-  .pc.pc-dd-open .pc-body,
-  .pc.pc-dd-open .pc-inner { overflow: visible; }
-  .pc.pc-dd-open .pc-dosage { z-index: 210; }
-  .pc-dd-menu { z-index: 220; max-height: 260px; overflow-y: auto; }
-}
+.pc-dd-opt:hover { background: rgba(46,209,180,0.08); }
+.pc-dd-opt.ac { background: rgba(46,209,180,0.1); color: #2ED1B4; }
+.pc-dd-opt.oos { background: rgba(251,191,36,0.04); }
+.pc-dd-opt + .pc-dd-opt { border-top: 1px solid rgba(255,255,255,0.05); }
 
 /* ── PRICE ── */
 .pc-price { margin-bottom: 8px; }
@@ -894,12 +855,18 @@ const STYLES = `
   /* Hide mobile-only elements */
   .pc-ruo-mobile { display: none; }
   .pc-stock-mobile { display: none; }
-  .pc-dosage { margin-bottom: 14px; }
-  .pc-dd-btn { padding: 11px 13px; border-radius: 12px; }
-  .pc-dd-size { font-size: 14px; }
-  .pc-dd-opt { padding: 11px 12px; }
-  .pc-dd-opt-size { font-size: 13px; }
-  .pc-dd-opt-price { font-size: 12px; }
+
+  .pc-dosage-mobile { margin-bottom: 14px; }
+  .pc-dd-btn {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    min-height: 46px;
+  }
+  .pc-dd-opt {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
   .pc-divider {
     display: block; height: 1px; margin-bottom: 12px;
     background: linear-gradient(90deg, rgba(46,209,180,0.1), rgba(255,255,255,0.04), transparent);
