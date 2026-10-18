@@ -3,8 +3,29 @@ import { LANDING_PATH } from '@/lib/routes';
 
 export const SIGNUP_WELCOME_STORAGE_KEY = 'peplab_signup_welcome_v1';
 
+/** First-order welcome code shown after email capture. Override with VITE_SIGNUP_WELCOME_PROMO_CODE. */
+export const SIGNUP_WELCOME_PROMO_CODE = (
+  import.meta.env.VITE_SIGNUP_WELCOME_PROMO_CODE || 'PEP10'
+).trim().toUpperCase() || 'PEP10';
+
+const AFFILIATE_CODE_STORAGE_KEY = 'peplab_affiliate_code';
+
 export function isSignupWelcomeEnabled(): boolean {
   return CONFIG.FEATURES.ENABLE_SIGNUP_WELCOME_MODAL;
+}
+
+/** Persist welcome code so checkout can auto-apply it. */
+export function stashSignupWelcomePromoCode(code: string = SIGNUP_WELCOME_PROMO_CODE): void {
+  const trimmed = code.trim().toUpperCase();
+  if (!trimmed) return;
+  try {
+    sessionStorage.setItem(
+      AFFILIATE_CODE_STORAGE_KEY,
+      JSON.stringify({ code: trimmed, autoApply: true }),
+    );
+  } catch {
+    /* ignore */
+  }
 }
 
 /** Routes where the signup welcome modal should not appear. */
