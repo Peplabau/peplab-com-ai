@@ -6,6 +6,7 @@ import CartDrawer from '@/components/CartDrawer';
 import { SEO } from '@/components/SEO';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 import Catalog from '@/sections/Catalog';
+import HomeLanding from '@/pages/HomeLanding';
 import TrustpilotReviews from '@/sections/TrustpilotReviews';
 import LeaderboardTop3 from '@/sections/LeaderboardTop3';
 // Wholesale / bulk supply section — commented out on home and shop.
@@ -21,14 +22,15 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * Rendered in two cases:
  *   - peplab.ai (always — the open shop host).
- *   - peplab.com.au when the admin toggles "Public catalog on peplab.com.au" ON.
+ *   - peplab.com.au, with the catalog swapped for the lock card when the
+ *     admin "Public catalog" toggle is off. Sections below the catalog stay.
  *
  * Mirrors the peplab.ai HomePage: catalog, Trustpilot reviews, promoter
  * leaderboard, quality/standards, long-form Elite Peptides SEO copy, and the
  * site footer — plus GSAP ScrollTrigger snap for pinned sections. The wholesale
  * bulk-sales section is commented out.
  */
-export default function ShopHome() {
+export default function ShopHome({ catalogLocked = false }: { catalogLocked?: boolean }) {
   // Pinned-section snap behaviour, copied from peplab.ai HomePage. Only
   // activates when at least one ScrollTrigger has `pin: true`; otherwise
   // normal free scrolling is preserved.
@@ -98,8 +100,8 @@ export default function ShopHome() {
 
         {/* Main content */}
         <main className="relative z-10">
-          {/* Shop — product catalog */}
-          <Catalog />
+          {/* Product catalog, or the lock card when the admin toggle is off. */}
+          {catalogLocked ? <HomeLanding embedded /> : <Catalog />}
 
           {/* Trustpilot reviews */}
           <TrustpilotReviews />

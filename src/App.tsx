@@ -36,7 +36,6 @@ const Blog = lazy(() => import('@/pages/Blog'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
-const HomeLanding = lazy(() => import('@/pages/HomeLanding'));
 const ShopHome = lazy(() => import('@/pages/ShopHome'));
 const PeplabLandingRoute = lazy(() => import('@/pages/PeplabLandingRoute'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -76,11 +75,11 @@ function StorefrontRouteLoading() {
  * `/` + `/shop` router:
  *
  *   peplab.ai                        → always `ShopHome` (open catalog).
- *   peplab.com.au, admin ON          → `ShopHome` (public catalog — same as the
- *                                      old peplab.com.au storefront).
- *   peplab.com.au, admin OFF         → `HomeLanding` (locked: login form + Shop
- *                                      CTA that hands off to peplab.ai). This is
- *                                      the default and current behavior.
+ *   peplab.com.au, admin ON          → `ShopHome` (public catalog).
+ *   peplab.com.au, admin OFF         → `ShopHome` with the catalog replaced by
+ *                                      the lock card (login + Shop CTA). Reviews,
+ *                                      leaderboard, quality, SEO copy, and the
+ *                                      footer stay on the page.
  *
  * Admin controls this with the "Public catalog on peplab.com.au" toggle in
  * Admin → Settings. The setting is cached in localStorage so the gate decision
@@ -115,8 +114,7 @@ function StorefrontLandingRoute() {
   }, [shopHost]);
 
   if (mode === 'loading') return <StorefrontRouteLoading />;
-  if (mode === 'public') return <ShopHome />;
-  return <HomeLanding />;
+  return <ShopHome catalogLocked={mode === 'locked'} />;
 }
 
 /** Persist referral ref and affiliate code from URL to sessionStorage. */

@@ -45,7 +45,16 @@ function friendlyAuthErrorMessage(raw: string | undefined | null): string {
 
 type AuthMode = 'signin' | 'signup';
 
-export default function HomeLanding() {
+type HomeLandingProps = {
+  /**
+   * Render only the lock slot (Shop CTA + sign-in card) so it can replace the
+   * catalog inside ShopHome. Navigation, SEO, and the sections below stay on
+   * the parent page.
+   */
+  embedded?: boolean;
+};
+
+export default function HomeLanding({ embedded = false }: HomeLandingProps) {
   const [searchParams] = useSearchParams();
   const [authMode, setAuthMode] = useState<AuthMode>(() => {
     const mode = searchParams.get('signup') ?? searchParams.get('mode');
@@ -228,30 +237,19 @@ export default function HomeLanding() {
     }
   };
 
-  return (
-    <>
-      <SEO
-        title={SITE_SEO_TITLE}
-        description={SITE_SEO_DESCRIPTION}
-        keywords={SITE_SEO_KEYWORDS}
-      />
-      <div className="relative min-h-screen page-grid-bg flex flex-col">
-        <Navigation />
-        <CartDrawer />
+  const lockSlot = (
+    <div className="px-4 sm:px-6 lg:px-12">
+      <ShopPromoStrip />
 
-        <main className="relative z-10 flex-1 pt-16 sm:pt-20 lg:pt-24 pb-10">
-          {/* Full content width on desktop (same gutter as shop); mobile sign-in UI stretches with it */}
-          <div className="px-4 sm:px-6 lg:px-12">
-            <div className="mx-auto w-full max-w-[440px] lg:max-w-none">
-              <ShopPromoStrip />
+      {researchDisclaimer.trim() ? (
+        <ResearchMarquee
+          text={researchDisclaimer}
+          className="mb-4 sm:mb-6 rounded-lg border border-[rgba(239,68,68,0.2)] bg-[#1e1019] py-2"
+        />
+      ) : null}
 
-              {researchDisclaimer.trim() ? (
-                <ResearchMarquee
-                  text={researchDisclaimer}
-                  className="mb-4 sm:mb-6 rounded-lg border border-[rgba(239,68,68,0.2)] bg-[#1e1019] py-2"
-                />
-              ) : null}
-
+      {/* Shop CTA and the sign-in card stay a narrow column on desktop too. */}
+      <div className="mx-auto w-full max-w-[440px]">
               {!isHandingOff ? (
                 <a
                   href={SHOP_EXTERNAL_URL}
@@ -426,8 +424,33 @@ export default function HomeLanding() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+      </div>
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <section
+        id="catalog"
+        className="relative z-60 pt-16 sm:pt-20 lg:pt-24 pb-10"
+      >
+        {lockSlot}
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <SEO
+        title={SITE_SEO_TITLE}
+        description={SITE_SEO_DESCRIPTION}
+        keywords={SITE_SEO_KEYWORDS}
+      />
+      <div className="relative min-h-screen page-grid-bg flex flex-col">
+        <Navigation />
+        <CartDrawer />
+        <main className="relative z-10 flex-1 pt-16 sm:pt-20 lg:pt-24 pb-10">
+          {lockSlot}
         </main>
       </div>
     </>
