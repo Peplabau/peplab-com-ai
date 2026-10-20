@@ -6899,27 +6899,42 @@ function SettingsSection() {
         </div>
       </div>
 
-      {/* Landing Page Control */}
+      {/* Public catalog on peplab.com.au */}
       <div className="p-6 rounded-2xl bg-gradient-to-br from-[rgba(59,130,246,0.1)] to-[rgba(139,92,246,0.1)] border border-[rgba(59,130,246,0.2)]">
         <h3 className="text-lg font-semibold text-[#F4F6FA] mb-1 flex items-center gap-2">
           <Eye className="w-5 h-5 text-[#3B82F6]" />
-          Landing Page Control
+          Public catalog on peplab.com.au
         </h3>
         <p className="text-xs text-[#A9B3C7] mb-5">
-          Turn the homepage on or off. When off, visitors must log in to access the shop homepage.
+          Controls the <span className="text-[#F4F6FA]">/</span> and{' '}
+          <span className="text-[#F4F6FA]">/shop</span> pages on peplab.com.au.
+          <br />
+          <span className="text-[#F4F6FA]">On</span> — anyone can browse the full catalog
+          (same as the old peplab.com.au site).
+          <br />
+          <span className="text-[#F4F6FA]">Off</span> — visitors see the login screen and
+          the Shop button hands them off to peplab.ai.
+          <br />
+          <span className="text-[10px] uppercase tracking-wider text-[#6B7280]">
+            peplab.ai is always public and is not affected by this toggle.
+          </span>
         </p>
         <div className="flex items-center justify-between p-4 rounded-xl bg-[rgba(7,10,18,0.5)] border border-[rgba(244,246,250,0.08)]">
           <div>
-            <p className="text-sm font-medium text-[#F4F6FA]">Landing Page Enabled</p>
+            <p className="text-sm font-medium text-[#F4F6FA]">
+              {landingPageSettings.enabled ? 'Public catalog' : 'Locked (login + redirect to peplab.ai)'}
+            </p>
             <p className="text-xs text-[#A9B3C7] mt-0.5">
               {landingPageSettings.enabled
-                ? 'Active — homepage is visible to everyone'
-                : 'Disabled — homepage requires customer login'}
+                ? 'On — peplab.com.au home and shop show the full catalog to everyone.'
+                : 'Off — peplab.com.au home and shop show the sign-in gate and send shoppers to peplab.ai.'}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setLandingPageSettings({ ...landingPageSettings, enabled: !landingPageSettings.enabled })}
+            aria-pressed={landingPageSettings.enabled}
+            aria-label="Toggle public catalog on peplab.com.au"
             className={`relative inline-flex items-center w-11 h-7 shrink-0 rounded-full transition-colors duration-200 focus:outline-none ${
               landingPageSettings.enabled ? 'bg-[#22C55E]' : 'bg-[rgba(244,246,250,0.15)]'
             }`}

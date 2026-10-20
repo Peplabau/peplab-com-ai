@@ -91,8 +91,18 @@ export const DEFAULT_SUPPORT_LINKS: SupportLinks = {
   whatsapp_link: 'https://wa.me/61435717401',
 };
 
+/**
+ * Controls the peplab.com.au `/` and `/shop` routes.
+ *
+ *   enabled: true  → public catalog (same experience the old peplab.com.au site had)
+ *   enabled: false → locked HomeLanding (login form + Shop CTA that hands off to peplab.ai)
+ *
+ * Default is `false` so no row in `site_settings` (or any env where the toggle
+ * has never been flipped) keeps the current locked behavior. Admins can turn it
+ * on from Admin → Settings → "Public catalog on peplab.com.au".
+ */
 export const DEFAULT_LANDING_PAGE_SETTINGS: LandingPageSettings = {
-  enabled: true,
+  enabled: false,
 };
 
 export const DEFAULT_AFFILIATE_PROGRAM_SETTINGS: AffiliateProgramSettings = {

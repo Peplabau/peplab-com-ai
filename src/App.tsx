@@ -8,9 +8,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CartProvider } from '@/context/CartContext';
 import { RewardsProvider } from '@/context/RewardsContext';
 import { AffiliateProvider } from '@/context/AffiliateContext';
-// `DEFAULT_LANDING_PAGE_SETTINGS` was used by the ShopRoute homepage-gate check
-// (now commented out below). Import kept out of the tree until re-enabled.
-import { getSiteSetting, DEFAULT_AFFILIATE_PROGRAM_SETTINGS } from '@/lib/settings';
+import {
+  getSiteSetting,
+  DEFAULT_AFFILIATE_PROGRAM_SETTINGS,
+  DEFAULT_LANDING_PAGE_SETTINGS,
+} from '@/lib/settings';
 import { supabase } from '@/lib/supabase';
 import SignupWelcomeModal from '@/components/SignupWelcomeModal';
 import { CONFIG } from '@/lib/config';
@@ -58,75 +60,62 @@ gsap.registerPlugin(ScrollTrigger);
 /** Inline shell styles — work before Tailwind CSS finishes loading on slow mobile networks. */
 const PAGE_SHELL_STYLE = { background: '#070A12', minHeight: '100dvh' } as const;
 
-// The homepage / shop is always publicly viewable on the storefront.
-//
-// The `landing_page_settings.enabled` toggle in the admin panel used to gate
-// this route (redirecting anonymous visitors to /login when disabled). We
-// intentionally bypass that check now — the setting is still writable from
-// admin so nothing there breaks, but it no longer affects the storefront.
-//
-// The original gating logic is preserved below (commented out) so it can be
-// restored quickly if the requirement changes.
-//
-// type ShopRouteGate = 'loading' | 'public' | 'authed' | 'login';
-//
-// function ShopRouteLoading() {
-//   return (
-//     <div style={PAGE_SHELL_STYLE} className="flex items-center justify-center">
-//       <div className="w-8 h-8 border-2 border-[#2ED1B4] border-t-transparent rounded-full animate-spin" />
-//     </div>
-//   );
-// }
-//
-// function ShopRoute() {
-//   const [gate, setGate] = useState<ShopRouteGate>('loading');
-//
-//   useEffect(() => {
-//     let cancelled = false;
-//     const loadGate = async () => {
-//       try {
-//         const [settings, { data: { session } }] = await Promise.all([
-//           getSiteSetting('landing_page_settings', DEFAULT_LANDING_PAGE_SETTINGS),
-//           supabase.auth.getSession(),
-//         ]);
-//         if (cancelled) return;
-//
-//         const landingEnabled = settings.enabled !== false;
-//         const isLoggedIn = Boolean(session?.user);
-//
-//         if (landingEnabled) {
-//           setGate('public');
-//         } else if (isLoggedIn) {
-//           setGate('authed');
-//         } else {
-//           setGate('login');
-//         }
-//       } catch (error) {
-//         console.error('Failed to load shop route gate:', error);
-//         if (!cancelled) setGate('public');
-//       }
-//     };
-//     loadGate();
-//     return () => {
-//       cancelled = true;
-//     };
-//   }, []);
-//
-//   if (gate === 'loading') return <ShopRouteLoading />;
-//   if (gate === 'login') {
-//     return <Navigate to={`/login?redirect=${encodeURIComponent(SHOP_PATH)}`} replace />;
-//   }
-//   return <HomePage />;
-// }
+/**
+ * Loading shell shown while we resolve the storefront route (prevents a
+ * flash of the locked HomeLanding when the admin has turned public mode on).
+ */
+function StorefrontRouteLoading() {
+  return (
+    <div style={PAGE_SHELL_STYLE} className="flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[#2ED1B4] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 /**
- * - peplab.com.au `/` + `/shop`: login gate + Shop CTA (no catalog).
- * - peplab.ai: unlocked full storefront (catalog / landing).
+ * `/` + `/shop` router:
+ *
+ *   peplab.ai                        → always `ShopHome` (open catalog).
+ *   peplab.com.au, admin ON          → `ShopHome` (public catalog — same as the
+ *                                      old peplab.com.au storefront).
+ *   peplab.com.au, admin OFF         → `HomeLanding` (locked: login form + Shop
+ *                                      CTA that hands off to peplab.ai). This is
+ *                                      the default and current behavior.
+ *
+ * Admin controls this with the "Public catalog on peplab.com.au" toggle in
+ * Admin → Settings. The setting is cached in localStorage so the gate decision
+ * is instant on repeat visits; a short loader is shown on the very first load.
  */
 function StorefrontLandingRoute() {
-  if (isShopAppHost()) {
-    return <ShopHome />;
-  }
+  // peplab.ai is always the open shop host — skip the admin gate entirely.
+  const shopHost = isShopAppHost();
+
+  type Mode = 'loading' | 'public' | 'locked';
+  const [mode, setMode] = useState<Mode>(shopHost ? 'public' : 'loading');
+
+  useEffect(() => {
+    if (shopHost) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const settings = await getSiteSetting(
+          'landing_page_settings',
+          DEFAULT_LANDING_PAGE_SETTINGS,
+        );
+        if (cancelled) return;
+        setMode(settings.enabled === true ? 'public' : 'locked');
+      } catch (err) {
+        console.error('Failed to load landing_page_settings; defaulting to locked.', err);
+        if (!cancelled) setMode('locked');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [shopHost]);
+
+  if (mode === 'loading') return <StorefrontRouteLoading />;
+  if (mode === 'public') return <ShopHome />;
   return <HomeLanding />;
 }
 
