@@ -109,50 +109,7 @@
       "statusCode": 301
     }
   ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "peplab.ai" }],
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.peplab.ai" }],
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "peplab.ai" }],
-      "destination": "/robots-ai.txt"
-    },
-    {
-      "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "www.peplab.ai" }],
-      "destination": "/robots-ai.txt"
-    },
-    {
-      "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "peplab.ai" }],
-      "destination": "/sitemap-ai-empty.xml"
-    },
-    {
-      "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "www.peplab.ai" }],
-      "destination": "/sitemap-ai-empty.xml"
-    },
-    {
-      "source": "/peplab-sitemap.xml",
-      "has": [{ "type": "host", "value": "peplab.ai" }],
-      "destination": "/sitemap-ai-empty.xml"
-    },
-    {
-      "source": "/peplab-sitemap.xml",
-      "has": [{ "type": "host", "value": "www.peplab.ai" }],
-      "destination": "/sitemap-ai-empty.xml"
-    },
-
     {
       "source": "/(.*)",
       "destination": "/index.html"

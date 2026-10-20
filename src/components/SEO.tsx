@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CONFIG } from '@/lib/config';
-import { isNonIndexableHost, publicCanonicalOrigin } from '@/lib/domain';
+import { publicCanonicalOrigin } from '@/lib/domain';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 
 interface SEOProps {
@@ -34,8 +34,6 @@ export function SEO({
   const keywordsText = Array.isArray(keywords) ? keywords.join(', ') : keywords;
   const resolvedOgImage =
     ogImage ?? `${origin}${CONFIG.SHARE_PREVIEW_IMAGE_PATH}`;
-  const blockIndexing = noIndex || isNonIndexableHost();
-
   useEffect(() => {
     // Update document title
     document.title = title;
@@ -75,7 +73,7 @@ export function SEO({
       { name: 'twitter:image', content: resolvedOgImage },
     ];
 
-    if (blockIndexing) {
+    if (noIndex) {
       metaTags.push({ name: 'robots', content: 'noindex, nofollow' });
     } else {
       metaTags.push({ name: 'robots', content: INDEXABLE_ROBOTS });
@@ -124,7 +122,7 @@ export function SEO({
     };
     setAlternate('en-AU');
     setAlternate('x-default');
-  }, [title, description, keywordsText, resolvedOgImage, blockIndexing, pageUrl, origin]);
+  }, [title, description, keywordsText, resolvedOgImage, noIndex, pageUrl, origin]);
 
   return null;
 }

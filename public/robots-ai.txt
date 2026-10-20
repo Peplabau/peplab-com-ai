@@ -1,3 +1,0 @@
-# peplab.ai — not for search engines (no index, no sitemap).
-User-agent: *
-Disallow: /

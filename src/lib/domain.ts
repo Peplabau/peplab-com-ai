@@ -5,7 +5,6 @@
  *                    Landing + shop paths redirect to peplab.ai.
  *
  *   peplab.ai      → Open storefront (catalog, checkout, account). No login lock.
- *                    noindex / no sitemap (see robots-ai + SEO helpers).
  *
  * Env (production):
  *   VITE_SITE_URL           = https://peplab.com.au
@@ -67,9 +66,6 @@ export const MAIN_APP_ORIGIN: string = (
  */
 export const PUBLIC_SITE_ORIGIN = 'https://peplab.com.au';
 
-/** Hosts that must never appear in search (noindex / no sitemap). */
-const NON_INDEXABLE_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
-
 const SHOP_APP_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
 const SEO_SITE_HOSTS = new Set(['peplab.com.au', 'www.peplab.com.au']);
 
@@ -78,19 +74,13 @@ function currentHostname(): string {
   return window.location.hostname.toLowerCase();
 }
 
-/** True when this deployment host should be fully excluded from search indexing. */
-export function isNonIndexableHost(hostname?: string): boolean {
-  const host = (hostname ?? currentHostname()).trim().toLowerCase();
-  return NON_INDEXABLE_HOSTS.has(host);
-}
-
 /** Open shop host (peplab.ai) — full catalog, never login-locked. */
 export function isShopAppHost(hostname?: string): boolean {
   const host = (hostname ?? currentHostname()).trim().toLowerCase();
   return SHOP_APP_HOSTS.has(host);
 }
 
-/** SEO / content host (peplab.com.au) — landings redirect to peplab.ai. */
+/** SEO / content host (peplab.com.au) — / and /shop redirect to peplab.ai. */
 export function isSeoSiteHost(hostname?: string): boolean {
   const host = (hostname ?? currentHostname()).trim().toLowerCase();
   return SEO_SITE_HOSTS.has(host);
