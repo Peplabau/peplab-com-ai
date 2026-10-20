@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
@@ -61,14 +61,27 @@ export default function HomeLanding() {
     password: '',
   });
   const [sessionReady, setSessionReady] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isHandingOff, setIsHandingOff] = useState(false);
   const [researchDisclaimer, setResearchDisclaimer] = useState(
     DEFAULT_RESEARCH_DISCLAIMER_SETTINGS.message,
   );
+  const handoffStarted = useRef(false);
 
   const redirectAfterLogin = useCallback(async () => {
-    const destination = await resolvePostLoginPath(searchParams.get('redirect') ?? '/');
-    await handoffToExternalShop(destination);
+    if (handoffStarted.current) return;
+    handoffStarted.current = true;
+    setIsHandingOff(true);
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const destination = await resolvePostLoginPath(searchParams.get('redirect') ?? '/');
+      await handoffToExternalShop(destination);
+    } catch {
+      handoffStarted.current = false;
+      setIsHandingOff(false);
+      setIsSubmitting(false);
+      setError('Could not open the shop. Please try again.');
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -92,12 +105,12 @@ export default function HomeLanding() {
       const user = await getCurrentUser();
       if (cancelled) return;
       if (user) {
-        setIsLoggedIn(true);
         localStorage.setItem('peplab_logged_in', 'true');
-      } else {
-        setIsLoggedIn(false);
-        localStorage.removeItem('peplab_logged_in');
+        setSessionReady(true);
+        await redirectAfterLogin();
+        return;
       }
+      localStorage.removeItem('peplab_logged_in');
       setSessionReady(true);
     })();
 
@@ -105,16 +118,19 @@ export default function HomeLanding() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (cancelled) return;
-      setIsLoggedIn(Boolean(session?.user));
-      if (session?.user) localStorage.setItem('peplab_logged_in', 'true');
-      else localStorage.removeItem('peplab_logged_in');
+      if (session?.user) {
+        localStorage.setItem('peplab_logged_in', 'true');
+        void redirectAfterLogin();
+      } else {
+        localStorage.removeItem('peplab_logged_in');
+      }
     });
 
     return () => {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [redirectAfterLogin]);
 
   useEffect(() => {
     const emailParam = searchParams.get('email');
@@ -236,43 +252,30 @@ export default function HomeLanding() {
                 />
               ) : null}
 
-              <a
-                href={SHOP_EXTERNAL_URL}
-                rel="nofollow noopener noreferrer"
-                className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(46,209,180,0.45)] bg-[rgba(46,209,180,0.08)] px-4 py-3.5 text-sm font-semibold text-[#F4F6FA] transition-colors hover:bg-[rgba(46,209,180,0.16)]"
-              >
-                <ShoppingBag className="h-4 w-4 text-[#2ED1B4] shrink-0" />
-                Shop
-              </a>
+              {!isHandingOff ? (
+                <a
+                  href={SHOP_EXTERNAL_URL}
+                  rel="nofollow noopener noreferrer"
+                  className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(46,209,180,0.45)] bg-[rgba(46,209,180,0.08)] px-4 py-3.5 text-sm font-semibold text-[#F4F6FA] transition-colors hover:bg-[rgba(46,209,180,0.16)]"
+                >
+                  <ShoppingBag className="h-4 w-4 text-[#2ED1B4] shrink-0" />
+                  Shop
+                </a>
+              ) : null}
 
-              {sessionReady && isLoggedIn ? (
-                <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-6 sm:p-7 lg:p-8 shadow-xl shadow-black/20">
-                  <h2 className="text-xl font-semibold text-[#F4F6FA] mb-1">You&apos;re signed in</h2>
-                  <p className="text-sm text-[#A9B3C7] mb-5">
-                    Continue to the shop or open your dashboard.
+              {!sessionReady || isHandingOff ? (
+                <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-8 sm:p-10 shadow-xl shadow-black/20 flex flex-col items-center justify-center text-center min-h-[280px]">
+                  <div className="mb-4 h-9 w-9 animate-spin rounded-full border-2 border-[#2ED1B4] border-t-transparent" />
+                  <p className="text-base font-medium text-[#F4F6FA]">
+                    {isHandingOff ? 'Signing in…' : 'Loading…'}
                   </p>
-                  <div className="space-y-2.5 lg:max-w-md">
-                    <a
-                      href={SHOP_EXTERNAL_URL}
-                      rel="nofollow noopener noreferrer"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2ED1B4] px-5 py-3 text-sm font-medium text-[#070A12] hover:bg-[#26b89e] transition-colors"
-                    >
-                      Browse peptides
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-                    <Link
-                      to="/dashboard"
-                      className="flex w-full items-center justify-center rounded-xl border border-[rgba(244,246,250,0.12)] px-5 py-3 text-sm font-medium text-[#F4F6FA] hover:bg-[rgba(244,246,250,0.04)] transition-colors"
-                    >
-                      Go to dashboard
-                    </Link>
-                  </div>
+                  <p className="mt-1.5 text-sm text-[#A9B3C7]">Please wait</p>
                 </div>
               ) : (
                 <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-6 sm:p-7 lg:p-8 shadow-xl shadow-black/20">
                   <h2 className="text-xl lg:text-2xl font-semibold text-[#F4F6FA] mb-1">Welcome back</h2>
                   <p className="text-sm text-[#A9B3C7] mb-5">
-                    Sign in to continue shopping on peplab.ai.
+                    Sign in to continue.
                   </p>
 
                   <div className="mb-5 flex rounded-full bg-[rgba(7,10,18,0.65)] p-1 border border-[rgba(244,246,250,0.08)]">

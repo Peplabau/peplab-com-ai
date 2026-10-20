@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, ShoppingBag, History, Shield, Gift, TrendingUp, Users, Award, Sparkles, Zap } from 'lucide-react';
 import { useRewards, REDEMPTION_TIERS, BONUS_POINTS } from '@/context/RewardsContext';
@@ -43,12 +43,26 @@ export default function Login() {
     password: '',
   });
   const [error, setError] = useState<string | null>(null);
+  const [isHandingOff, setIsHandingOff] = useState(false);
 
   useRewards();
 
+  const handoffStarted = useRef(false);
+
   const redirectAfterLogin = useCallback(async () => {
-    const destination = await resolvePostLoginPath(searchParams.get('redirect'));
-    await handoffToExternalShop(destination);
+    if (handoffStarted.current) return;
+    handoffStarted.current = true;
+    setIsHandingOff(true);
+    setIsLoading(true);
+    try {
+      const destination = await resolvePostLoginPath(searchParams.get('redirect'));
+      await handoffToExternalShop(destination);
+    } catch {
+      handoffStarted.current = false;
+      setIsHandingOff(false);
+      setIsLoading(false);
+      setError('Could not open the shop. Please try again.');
+    }
   }, [searchParams]);
 
   const checkUser = useCallback(async () => {
@@ -64,7 +78,7 @@ export default function Login() {
 
   // Check for existing session on mount
   useEffect(() => {
-    checkUser();
+    void checkUser();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -73,10 +87,10 @@ export default function Login() {
       if (nextUser) {
         localStorage.setItem('peplab_logged_in', 'true');
         await redirectAfterLogin();
-      } else {
-        localStorage.removeItem('peplab_logged_in');
+        return;
       }
-      setIsLoading(false);
+      localStorage.removeItem('peplab_logged_in');
+      if (!handoffStarted.current) setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -200,8 +214,12 @@ export default function Login() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#070A12' }}>
-        <div className="w-8 h-8 border-2 border-[#2ED1B4] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: '#070A12' }}>
+        <div className="w-9 h-9 border-2 border-[#2ED1B4] border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-medium text-[#F4F6FA]">
+          {isHandingOff ? 'Signing in…' : 'Loading…'}
+        </p>
+        <p className="text-xs text-[#A9B3C7]">Please wait</p>
       </div>
     );
   }
