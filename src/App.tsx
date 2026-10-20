@@ -14,9 +14,8 @@ import { getSiteSetting, DEFAULT_AFFILIATE_PROGRAM_SETTINGS } from '@/lib/settin
 import { supabase } from '@/lib/supabase';
 import SignupWelcomeModal from '@/components/SignupWelcomeModal';
 import { CONFIG } from '@/lib/config';
-import { isLoginOnlyDomain, isSeoSiteHost, mainAppUrl } from '@/lib/domain';
+import { isLoginOnlyDomain } from '@/lib/domain';
 import { handoffToMainApp } from '@/lib/login-redirect';
-import ExternalRedirect from '@/components/ExternalRedirect';
 
 // Route-level code-splitting: keeps initial bundle smaller (faster deploy + faster first load).
 const Contact = lazy(() => import('@/pages/Contact'));
@@ -35,7 +34,7 @@ const Blog = lazy(() => import('@/pages/Blog'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
-const ShopHome = lazy(() => import('@/pages/ShopHome'));
+const HomeLanding = lazy(() => import('@/pages/HomeLanding'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
@@ -119,15 +118,11 @@ const PAGE_SHELL_STYLE = { background: '#070A12', minHeight: '100dvh' } as const
 // }
 
 /**
- * Landing / shop entry:
- * - peplab.com.au → redirect to open shop on peplab.ai
- * - peplab.ai (and local/dev) → full unlocked catalog
+ * Home (`/`) and shop (`/shop`): promo + Shop button + login only.
+ * No catalog, products, or footer. Shop click / post-login → peplab.ai.
  */
 function StorefrontLandingRoute() {
-  if (isSeoSiteHost()) {
-    return <ExternalRedirect to={mainAppUrl(SHOP_PATH)} />;
-  }
-  return <ShopHome />;
+  return <HomeLanding />;
 }
 
 /** Persist referral ref and affiliate code from URL to sessionStorage. */
@@ -415,9 +410,8 @@ function App() {
             <Routes>
               <Route path={HOME_PATH} element={<StorefrontLandingRoute />} />
               <Route path={SHOP_PATH} element={<StorefrontLandingRoute />} />
-              {/* Legacy paths stay on peplab.com.au — only / and /shop go to peplab.ai */}
-              <Route path="/landing" element={<Navigate to={RESEARCH_PATH} replace />} />
-              <Route path="/new-landing" element={<Navigate to={RESEARCH_PATH} replace />} />
+              <Route path="/landing" element={<Navigate to={HOME_PATH} replace />} />
+              <Route path="/new-landing" element={<Navigate to={HOME_PATH} replace />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/privacy" element={<Privacy />} />

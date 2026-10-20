@@ -5,8 +5,7 @@ import { SEO } from '@/components/SEO';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 
 /**
- * Open shop storefront (peplab.ai) — catalog only, no footer.
- * peplab.com.au landing paths redirect here instead of rendering this page.
+ * Logged-in storefront on peplab.com.au — catalog with promo strip, no footer.
  */
 export default function ShopHome() {
   return (

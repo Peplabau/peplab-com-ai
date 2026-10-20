@@ -86,18 +86,6 @@
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "peplab.com.au" }],
-      "destination": "https://peplab.ai/shop",
-      "statusCode": 302
-    },
-    {
-      "source": "/shop",
-      "has": [{ "type": "host", "value": "peplab.com.au" }],
-      "destination": "https://peplab.ai/shop",
-      "statusCode": 302
-    },
-    {
-      "source": "/",
       "has": [{ "type": "host", "value": "www.peplab.ai" }],
       "destination": "https://peplab.ai/",
       "statusCode": 301

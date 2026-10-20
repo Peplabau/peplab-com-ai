@@ -5,7 +5,7 @@ import { useRewards, REDEMPTION_TIERS, BONUS_POINTS } from '@/context/RewardsCon
 import { supabase, signUp, signIn, getCurrentUser } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import { sendSignUpWelcome } from '@/lib/email';
-import { handoffToMainApp, resolvePostLoginPath } from '@/lib/login-redirect';
+import { handoffToExternalShop, resolvePostLoginPath } from '@/lib/login-redirect';
 import { SEO } from '@/components/SEO';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
@@ -48,7 +48,7 @@ export default function Login() {
 
   const redirectAfterLogin = useCallback(async () => {
     const destination = await resolvePostLoginPath(searchParams.get('redirect'));
-    await handoffToMainApp(destination);
+    await handoffToExternalShop(destination);
   }, [searchParams]);
 
   const checkUser = useCallback(async () => {

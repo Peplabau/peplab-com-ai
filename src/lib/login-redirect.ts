@@ -2,7 +2,9 @@ import { SHOP_PATH } from '@/lib/routes';
 import { DEFAULT_LANDING_PAGE_SETTINGS, getSiteSetting } from '@/lib/settings';
 import {
   buildCrossDomainLoginUrl,
+  EXTERNAL_SHOP_ORIGIN,
   MAIN_APP_ORIGIN,
+  externalShopUrl,
   mainAppUrl,
 } from '@/lib/domain';
 import { supabase } from '@/lib/supabase';
@@ -24,16 +26,16 @@ export async function isLandingPageEnabled(): Promise<boolean> {
   return settings.enabled !== false;
 }
 
-/** Where to send a customer after login on the shop host. Default is the catalogue. */
+/** Where to send a customer after login. Default is peplab.ai home. */
 export async function resolvePostLoginPath(redirectParam: string | null | undefined): Promise<string> {
   const safeRedirect = sanitizeRedirectPath(redirectParam ?? null);
   if (safeRedirect) return safeRedirect;
-  return SHOP_PATH;
+  return '/';
 }
 
 /**
- * After auth, land the session on peplab.ai (MAIN_APP_ORIGIN).
- * Same-origin: plain navigation. Cross-origin: hash token handoff.
+ * After auth on an optional login-only host, hand the session to MAIN_APP_ORIGIN.
+ * On peplab.com.au (same origin as MAIN_APP), this is a normal in-site navigation.
  */
 export async function handoffToMainApp(nextPath?: string | null): Promise<void> {
   const next = sanitizeRedirectPath(nextPath) ?? SHOP_PATH;
@@ -41,7 +43,7 @@ export async function handoffToMainApp(nextPath?: string | null): Promise<void> 
 
   const currentOrigin = window.location.origin.replace(/\/+$/, '');
   if (currentOrigin === MAIN_APP_ORIGIN) {
-    window.location.assign(`${MAIN_APP_ORIGIN}${next}`);
+    window.location.assign(`${currentOrigin}${next}`);
     return;
   }
 
@@ -61,4 +63,36 @@ export async function handoffToMainApp(nextPath?: string | null): Promise<void> 
   }
 
   window.location.assign(mainAppUrl(next));
+}
+
+/**
+ * After login on peplab.com.au home/shop/login, hand the session to peplab.ai.
+ */
+export async function handoffToExternalShop(nextPath?: string | null): Promise<void> {
+  const next = sanitizeRedirectPath(nextPath) ?? '/';
+  if (typeof window === 'undefined') return;
+
+  const currentOrigin = window.location.origin.replace(/\/+$/, '');
+  if (currentOrigin === EXTERNAL_SHOP_ORIGIN) {
+    window.location.assign(`${currentOrigin}${next}`);
+    return;
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session?.access_token && session.refresh_token) {
+    window.location.assign(
+      buildCrossDomainLoginUrl({
+        accessToken: session.access_token,
+        refreshToken: session.refresh_token,
+        next,
+        origin: EXTERNAL_SHOP_ORIGIN,
+      }),
+    );
+    return;
+  }
+
+  window.location.assign(externalShopUrl(next));
 }

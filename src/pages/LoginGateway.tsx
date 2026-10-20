@@ -25,11 +25,11 @@ import {
 import { supabase, signIn, signUp, getCurrentUser } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import { sendSignUpWelcome } from '@/lib/email';
-import { handoffToMainApp, resolvePostLoginPath } from '@/lib/login-redirect';
+import { handoffToExternalShop, resolvePostLoginPath } from '@/lib/login-redirect';
 import { SEO } from '@/components/SEO';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
-import { LOGIN_GATEWAY_PAGE_TITLE, MAIN_APP_ORIGIN } from '@/lib/domain';
+import { EXTERNAL_SHOP_ORIGIN, LOGIN_GATEWAY_PAGE_TITLE } from '@/lib/domain';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 import { HOMEPAGE_SEO_DESCRIPTION } from '@/lib/seo-constants';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
@@ -125,7 +125,7 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
     }
 
     const destination = await resolvePostLoginPath(searchParams.get('redirect'));
-    await handoffToMainApp(destination);
+    await handoffToExternalShop(destination);
   }, [searchParams]);
 
   useEffect(() => {
@@ -367,7 +367,7 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
 
             <div className="mb-5 space-y-2.5">
               <a
-                href={MAIN_APP_ORIGIN}
+                href={EXTERNAL_SHOP_ORIGIN}
                 className="flex w-full items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold bg-[rgba(46,209,180,0.16)] border border-[rgba(46,209,180,0.4)] text-[#F4F6FA] hover:bg-[rgba(46,209,180,0.24)] transition-colors"
               >
                 <ShoppingBag className="w-4 h-4 text-[#2ED1B4] shrink-0" />

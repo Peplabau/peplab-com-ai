@@ -1,15 +1,16 @@
 /**
  * PEPLAB domain routing:
  *
- *   peplab.com.au  → SEO / content host (blog, research, legal, product pages).
- *                    Landing + shop paths redirect to peplab.ai.
+ *   peplab.com.au  → Full site (home, shop, blog, research, login). No auto-redirect.
+ *                    Optional "Shop" CTA may link out to peplab.ai.
  *
- *   peplab.ai      → Open storefront (catalog, checkout, account). No login lock.
+ *   peplab.ai      → Separate open storefront deploy (see peplab-ai repo).
  *
  * Env (production):
  *   VITE_SITE_URL           = https://peplab.com.au
- *   VITE_MAIN_APP_ORIGIN    = https://peplab.ai
- *   VITE_LOGIN_ONLY_HOSTS   =   (empty — never lock peplab.ai)
+ *   VITE_MAIN_APP_ORIGIN    = https://peplab.com.au
+ *   VITE_EXTERNAL_SHOP_URL  = https://peplab.ai  (Shop CTA + post-login handoff)
+ *   VITE_LOGIN_ONLY_HOSTS   =   (empty)
  */
 
 import { CONFIG } from './config';
@@ -17,8 +18,11 @@ import { CONFIG } from './config';
 /** Hosts that only render the login/auth flow. Empty = never use LoginOnlyApp. */
 const DEFAULT_LOGIN_ONLY_HOSTS = '';
 
-/** Open shop storefront origin (login handoff + shop CTAs). */
-const DEFAULT_MAIN_APP_ORIGIN = 'https://peplab.ai';
+/** Same-origin storefront / post-login destination. */
+const DEFAULT_MAIN_APP_ORIGIN = 'https://peplab.com.au';
+
+/** External shop CTA target (nav/button click only — not an auto-redirect). */
+const DEFAULT_EXTERNAL_SHOP_ORIGIN = 'https://peplab.ai';
 
 /** Marker in the URL hash that identifies a cross-domain login handoff. */
 export const CROSS_DOMAIN_LOGIN_HASH_TYPE = 'cross-domain-login';
@@ -60,30 +64,21 @@ export const MAIN_APP_ORIGIN: string = (
   import.meta.env.VITE_MAIN_APP_ORIGIN ?? DEFAULT_MAIN_APP_ORIGIN
 ).replace(/\/+$/, '');
 
+/** peplab.ai — used only when the user clicks a Shop CTA (not for page visits). */
+export const EXTERNAL_SHOP_ORIGIN: string = (
+  import.meta.env.VITE_EXTERNAL_SHOP_URL ?? DEFAULT_EXTERNAL_SHOP_ORIGIN
+).replace(/\/+$/, '');
+
 /**
  * Public origin search engines should index for this deployment.
  * Hardcoded so a mis-set VITE_SITE_URL cannot move canonicals off peplab.com.au.
  */
 export const PUBLIC_SITE_ORIGIN = 'https://peplab.com.au';
 
-const SHOP_APP_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
-const SEO_SITE_HOSTS = new Set(['peplab.com.au', 'www.peplab.com.au']);
-
-function currentHostname(): string {
-  if (typeof window === 'undefined') return '';
-  return window.location.hostname.toLowerCase();
-}
-
-/** Open shop host (peplab.ai) — full catalog, never login-locked. */
-export function isShopAppHost(hostname?: string): boolean {
-  const host = (hostname ?? currentHostname()).trim().toLowerCase();
-  return SHOP_APP_HOSTS.has(host);
-}
-
-/** SEO / content host (peplab.com.au) — / and /shop redirect to peplab.ai. */
-export function isSeoSiteHost(hostname?: string): boolean {
-  const host = (hostname ?? currentHostname()).trim().toLowerCase();
-  return SEO_SITE_HOSTS.has(host);
+/** Absolute URL on the external shop (peplab.ai). Default is the site root. */
+export function externalShopUrl(pathAndQuery: string = '/'): string {
+  const path = pathAndQuery.startsWith('/') ? pathAndQuery : `/${pathAndQuery}`;
+  return `${EXTERNAL_SHOP_ORIGIN}${path === '/' ? '/' : path}`;
 }
 
 export function publicCanonicalOrigin(): string {
@@ -115,20 +110,19 @@ export function siteHostname(): string {
 export function isLoginOnlyDomain(): boolean {
   if (typeof window === 'undefined') return false;
   if (LOGIN_ONLY_HOSTS.length === 0) return false;
-  if (isShopAppHost()) return false;
   const hostname = window.location.hostname.toLowerCase();
   const host = window.location.host.toLowerCase();
   return LOGIN_ONLY_HOSTS.includes(hostname) || LOGIN_ONLY_HOSTS.includes(host);
 }
 
-/** Build an absolute URL on the open shop (peplab.ai). */
+/** Build an absolute URL on the main storefront (peplab.com.au by default). */
 export function mainAppUrl(pathAndQuery: string = '/'): string {
   const path = pathAndQuery.startsWith('/') ? pathAndQuery : `/${pathAndQuery}`;
   return `${MAIN_APP_ORIGIN}${path}`;
 }
 
 /**
- * Build the cross-domain login handoff URL to peplab.ai.
+ * Build a cross-domain login handoff URL (default: MAIN_APP_ORIGIN).
  *
  * Encodes the Supabase access + refresh tokens (plus the intended landing
  * path) in the URL *hash*. Hash fragments are never sent to the server.
@@ -137,14 +131,17 @@ export function buildCrossDomainLoginUrl(params: {
   accessToken: string;
   refreshToken: string;
   next?: string;
+  /** Defaults to MAIN_APP_ORIGIN; pass EXTERNAL_SHOP_ORIGIN for peplab.ai. */
+  origin?: string;
 }): string {
+  const origin = (params.origin ?? MAIN_APP_ORIGIN).replace(/\/+$/, '');
   const hash = new URLSearchParams({
     access_token: params.accessToken,
     refresh_token: params.refreshToken,
     type: CROSS_DOMAIN_LOGIN_HASH_TYPE,
     next: params.next ?? '/dashboard',
   }).toString();
-  return `${MAIN_APP_ORIGIN}/#${hash}`;
+  return `${origin}/#${hash}`;
 }
 
 /** Paths on the login-only host that should not be indexed (auth entry, not public content). */

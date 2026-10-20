@@ -18,15 +18,15 @@ import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/s
 import { checkIsAdmin } from '@/lib/supabase-db';
 import { getCurrentUser, signIn, signUp, supabase } from '@/lib/supabase';
 import { sendSignUpWelcome } from '@/lib/email';
-import { handoffToMainApp, resolvePostLoginPath } from '@/lib/login-redirect';
-import { MAIN_APP_ORIGIN, mainAppUrl } from '@/lib/domain';
+import { handoffToExternalShop, resolvePostLoginPath } from '@/lib/login-redirect';
+import { EXTERNAL_SHOP_ORIGIN, externalShopUrl } from '@/lib/domain';
 import {
   DEFAULT_RESEARCH_DISCLAIMER_SETTINGS,
   getSiteSetting,
 } from '@/lib/settings';
 
-/** External shop destination from the homepage Shop CTA (not for SEO). */
-const SHOP_EXTERNAL_URL = MAIN_APP_ORIGIN;
+/** Shop CTA → peplab.ai root (not /shop). */
+const SHOP_EXTERNAL_URL = externalShopUrl('/');
 
 const VERIFICATION_PENDING_COPY =
   "Your account is created. We've also sent a quick confirmation email — open it to finish setting up your dashboard access.";
@@ -67,8 +67,8 @@ export default function HomeLanding() {
   );
 
   const redirectAfterLogin = useCallback(async () => {
-    const destination = await resolvePostLoginPath(searchParams.get('redirect'));
-    await handoffToMainApp(destination);
+    const destination = await resolvePostLoginPath(searchParams.get('redirect') ?? '/');
+    await handoffToExternalShop(destination);
   }, [searchParams]);
 
   useEffect(() => {
@@ -194,7 +194,7 @@ export default function HomeLanding() {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: mainAppUrl('/dashboard'),
+          emailRedirectTo: `${EXTERNAL_SHOP_ORIGIN}/dashboard`,
           shouldCreateUser: true,
         },
       });
@@ -272,7 +272,7 @@ export default function HomeLanding() {
                 <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-6 sm:p-7 lg:p-8 shadow-xl shadow-black/20">
                   <h2 className="text-xl lg:text-2xl font-semibold text-[#F4F6FA] mb-1">Welcome back</h2>
                   <p className="text-sm text-[#A9B3C7] mb-5">
-                    Sign in to continue on peplab.com.au.
+                    Sign in to continue shopping on peplab.ai.
                   </p>
 
                   <div className="mb-5 flex rounded-full bg-[rgba(7,10,18,0.65)] p-1 border border-[rgba(244,246,250,0.08)]">
