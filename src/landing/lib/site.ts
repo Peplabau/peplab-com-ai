@@ -1,4 +1,5 @@
 import { EXTERNAL_SHOP_ORIGIN, externalShopUrl, PUBLIC_SITE_ORIGIN } from '@/lib/domain';
+import { resolveShopHref } from '@/lib/settings';
 
 const trim = (url: string) => url.replace(/\/$/, '');
 
@@ -28,9 +29,19 @@ export const COA_ARCHIVE_PATH = '/coa';
 /** Canonical shop / catalogue path on the main site. */
 export const SHOP_PAGE_PATH = '/shop';
 
-/** Build an absolute URL — products/shop go to peplab.ai; other pages stay on .com.au. */
+/**
+ * Build an absolute URL for a shop-related path.
+ *
+ * Shop / product / checkout paths flow through `resolveShopHref`, which:
+ *   - stays local on peplab.ai (always),
+ *   - stays local on peplab.com.au when the admin "Public catalog" toggle is ON,
+ *   - sends the user to peplab.ai when the toggle is OFF (current locked mode).
+ *
+ * All other paths (privacy, standards, calculator, …) always stay on the SEO
+ * site (peplab.com.au).
+ */
 export function shopUrl(path = ''): string {
-  if (!path) return `${EXTERNAL_SHOP_ORIGIN}/`;
+  if (!path) return resolveShopHref('/');
   const normalized = path.startsWith('/') ? path : `/${path}`;
   if (
     normalized === '/' ||
@@ -38,14 +49,14 @@ export function shopUrl(path = ''): string {
     normalized.startsWith('/product/') ||
     normalized.startsWith('/checkout')
   ) {
-    return externalShopUrl(normalized === SHOP_PAGE_PATH ? '/' : normalized);
+    return resolveShopHref(normalized === SHOP_PAGE_PATH ? '/' : normalized);
   }
   return `${MAIN_SITE_URL}${normalized}`;
 }
 
-/** Shop catalogue CTA → peplab.ai home. */
+/** Shop catalogue CTA — respects the admin "Public catalog" toggle. */
 export function shopPageUrl(): string {
-  return externalShopUrl('/');
+  return resolveShopHref('/');
 }
 
 /** COA archive page — stays on peplab.com.au for SEO. */

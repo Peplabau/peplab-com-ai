@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
-import { cached, invalidateCache, TTL_SETTINGS } from './cache';
+import { cached, getCache, invalidateCache, TTL_SETTINGS } from './cache';
+import { isShopAppHost, externalShopUrl } from './domain';
 
 export interface BankDetails {
   account_name: string;
@@ -265,4 +266,50 @@ export async function fetchAllSiteSettings(): Promise<{
 // Get all settings at once — cached
 export function getAllSettings() {
   return cached('all_settings', fetchAllSiteSettings, TTL_SETTINGS, true, true);
+}
+
+/**
+ * Synchronous read of the admin "Public catalog on peplab.com.au" toggle.
+ *
+ * Pulls from the same localStorage-backed cache that `getSiteSetting` writes
+ * to, so after the first successful fetch anywhere in the app the result is
+ * instant. If nothing has been cached yet (cold first visit), returns the
+ * default — currently `false` (locked).
+ *
+ * Keep calls to this function stable within a render; if a component needs to
+ * react to a late-arriving fetch, prime the cache in a `useEffect` by calling
+ * `getSiteSetting('landing_page_settings', DEFAULT_LANDING_PAGE_SETTINGS)` and
+ * triggering a re-render once it resolves.
+ */
+export function isPublicStorefrontEnabledSync(): boolean {
+  const cachedValue = getCache<LandingPageSettings>(
+    'setting:landing_page_settings',
+    true, // persist (same flag `getSiteSetting` uses)
+  );
+  if (cachedValue && typeof cachedValue.enabled === 'boolean') {
+    return cachedValue.enabled;
+  }
+  return DEFAULT_LANDING_PAGE_SETTINGS.enabled === true;
+}
+
+/**
+ * Resolve the href for a "Shop" / "/shop" / "/product/*" / "/checkout" CTA.
+ *
+ * Returns a local path when the open storefront is available on the current
+ * host, and falls back to the absolute peplab.ai URL otherwise:
+ *
+ *   peplab.ai                        → always local  (e.g. "/shop")
+ *   peplab.com.au, admin toggle ON   → local         (e.g. "/shop")
+ *   peplab.com.au, admin toggle OFF  → peplab.ai     (e.g. "https://peplab.ai/")
+ *
+ * Pass the full in-app path (e.g. `/product/bpc-157`, `/checkout`); `/shop`
+ * resolves to the shop host root (`/`) when sending the user to peplab.ai,
+ * matching the pre-existing externalShopUrl behavior.
+ */
+export function resolveShopHref(path: string = '/shop'): string {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (isShopAppHost() || isPublicStorefrontEnabledSync()) {
+    return normalized;
+  }
+  return externalShopUrl(normalized === '/shop' ? '/' : normalized);
 }

@@ -4635,19 +4635,51 @@ a.catalog-halloween-promo:active {
 
 .coa-archive-hero-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
-  margin: 0 0 1.25rem;
+  margin: 1rem 0 1.25rem;
   border: 1px solid rgba(244, 246, 250, 0.08);
   border-radius: 0.75rem;
   background: rgba(17, 24, 39, 0.45);
   overflow: hidden;
 }
 
+@media (min-width: 1024px) {
+  .coa-archive-hero-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 0;
+  }
+}
+
 .coa-archive-hero-stat {
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 0.75rem;
   border-right: 1px solid rgba(244, 246, 250, 0.06);
+  border-bottom: 1px solid rgba(244, 246, 250, 0.06);
   min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .coa-archive-hero-stat {
+    padding: 0.875rem 1rem;
+  }
+}
+
+.coa-archive-hero-stat:nth-child(2n) {
+  border-right: none;
+}
+
+.coa-archive-hero-stat:nth-child(n + 3) {
+  border-bottom: none;
+}
+
+@media (min-width: 1024px) {
+  .coa-archive-hero-stat {
+    border-bottom: none;
+  }
+
+  .coa-archive-hero-stat:nth-child(2n) {
+    border-right: 1px solid rgba(244, 246, 250, 0.06);
+  }
 }
 
 .coa-archive-hero-stat:last-child {
@@ -4672,7 +4704,8 @@ a.catalog-halloween-promo:active {
   letter-spacing: 0.02em;
   color: #f4f6fa;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
+  line-height: 1.25;
 }
 
 .coa-archive-hero-points {

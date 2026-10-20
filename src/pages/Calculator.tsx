@@ -1,6 +1,5 @@
 import { Droplets, RotateCw, Syringe } from 'lucide-react';
-import Navigation from '@/components/Navigation';
-import CartDrawer from '@/components/CartDrawer';
+import ContentPageHeader from '@/components/ContentPageHeader';
 import ReconstitutionCalculator from '@/components/ReconstitutionCalculator';
 import Footer from '@/sections/Footer';
 import { SEO } from '@/components/SEO';
@@ -42,11 +41,12 @@ export default function Calculator() {
         ])}
       />
 
-      <Navigation />
-      <CartDrawer />
+      <ContentPageHeader />
 
-      <main className="relative z-10 pt-24 sm:pt-28 pb-16 lg:pb-24">
-        <ReconstitutionCalculator />
+      <main className="relative z-10 px-6 lg:px-12 py-12 lg:py-16">
+        <div className="mx-auto max-w-6xl">
+          <ReconstitutionCalculator />
+        </div>
       </main>
 
       <Footer />

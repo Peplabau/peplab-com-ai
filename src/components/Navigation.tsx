@@ -20,7 +20,12 @@ import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
-import { externalShopUrl, isShopAppHost } from '@/lib/domain';
+import {
+  DEFAULT_LANDING_PAGE_SETTINGS,
+  getSiteSetting,
+  isPublicStorefrontEnabledSync,
+  resolveShopHref,
+} from '@/lib/settings';
 
 type NavigationProps = {
   /** Render inside a parent fixed header (e.g. below announce bar on /landing). */
@@ -34,6 +39,12 @@ export default function Navigation({ embedded = false }: NavigationProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // Tracks the admin "Public catalog on peplab.com.au" toggle so the Shop
+  // link renders correctly even on a cold load. Starts from the sync cache
+  // read, then primes it in an effect for first-visit users.
+  const [publicStorefrontOn, setPublicStorefrontOn] = useState(() =>
+    isPublicStorefrontEnabledSync(),
+  );
   const accountRef = useRef<HTMLDivElement>(null);
   const { totalItems, setIsCartOpen } = useCart();
   const { balance } = useRewards();
@@ -87,6 +98,24 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prime the "landing_page_settings" cache so the Shop link flips to local
+  // "/shop" (or back to peplab.ai) once the admin's toggle is known. On every
+  // visit after the first the sync initial state already has the right value.
+  useEffect(() => {
+    let cancelled = false;
+    void getSiteSetting('landing_page_settings', DEFAULT_LANDING_PAGE_SETTINGS)
+      .then((settings) => {
+        if (cancelled) return;
+        setPublicStorefrontOn(settings.enabled === true);
+      })
+      .catch(() => {
+        /* keep the sync-cached value */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     if (!isAccountOpen) return;
     const onPointerDown = (event: MouseEvent) => {
@@ -122,8 +151,12 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.06)] hover:text-[#F4F6FA] transition-colors';
 
   type NavAnchor = { label: string; href: string };
+  // `publicStorefrontOn` participates so the entry re-renders when the admin
+  // setting resolves (see the prime effect above). The call still returns the
+  // live result from `resolveShopHref`, which also handles peplab.ai.
+  void publicStorefrontOn;
   const navEntries: ReadonlyArray<NavAnchor> = [
-    { label: 'Shop', href: isShopAppHost() ? SHOP_PATH : externalShopUrl('/') },
+    { label: 'Shop', href: resolveShopHref(SHOP_PATH) },
     { label: 'Research', href: RESEARCH_PATH },
     { label: 'Blog', href: BLOG_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },
