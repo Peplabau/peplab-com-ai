@@ -6,8 +6,8 @@ export const SHOP_PATH = '/shop';
 
 /**
  * Legacy marketing landing path.
- * Kept for old bookmarks/links; app + Vercel redirect this to the shop.
- * Prefer SHOP_PATH for new links.
+ * Kept for old bookmarks/links; app + Vercel redirect this to the homepage.
+ * Prefer HOME_PATH for new links.
  */
 export const LANDING_PATH = '/landing';
 
@@ -37,9 +37,9 @@ export const BLOG_SLUG_PATH = '/blog/:slug';
 
 import { CONFIG } from '@/lib/config';
 
-/** Full URL for external links — landing now points at the shop. */
+/** Full URL for external links — landing now points at the homepage. */
 export const LANDING_SITE_URL =
   import.meta.env.VITE_LANDING_SITE_URL ||
   (typeof window !== 'undefined'
-    ? `${window.location.origin}${SHOP_PATH}`
-    : `${CONFIG.SITE_URL.replace(/\/$/, '')}${SHOP_PATH}`);
+    ? `${window.location.origin}${HOME_PATH}`
+    : `${CONFIG.SITE_URL.replace(/\/$/, '')}${HOME_PATH}`);

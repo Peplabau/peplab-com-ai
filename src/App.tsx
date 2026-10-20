@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 // PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
-import { SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_COMPOUND_SLUG_PATH, BLOG_PATH, BLOG_SLUG_PATH } from '@/lib/routes';
+import { HOME_PATH, SHOP_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_COMPOUND_SLUG_PATH, BLOG_PATH, BLOG_SLUG_PATH } from '@/lib/routes';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -12,22 +12,11 @@ import { AffiliateProvider } from '@/context/AffiliateContext';
 // (now commented out below). Import kept out of the tree until re-enabled.
 import { getSiteSetting, DEFAULT_AFFILIATE_PROGRAM_SETTINGS } from '@/lib/settings';
 import { supabase } from '@/lib/supabase';
-import Navigation from '@/components/Navigation';
-import CartDrawer from '@/components/CartDrawer';
 import SignupWelcomeModal from '@/components/SignupWelcomeModal';
 import { CONFIG } from '@/lib/config';
-import { SEO } from '@/components/SEO';
-import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
-import { isLoginOnlyDomain } from '@/lib/domain';
+import { isLoginOnlyDomain, isSeoSiteHost, mainAppUrl } from '@/lib/domain';
 import { handoffToMainApp } from '@/lib/login-redirect';
-
-import Catalog from '@/sections/Catalog';
-import BulkSales from '@/sections/BulkSales';
-import HomeBlog from '@/sections/HomeBlog';
-import Quality from '@/sections/Quality';
-import TrustpilotReviews from '@/sections/TrustpilotReviews';
-import LeaderboardTop3 from '@/sections/LeaderboardTop3';
-import Footer from '@/sections/Footer';
+import ExternalRedirect from '@/components/ExternalRedirect';
 
 // Route-level code-splitting: keeps initial bundle smaller (faster deploy + faster first load).
 const Contact = lazy(() => import('@/pages/Contact'));
@@ -46,6 +35,7 @@ const Blog = lazy(() => import('@/pages/Blog'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
+const ShopHome = lazy(() => import('@/pages/ShopHome'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
@@ -66,104 +56,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 /** Inline shell styles — work before Tailwind CSS finishes loading on slow mobile networks. */
 const PAGE_SHELL_STYLE = { background: '#070A12', minHeight: '100dvh' } as const;
-
-function HomePage() {
-  useEffect(() => {
-    // Wait for all ScrollTriggers to be created
-    const timeout = setTimeout(() => {
-      const pinned = ScrollTrigger.getAll()
-        .filter((st) => st.vars.pin)
-        .sort((a, b) => a.start - b.start);
-
-      const maxScroll = ScrollTrigger.maxScroll(window);
-
-      if (!maxScroll || pinned.length === 0) return;
-
-      // Build ranges and snap targets from pinned sections
-      const pinnedRanges = pinned.map((st) => ({
-        start: st.start / maxScroll,
-        end: (st.end ?? st.start) / maxScroll,
-        center: (st.start + ((st.end ?? st.start) - st.start) * 0.5) / maxScroll,
-      }));
-
-      // Create global snap
-      ScrollTrigger.create({
-        snap: {
-          snapTo: (value) => {
-            // Check if within any pinned range (allow small buffer)
-            const inPinned = pinnedRanges.some(
-              (r) => value >= r.start - 0.02 && value <= r.end + 0.02
-            );
-
-            // If not in a pinned section, allow free scroll
-            if (!inPinned) return value;
-
-            // Find nearest pinned center
-            const target = pinnedRanges.reduce(
-              (closest, r) =>
-                Math.abs(r.center - value) < Math.abs(closest - value)
-                  ? r.center
-                  : closest,
-              pinnedRanges[0]?.center ?? 0
-            );
-
-            return target;
-          },
-          duration: { min: 0.15, max: 0.35 },
-          delay: 0,
-          ease: 'power2.out',
-        },
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
-  }, []);
-
-  return (
-    <>
-      <SEO
-        title={SITE_SEO_TITLE}
-        description={SITE_SEO_DESCRIPTION}
-        keywords={SITE_SEO_KEYWORDS}
-      />
-      <div className="relative min-h-screen page-grid-bg">
-
-        {/* Navigation */}
-        <Navigation />
-
-        {/* Cart Drawer */}
-        <CartDrawer />
-
-        {/* Main Content */}
-        <main className="relative z-10">
-        {/* Shop - Catalog */}
-        <Catalog />
-
-        {/* Trustpilot reviews */}
-        <TrustpilotReviews />
-
-        {/* Blog teaser — crawlable links from homepage to /blog posts */}
-        <HomeBlog />
-
-        {/* Promoter Leaderboard — Top 3 podium with CTA to full /leaderboard */}
-        <LeaderboardTop3 />
-
-        {/* Bulk sales / wholesale */}
-        <BulkSales />
-
-        {/* Quality Section (merged purity/standards/quality/trust) */}
-        <Quality />
-
-        {/* Footer */}
-        <Footer />
-      </main>
-      </div>
-    </>
-  );
-}
 
 // The homepage / shop is always publicly viewable on the storefront.
 //
@@ -226,8 +118,16 @@ function HomePage() {
 //   return <HomePage />;
 // }
 
-function ShopRoute() {
-  return <HomePage />;
+/**
+ * Landing / shop entry:
+ * - peplab.com.au → redirect to open shop on peplab.ai
+ * - peplab.ai (and local/dev) → full unlocked catalog
+ */
+function StorefrontLandingRoute() {
+  if (isSeoSiteHost()) {
+    return <ExternalRedirect to={mainAppUrl(SHOP_PATH)} />;
+  }
+  return <ShopHome />;
 }
 
 /** Persist referral ref and affiliate code from URL to sessionStorage. */
@@ -513,10 +413,11 @@ function App() {
           <StaleTabReloader />
           <Suspense fallback={<div style={PAGE_SHELL_STYLE} />}>
             <Routes>
-              <Route path="/" element={<ShopRoute />} />
-              <Route path="/shop" element={<ShopRoute />} />
-              <Route path="/landing" element={<Navigate to={SHOP_PATH} replace />} />
-              <Route path="/new-landing" element={<Navigate to={SHOP_PATH} replace />} />
+              <Route path={HOME_PATH} element={<StorefrontLandingRoute />} />
+              <Route path={SHOP_PATH} element={<StorefrontLandingRoute />} />
+              {/* Legacy paths stay on peplab.com.au — only / and /shop go to peplab.ai */}
+              <Route path="/landing" element={<Navigate to={RESEARCH_PATH} replace />} />
+              <Route path="/new-landing" element={<Navigate to={RESEARCH_PATH} replace />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/privacy" element={<Privacy />} />

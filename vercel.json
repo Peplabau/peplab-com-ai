@@ -85,17 +85,74 @@
       "permanent": true
     },
     {
-      "source": "/landing",
-      "destination": "/shop",
-      "permanent": true
+      "source": "/",
+      "has": [{ "type": "host", "value": "peplab.com.au" }],
+      "destination": "https://peplab.ai/shop",
+      "statusCode": 302
     },
     {
-      "source": "/new-landing",
-      "destination": "/shop",
-      "permanent": true
+      "source": "/shop",
+      "has": [{ "type": "host", "value": "peplab.com.au" }],
+      "destination": "https://peplab.ai/shop",
+      "statusCode": 302
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "destination": "https://peplab.ai/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "destination": "https://peplab.ai/:path*",
+      "statusCode": 301
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "peplab.ai" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ],
   "rewrites": [
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "peplab.ai" }],
+      "destination": "/robots-ai.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "destination": "/robots-ai.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "peplab.ai" }],
+      "destination": "/sitemap-ai-empty.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "destination": "/sitemap-ai-empty.xml"
+    },
+    {
+      "source": "/peplab-sitemap.xml",
+      "has": [{ "type": "host", "value": "peplab.ai" }],
+      "destination": "/sitemap-ai-empty.xml"
+    },
+    {
+      "source": "/peplab-sitemap.xml",
+      "has": [{ "type": "host", "value": "www.peplab.ai" }],
+      "destination": "/sitemap-ai-empty.xml"
+    },
+
     {
       "source": "/(.*)",
       "destination": "/index.html"

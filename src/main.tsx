@@ -10,9 +10,9 @@ import { CROSS_DOMAIN_LOGIN_HASH_TYPE, applyLoginGatewayDocumentBranding } from 
  * `supabase.auth.setSession(...)` completes.
  *
  * The URL looks like:
- *   https://peplab.com.au/#access_token=…&refresh_token=…&type=cross-domain-login&next=/dashboard
+ *   https://peplab.ai/#access_token=…&refresh_token=…&type=cross-domain-login&next=/dashboard
  *
- * We only ever accept this handoff on the *target* domain.
+ * We only ever accept this handoff on the *target* shop domain (peplab.ai).
  */
 async function consumeCrossDomainLoginHandoff(): Promise<void> {
   const rawHash = window.location.hash;

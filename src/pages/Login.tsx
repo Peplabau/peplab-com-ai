@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, ShoppingBag, History, Shield, Gift, TrendingUp, Users, Award, Sparkles, Zap } from 'lucide-react';
 import { useRewards, REDEMPTION_TIERS, BONUS_POINTS } from '@/context/RewardsContext';
 import { supabase, signUp, signIn, getCurrentUser } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import { sendSignUpWelcome } from '@/lib/email';
-import { resolvePostLoginPath } from '@/lib/login-redirect';
+import { handoffToMainApp, resolvePostLoginPath } from '@/lib/login-redirect';
 import { SEO } from '@/components/SEO';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
@@ -30,7 +30,6 @@ function friendlyAuthErrorMessage(raw: string | undefined | null): string {
 }
 
 export default function Login() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isSignUp, setIsSignUp] = useState(() => {
@@ -49,8 +48,8 @@ export default function Login() {
 
   const redirectAfterLogin = useCallback(async () => {
     const destination = await resolvePostLoginPath(searchParams.get('redirect'));
-    navigate(destination);
-  }, [navigate, searchParams]);
+    await handoffToMainApp(destination);
+  }, [searchParams]);
 
   const checkUser = useCallback(async () => {
     const currentUser = await getCurrentUser();

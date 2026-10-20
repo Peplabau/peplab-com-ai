@@ -20,6 +20,7 @@ import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
+import { isSeoSiteHost, mainAppUrl } from '@/lib/domain';
 
 type NavigationProps = {
   /** Render inside a parent fixed header (e.g. below announce bar on /landing). */
@@ -121,8 +122,9 @@ export default function Navigation({ embedded = false }: NavigationProps) {
     'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[#A9B3C7] hover:bg-[rgba(244,246,250,0.06)] hover:text-[#F4F6FA] transition-colors';
 
   type NavAnchor = { label: string; href: string };
+  const shopHref = isSeoSiteHost() ? mainAppUrl(SHOP_PATH) : SHOP_PATH;
   const navEntries: ReadonlyArray<NavAnchor> = [
-    { label: 'Shop', href: SHOP_PATH },
+    { label: 'Shop', href: shopHref },
     { label: 'Research', href: RESEARCH_PATH },
     { label: 'Blog', href: BLOG_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },

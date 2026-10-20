@@ -1,32 +1,30 @@
 /**
- * PEPLAB domain routing — unified storefront on peplab.com.au:
+ * PEPLAB domain routing:
  *
- *   peplab.com.au  → This repo / Vercel project
- *                    Full shop + research + blog + account. Canonical SEO host.
+ *   peplab.com.au  → SEO / content host (blog, research, legal, product pages).
+ *                    Landing + shop paths redirect to peplab.ai.
  *
- * Leave VITE_LOGIN_ONLY_HOSTS empty so every host gets the full shop.
+ *   peplab.ai      → Open storefront (catalog, checkout, account). No login lock.
+ *                    noindex / no sitemap (see robots-ai + SEO helpers).
  *
  * Env (production):
  *   VITE_SITE_URL           = https://peplab.com.au
- *   VITE_MAIN_APP_ORIGIN    = https://peplab.com.au
- *   VITE_LOGIN_ONLY_HOSTS   =   (empty — full shop everywhere)
- *
- * Optional: set VITE_LOGIN_ONLY_HOSTS=staging.example.com to re-enable the
- * login-gateway route tree on a staging host only.
+ *   VITE_MAIN_APP_ORIGIN    = https://peplab.ai
+ *   VITE_LOGIN_ONLY_HOSTS   =   (empty — never lock peplab.ai)
  */
 
 import { CONFIG } from './config';
 
-/** Hosts that only render the login/auth flow. Empty = full shop everywhere. */
+/** Hosts that only render the login/auth flow. Empty = never use LoginOnlyApp. */
 const DEFAULT_LOGIN_ONLY_HOSTS = '';
 
-/** Full origin (protocol + host) of the open storefront. */
-const DEFAULT_MAIN_APP_ORIGIN = 'https://peplab.com.au';
+/** Open shop storefront origin (login handoff + shop CTAs). */
+const DEFAULT_MAIN_APP_ORIGIN = 'https://peplab.ai';
 
 /** Marker in the URL hash that identifies a cross-domain login handoff. */
 export const CROSS_DOMAIN_LOGIN_HASH_TYPE = 'cross-domain-login';
 
-/** Browser tab title on the login-only host (peplab.com.au / staging.*). */
+/** Browser tab title on the login-only host. */
 export const LOGIN_GATEWAY_PAGE_TITLE = 'PEPLAB | Sign in';
 
 /** Subtitle under the PEPLAB wordmark in the inline loading shell on login-only hosts. */
@@ -45,8 +43,9 @@ function parseHostList(raw: string | undefined): string[] {
 
 /**
  * Only hosts listed in VITE_LOGIN_ONLY_HOSTS are gated.
- * - unset → DEFAULT_LOGIN_ONLY_HOSTS (empty = full shop)
- * - empty string → unlocked (full shop on every host)
+ * - unset → DEFAULT_LOGIN_ONLY_HOSTS (empty = never gated)
+ * - empty string → unlocked
+ * peplab.ai must never be listed here.
  */
 function resolveLoginOnlyHosts(): string[] {
   const raw = import.meta.env.VITE_LOGIN_ONLY_HOSTS;
@@ -67,6 +66,35 @@ export const MAIN_APP_ORIGIN: string = (
  * Hardcoded so a mis-set VITE_SITE_URL cannot move canonicals off peplab.com.au.
  */
 export const PUBLIC_SITE_ORIGIN = 'https://peplab.com.au';
+
+/** Hosts that must never appear in search (noindex / no sitemap). */
+const NON_INDEXABLE_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
+
+const SHOP_APP_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
+const SEO_SITE_HOSTS = new Set(['peplab.com.au', 'www.peplab.com.au']);
+
+function currentHostname(): string {
+  if (typeof window === 'undefined') return '';
+  return window.location.hostname.toLowerCase();
+}
+
+/** True when this deployment host should be fully excluded from search indexing. */
+export function isNonIndexableHost(hostname?: string): boolean {
+  const host = (hostname ?? currentHostname()).trim().toLowerCase();
+  return NON_INDEXABLE_HOSTS.has(host);
+}
+
+/** Open shop host (peplab.ai) — full catalog, never login-locked. */
+export function isShopAppHost(hostname?: string): boolean {
+  const host = (hostname ?? currentHostname()).trim().toLowerCase();
+  return SHOP_APP_HOSTS.has(host);
+}
+
+/** SEO / content host (peplab.com.au) — landings redirect to peplab.ai. */
+export function isSeoSiteHost(hostname?: string): boolean {
+  const host = (hostname ?? currentHostname()).trim().toLowerCase();
+  return SEO_SITE_HOSTS.has(host);
+}
 
 export function publicCanonicalOrigin(): string {
   return PUBLIC_SITE_ORIGIN;
@@ -92,31 +120,28 @@ export function siteHostname(): string {
  *
  * We match on `hostname` (no port) *and* on `host` (with port) so a dev
  * override like `VITE_LOGIN_ONLY_HOSTS=localhost:5173` still works.
+ * peplab.ai is never treated as login-only.
  */
 export function isLoginOnlyDomain(): boolean {
   if (typeof window === 'undefined') return false;
   if (LOGIN_ONLY_HOSTS.length === 0) return false;
+  if (isShopAppHost()) return false;
   const hostname = window.location.hostname.toLowerCase();
   const host = window.location.host.toLowerCase();
   return LOGIN_ONLY_HOSTS.includes(hostname) || LOGIN_ONLY_HOSTS.includes(host);
 }
 
-/** Build an absolute URL on the main storefront. */
+/** Build an absolute URL on the open shop (peplab.ai). */
 export function mainAppUrl(pathAndQuery: string = '/'): string {
   const path = pathAndQuery.startsWith('/') ? pathAndQuery : `/${pathAndQuery}`;
   return `${MAIN_APP_ORIGIN}${path}`;
 }
 
 /**
- * Build the cross-domain login handoff URL.
+ * Build the cross-domain login handoff URL to peplab.ai.
  *
  * Encodes the Supabase access + refresh tokens (plus the intended landing
- * path) in the URL *hash*. Hash fragments are never sent to the server —
- * they never appear in HTTP logs, referer headers, or Vercel edge logs —
- * which is why we prefer them over the query string for token material.
- *
- * Kept for optional staging/login-only hosts. On the unified .com.au shop,
- * same-origin navigation is used instead (see handoffToMainApp).
+ * path) in the URL *hash*. Hash fragments are never sent to the server.
  */
 export function buildCrossDomainLoginUrl(params: {
   accessToken: string;
