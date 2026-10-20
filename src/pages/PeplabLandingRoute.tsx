@@ -1,9 +1,20 @@
 /**
- * Legacy /landing route — always send visitors to the shop.
+ * SEO marketing landing at peplab.com.au/landing — Research Gateway.
  */
-import { Navigate } from 'react-router-dom';
-import { SHOP_PATH } from '@/lib/routes';
+import '@/landing/index.css';
+import '@/landing/research-atelier.css';
+import BrandSplash from '@/landing/components/BrandSplash';
+import ResearchGateway from '@/landing/pages/ResearchGateway';
+import Navigation from '@/components/Navigation';
+import CartDrawer from '@/components/CartDrawer';
 
 export default function PeplabLandingRoute() {
-  return <Navigate to={SHOP_PATH} replace />;
+  return (
+    <>
+      <BrandSplash />
+      <Navigation logoHref="/landing" />
+      <CartDrawer />
+      <ResearchGateway />
+    </>
+  );
 }
