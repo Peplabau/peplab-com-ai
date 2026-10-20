@@ -9,7 +9,7 @@ import { useRewards } from '@/context/RewardsContext';
 export const SHOP_TELEGRAM_COMMUNITY = 'https://t.me/+lG6-bsBkKD0xMzY9';
 
 /** Pumpkin mark for the Halloween Treat banner and the drifting promo pumpkin. */
-function HalloweenPumpkinIcon({ className }: { className?: string }) {
+export function HalloweenPumpkinIcon({ className }: { className?: string }) {
   // Gradient/filter ids must stay unique — the icon renders several times per page.
   const uid = useId().replace(/:/g, '');
   const bodyId = `pk-body-${uid}`;

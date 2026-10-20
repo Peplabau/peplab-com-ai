@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import CartDrawer from '@/components/CartDrawer';
-import ShopPromoStrip from '@/components/ShopPromoStrip';
+import ShopPromoStrip, { HalloweenPumpkinIcon } from '@/components/ShopPromoStrip';
 import ResearchMarquee from '@/components/ResearchMarquee';
 import { SEO } from '@/components/SEO';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
@@ -248,21 +248,34 @@ export default function HomeLanding({ embedded = false }: HomeLandingProps) {
         />
       ) : null}
 
-      {/* Shop CTA and the sign-in card stay a narrow column on desktop too. */}
-      <div className="mx-auto w-full max-w-[440px]">
+      {/* Wide panel — same animated Halloween treatment as the promo strip. */}
+      <div className="catalog-halloween-strip relative overflow-hidden rounded-2xl border border-[rgba(139,92,246,0.4)] bg-[#0c0a14] px-4 py-8 shadow-[0_0_24px_rgba(139,92,246,0.18)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="catalog-halloween-pumpkin" aria-hidden="true">
+          <HalloweenPumpkinIcon className="h-full w-full" />
+        </div>
+        <div className="catalog-halloween-web" aria-hidden="true" />
+        <div className="catalog-halloween-jacks" aria-hidden="true">
+          <span className="catalog-halloween-jack catalog-halloween-jack--a">
+            <HalloweenPumpkinIcon className="h-full w-full" />
+          </span>
+          <span className="catalog-halloween-jack catalog-halloween-jack--b">
+            <HalloweenPumpkinIcon className="h-full w-full" />
+          </span>
+        </div>
+        <div className="relative z-10 mx-auto w-full max-w-xl">
               {!isHandingOff ? (
                 <a
                   href={SHOP_EXTERNAL_URL}
                   rel="nofollow noopener noreferrer"
-                  className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(46,209,180,0.45)] bg-[rgba(46,209,180,0.08)] px-4 py-3.5 text-sm font-semibold text-[#F4F6FA] transition-colors hover:bg-[rgba(46,209,180,0.16)]"
+                  className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(139,92,246,0.45)] bg-[rgba(139,92,246,0.12)] px-4 py-3 text-sm font-semibold text-[#F4F6FA] transition-colors hover:bg-[rgba(139,92,246,0.2)]"
                 >
-                  <ShoppingBag className="h-4 w-4 text-[#2ED1B4] shrink-0" />
+                  <ShoppingBag className="h-4 w-4 text-[#F97316] shrink-0" />
                   Shop
                 </a>
               ) : null}
 
               {!sessionReady || isHandingOff ? (
-                <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-8 sm:p-10 shadow-xl shadow-black/20 flex flex-col items-center justify-center text-center min-h-[280px]">
+                <div className="flex min-h-[280px] flex-col items-center justify-center text-center">
                   <div className="mb-4 h-9 w-9 animate-spin rounded-full border-2 border-[#2ED1B4] border-t-transparent" />
                   <p className="text-base font-medium text-[#F4F6FA]">
                     {isHandingOff ? 'Signing in…' : 'Loading…'}
@@ -270,9 +283,9 @@ export default function HomeLanding({ embedded = false }: HomeLandingProps) {
                   <p className="mt-1.5 text-sm text-[#A9B3C7]">Please wait</p>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.75)] p-6 sm:p-7 lg:p-8 shadow-xl shadow-black/20">
-                  <h2 className="text-xl lg:text-2xl font-semibold text-[#F4F6FA] mb-1">Welcome back</h2>
-                  <p className="text-sm text-[#A9B3C7] mb-5">
+                <div>
+                  <h2 className="mb-1 text-center text-xl font-semibold text-[#F4F6FA] lg:text-2xl">Welcome back</h2>
+                  <p className="mb-5 text-center text-sm text-[#A9B3C7]">
                     Sign in to continue.
                   </p>
 
@@ -424,6 +437,7 @@ export default function HomeLanding({ embedded = false }: HomeLandingProps) {
                   </div>
                 </div>
               )}
+        </div>
       </div>
     </div>
   );
