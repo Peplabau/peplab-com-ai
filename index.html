@@ -208,6 +208,14 @@
     -->
   <script>
     (function () {
+      var host = (location.hostname || '').toLowerCase();
+      // peplab.ai storefront: usable, but never index/rank (SEO stays on peplab.com.au).
+      if (host === 'peplab.ai' || host === 'www.peplab.ai') {
+        var aiRobots = document.querySelector('meta[name="robots"]');
+        if (aiRobots) aiRobots.setAttribute('content', 'noindex, nofollow');
+        return;
+      }
+
       var PUBLIC = 'https://peplab.com.au';
       var path = (location.pathname || '/').replace(/\/+$/, '') || '/';
       var url = PUBLIC + (path === '/' ? '/' : path);

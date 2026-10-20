@@ -14,7 +14,7 @@ import { getSiteSetting, DEFAULT_AFFILIATE_PROGRAM_SETTINGS } from '@/lib/settin
 import { supabase } from '@/lib/supabase';
 import SignupWelcomeModal from '@/components/SignupWelcomeModal';
 import { CONFIG } from '@/lib/config';
-import { isLoginOnlyDomain } from '@/lib/domain';
+import { isLoginOnlyDomain, isShopAppHost } from '@/lib/domain';
 import { handoffToMainApp } from '@/lib/login-redirect';
 
 // Route-level code-splitting: keeps initial bundle smaller (faster deploy + faster first load).
@@ -35,6 +35,7 @@ const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
 const HomeLanding = lazy(() => import('@/pages/HomeLanding'));
+const ShopHome = lazy(() => import('@/pages/ShopHome'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
@@ -118,10 +119,13 @@ const PAGE_SHELL_STYLE = { background: '#070A12', minHeight: '100dvh' } as const
 // }
 
 /**
- * Home (`/`) and shop (`/shop`): promo + Shop button + login only.
- * No catalog, products, or footer. Shop click / post-login → peplab.ai.
+ * - peplab.com.au `/` + `/shop`: login gate + Shop CTA (no catalog).
+ * - peplab.ai: unlocked full storefront (catalog / landing).
  */
 function StorefrontLandingRoute() {
+  if (isShopAppHost()) {
+    return <ShopHome />;
+  }
   return <HomeLanding />;
 }
 

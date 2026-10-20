@@ -19,8 +19,8 @@ import { useAffiliate } from '@/context/AffiliateContext';
 import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
-import { HOME_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
-import { externalShopUrl } from '@/lib/domain';
+import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
+import { externalShopUrl, isShopAppHost } from '@/lib/domain';
 
 type NavigationProps = {
   /** Render inside a parent fixed header (e.g. below announce bar on /landing). */
@@ -123,7 +123,7 @@ export default function Navigation({ embedded = false }: NavigationProps) {
 
   type NavAnchor = { label: string; href: string };
   const navEntries: ReadonlyArray<NavAnchor> = [
-    { label: 'Shop', href: externalShopUrl('/') },
+    { label: 'Shop', href: isShopAppHost() ? SHOP_PATH : externalShopUrl('/') },
     { label: 'Research', href: RESEARCH_PATH },
     { label: 'Blog', href: BLOG_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },

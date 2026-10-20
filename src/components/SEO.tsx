@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CONFIG } from '@/lib/config';
-import { publicCanonicalOrigin } from '@/lib/domain';
+import { isShopAppHost, publicCanonicalOrigin } from '@/lib/domain';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 
 interface SEOProps {
@@ -34,6 +34,8 @@ export function SEO({
   const keywordsText = Array.isArray(keywords) ? keywords.join(', ') : keywords;
   const resolvedOgImage =
     ogImage ?? `${origin}${CONFIG.SHARE_PREVIEW_IMAGE_PATH}`;
+  // peplab.ai is a working storefront but must not compete for SEO ranking.
+  const blockIndexing = noIndex || isShopAppHost();
   useEffect(() => {
     // Update document title
     document.title = title;
@@ -73,7 +75,7 @@ export function SEO({
       { name: 'twitter:image', content: resolvedOgImage },
     ];
 
-    if (noIndex) {
+    if (blockIndexing) {
       metaTags.push({ name: 'robots', content: 'noindex, nofollow' });
     } else {
       metaTags.push({ name: 'robots', content: INDEXABLE_ROBOTS });
@@ -122,7 +124,7 @@ export function SEO({
     };
     setAlternate('en-AU');
     setAlternate('x-default');
-  }, [title, description, keywordsText, resolvedOgImage, noIndex, pageUrl, origin]);
+  }, [title, description, keywordsText, resolvedOgImage, blockIndexing, pageUrl, origin]);
 
   return null;
 }

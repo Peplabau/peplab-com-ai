@@ -1,15 +1,13 @@
 /**
  * PEPLAB domain routing:
  *
- *   peplab.com.au  → Full site (home, shop, blog, research, login). No auto-redirect.
- *                    Optional "Shop" CTA may link out to peplab.ai.
+ *   peplab.com.au  → Gate home/shop (login + Shop CTA). Blog/research stay here (indexed).
+ *   peplab.ai      → Open storefront (catalog, landing, checkout). Never login-locked. noindex.
  *
- *   peplab.ai      → Separate open storefront deploy (see peplab-ai repo).
- *
- * Env (production):
+ * Env (production — peplab.com.au project):
  *   VITE_SITE_URL           = https://peplab.com.au
  *   VITE_MAIN_APP_ORIGIN    = https://peplab.com.au
- *   VITE_EXTERNAL_SHOP_URL  = https://peplab.ai  (Shop CTA + post-login handoff)
+ *   VITE_EXTERNAL_SHOP_URL  = https://peplab.ai
  *   VITE_LOGIN_ONLY_HOSTS   =   (empty)
  */
 
@@ -81,6 +79,19 @@ export function externalShopUrl(pathAndQuery: string = '/'): string {
   return `${EXTERNAL_SHOP_ORIGIN}${path === '/' ? '/' : path}`;
 }
 
+const SHOP_APP_HOSTS = new Set(['peplab.ai', 'www.peplab.ai']);
+
+function currentHostname(): string {
+  if (typeof window === 'undefined') return '';
+  return window.location.hostname.toLowerCase();
+}
+
+/** Open storefront host — full catalog/landing, never login-gated, never indexed. */
+export function isShopAppHost(hostname?: string): boolean {
+  const host = (hostname ?? currentHostname()).trim().toLowerCase();
+  return SHOP_APP_HOSTS.has(host);
+}
+
 export function publicCanonicalOrigin(): string {
   return PUBLIC_SITE_ORIGIN;
 }
@@ -110,6 +121,8 @@ export function siteHostname(): string {
 export function isLoginOnlyDomain(): boolean {
   if (typeof window === 'undefined') return false;
   if (LOGIN_ONLY_HOSTS.length === 0) return false;
+  // peplab.ai must stay unlocked even if misconfigured in env.
+  if (isShopAppHost()) return false;
   const hostname = window.location.hostname.toLowerCase();
   const host = window.location.host.toLowerCase();
   return LOGIN_ONLY_HOSTS.includes(hostname) || LOGIN_ONLY_HOSTS.includes(host);
