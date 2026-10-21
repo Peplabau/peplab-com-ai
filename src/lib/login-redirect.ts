@@ -1,5 +1,6 @@
 import { SHOP_PATH } from '@/lib/routes';
 import { DEFAULT_LANDING_PAGE_SETTINGS, getSiteSetting } from '@/lib/settings';
+import { invalidateCache } from '@/lib/cache';
 import {
   buildCrossDomainLoginUrl,
   EXTERNAL_SHOP_ORIGIN,
@@ -24,8 +25,14 @@ function isMainAppHost(origin: string): boolean {
   }
 }
 
-/** Fetches the admin "Public catalog on peplab.com.au" toggle. */
+/**
+ * Fetch the current admin storefront toggle without trusting a device's
+ * persisted value. Login routing must use the latest setting so an iPhone
+ * with an old "locked" cache does not get sent to peplab.ai after the admin
+ * has reopened peplab.com.au.
+ */
 async function isPublicStorefrontEnabled(): Promise<boolean> {
+  invalidateCache('setting:landing_page_settings');
   const settings = await getSiteSetting(
     'landing_page_settings',
     DEFAULT_LANDING_PAGE_SETTINGS,
