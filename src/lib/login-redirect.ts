@@ -9,6 +9,21 @@ import {
 } from '@/lib/domain';
 import { supabase } from '@/lib/supabase';
 
+/**
+ * Treat the canonical and www variants of the same production hostname as
+ * equivalent. This prevents a customer visiting www.peplab.com.au from being
+ * mistaken for an external host and handed off to peplab.ai after login.
+ */
+function isMainAppHost(origin: string): boolean {
+  try {
+    const normalize = (value: string) =>
+      new URL(value).hostname.toLowerCase().replace(/^www\./, '');
+    return normalize(origin) === normalize(MAIN_APP_ORIGIN);
+  } catch {
+    return false;
+  }
+}
+
 /** Fetches the admin "Public catalog on peplab.com.au" toggle. */
 async function isPublicStorefrontEnabled(): Promise<boolean> {
   const settings = await getSiteSetting(
@@ -46,7 +61,7 @@ export async function handoffToMainApp(nextPath?: string | null): Promise<void> 
   if (typeof window === 'undefined') return;
 
   const currentOrigin = window.location.origin.replace(/\/+$/, '');
-  if (currentOrigin === MAIN_APP_ORIGIN) {
+  if (isMainAppHost(currentOrigin)) {
     window.location.assign(`${currentOrigin}${next}`);
     return;
   }
@@ -95,7 +110,7 @@ export async function handoffToExternalShop(nextPath?: string | null): Promise<v
 
   // On peplab.com.au with the admin "Public catalog" toggle ON — the open
   // storefront lives on this host, so stay here instead of crossing domains.
-  if (currentOrigin === MAIN_APP_ORIGIN && (await isPublicStorefrontEnabled())) {
+  if (isMainAppHost(currentOrigin) && (await isPublicStorefrontEnabled())) {
     window.location.assign(`${currentOrigin}${next}`);
     return;
   }
