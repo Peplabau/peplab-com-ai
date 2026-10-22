@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navigation from '@/components/Navigation';
 import CartDrawer from '@/components/CartDrawer';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 import Catalog from '@/sections/Catalog';
 import HomeLanding from '@/pages/HomeLanding';
@@ -31,6 +33,10 @@ gsap.registerPlugin(ScrollTrigger);
  * bulk-sales section is commented out.
  */
 export default function ShopHome({ catalogLocked = false }: { catalogLocked?: boolean }) {
+  const { pathname } = useLocation();
+  const isShopPage = pathname === '/shop' || pathname === '/shop/';
+  const pageSeo = isShopPage ? PAGE_SEO.shop : { title: SITE_SEO_TITLE, description: SITE_SEO_DESCRIPTION };
+
   // Pinned-section snap behaviour, copied from peplab.ai HomePage. Only
   // activates when at least one ScrollTrigger has `pin: true`; otherwise
   // normal free scrolling is preserved.
@@ -87,8 +93,8 @@ export default function ShopHome({ catalogLocked = false }: { catalogLocked?: bo
   return (
     <>
       <SEO
-        title={SITE_SEO_TITLE}
-        description={SITE_SEO_DESCRIPTION}
+        title={pageSeo.title}
+        description={pageSeo.description}
         keywords={SITE_SEO_KEYWORDS}
       />
       <div className="relative min-h-screen page-grid-bg">

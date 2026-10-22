@@ -15,6 +15,7 @@ import {
 } from '@/lib/blog-posts';
 import { extractMarkdownHeadings, markdownToHtml } from '@/lib/markdown';
 import { BLOG_PATH, COA_ARCHIVE_PATH, SHOP_PATH } from '@/lib/routes';
+import { getOnpageSeo } from '@/lib/onpage-seo';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -82,9 +83,13 @@ export default function BlogPostPage() {
     setActiveId(id);
   };
 
+  const loadingPath = blogPostPath(slug);
+  const loadingSeo = getOnpageSeo(loadingPath);
+
   if (loading) {
     return (
       <div className="min-h-screen" style={{ background: '#070A12' }}>
+        {loadingSeo && <SEO title={loadingSeo.title} description={loadingSeo.description} />}
         <ContentPageHeader backTo={BLOG_PATH} backLabel="Back to Blog" />
         <div className="mx-auto max-w-3xl space-y-4 px-6 py-16">
           <Skeleton className="h-4 w-48" />
@@ -116,6 +121,7 @@ export default function BlogPostPage() {
   }
 
   const path = blogPostPath(post.slug);
+  const onpageSeo = getOnpageSeo(path);
   const date = formatBlogDate(post.published_at);
   const minutes = blogReadingMinutes(post.body_markdown);
   const author = post.author_name || 'PEPLAB';
@@ -123,8 +129,8 @@ export default function BlogPostPage() {
   return (
     <>
       <SEO
-        title={post.seo_title || `${post.title} | PEPLAB`}
-        description={post.seo_description || post.excerpt}
+        title={onpageSeo?.title || post.seo_title || `${post.title} | PEPLAB`}
+        description={onpageSeo?.description || post.seo_description || post.excerpt}
         ogImage={post.cover_image_url || undefined}
       />
       <JsonLd

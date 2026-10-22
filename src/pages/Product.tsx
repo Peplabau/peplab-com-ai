@@ -5,7 +5,9 @@ import ProductCard, { ProductCardStyles } from '@/components/ProductCard';
 import StorefrontLayout from '@/components/StorefrontLayout';
 import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
+import { getOnpageSeo } from '@/lib/onpage-seo';
 import { buildProductJsonLd, buildProductSeo } from '@/lib/product-seo';
+import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import { SHOP_PATH } from '@/lib/routes';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Product } from '@/products';
@@ -83,14 +85,26 @@ export default function ProductPage() {
     };
   }, [slug, needsAliasRedirect]);
 
-  const seo = useMemo(() => {
+  const seoPath = `/product/${rawSlug || slug || ''}`;
+  const onpageSeo = getOnpageSeo(seoPath);
+  const productSeo = useMemo(() => {
     if (!product || !slug) return null;
     return buildProductSeo(product, slug);
   }, [product, slug]);
+  const seo = productSeo || onpageSeo;
 
   const productJsonLd = useMemo(() => {
     if (!product || !slug) return null;
     return buildProductJsonLd(product, slug);
+  }, [product, slug]);
+
+  const productBreadcrumbJsonLd = useMemo(() => {
+    if (!product || !slug) return null;
+    return buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Shop', path: SHOP_PATH },
+      { name: product.name, path: `/product/${slug}` },
+    ]);
   }, [product, slug]);
 
   const shortCopy = useMemo(
@@ -140,6 +154,7 @@ export default function ProductPage() {
   if (loading) {
     return (
       <StorefrontLayout surface="clean">
+        {seo && <SEO title={seo.title} description={seo.description} />}
         <main className="pdp-page nl-new-landing page-grid-bg min-h-screen pt-24 pb-16">
           <section className="pdp-section">
             <div className="max-w-6xl mx-auto px-6">
@@ -157,6 +172,7 @@ export default function ProductPage() {
   if (!product || error) {
     return (
       <StorefrontLayout surface="clean">
+        {seo && <SEO title={seo.title} description={seo.description} />}
         <main className="pdp-page nl-new-landing page-grid-bg min-h-screen pt-24 pb-16">
           <section className="pdp-section">
             <div className="max-w-6xl mx-auto px-6 flex min-h-[50vh] flex-col items-center justify-center text-center">
@@ -178,8 +194,17 @@ export default function ProductPage() {
   return (
     <StorefrontLayout surface="clean">
       <ProductCardStyles />
-      {seo && <SEO title={seo.title} description={seo.description} keywords={seo.keywords} />}
+      {seo && (
+        <SEO
+          title={seo.title}
+          description={seo.description}
+          keywords={'keywords' in seo ? seo.keywords : undefined}
+        />
+      )}
       {productJsonLd && <JsonLd data={productJsonLd} id={`product-jsonld-${slug}`} />}
+      {productBreadcrumbJsonLd && (
+        <JsonLd data={productBreadcrumbJsonLd} id={`product-breadcrumb-${slug}`} />
+      )}
 
       <main className="pdp-page nl-new-landing page-grid-bg min-h-screen pt-24 pb-16">
         <section className="pdp-section">
@@ -200,6 +225,16 @@ export default function ProductPage() {
             </div>
 
             <section className="pdp-details-stack space-y-3" aria-label="Product information">
+              <div className="pdp-short-panel">
+                <h2 className="pdp-short-panel__label">About this product</h2>
+                <p className="nl-lead">
+                  {product.name} is supplied by PEPLAB Australia for laboratory research. Each batch
+                  is HPLC tested with published COA documentation, and orders dispatch from Sydney
+                  Monday to Friday. Review the description and batch notes below before ordering.
+                  Research use only — not for human or animal use.
+                </p>
+              </div>
+
               {/* Description — always visible and concise */}
               <div className="pdp-short-panel">
                 <h2 className="pdp-short-panel__label">Description</h2>

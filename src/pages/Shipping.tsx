@@ -2,14 +2,15 @@ import { Truck, MapPin, Package, Globe, MessageCircle } from 'lucide-react';
 import Footer from '@/sections/Footer';
 import { CONFIG } from '@/lib/config';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 
 export default function Shipping() {
   return (
     <>
       <SEO
-        title="Shipping Policy | PEPLAB — Australia-wide peptide dispatch"
-        description="PEPLAB shipping across Australia: express and standard AusPost options, same-day Mon–Fri dispatch, tracking on every order."
+        title={PAGE_SEO.shipping.title}
+        description={PAGE_SEO.shipping.description}
       />
     <div className="min-h-screen" style={{ background: '#070A12' }}>
       {/* Grid Overlay */}

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
 import { useAffiliate } from '@/context/AffiliateContext';
@@ -92,8 +93,8 @@ export default function Leaderboard() {
   return (
     <>
       <SEO
-        title="Rewards Leaderboard | PEPLAB"
-        description="See top PEPLAB rewards members and referral points. Earn points on every research peptide order."
+        title={PAGE_SEO.leaderboard.title}
+        description={PAGE_SEO.leaderboard.description}
       />
     <div className="min-h-screen" style={{ background: '#070A12' }}>
       <div className="absolute inset-0 grid-overlay opacity-60" />

@@ -1,0 +1,557 @@
+{
+  "/": {
+    "title": "Research Peptides Australia | HPLC Tested | PEPLAB",
+    "description": "Shop lab-grade research peptides in Australia. Each batch is HPLC tested, with all published COAs and fast same-day dispatch Mon–Fri. For research use only.",
+    "skipPrerender": false
+  },
+  "/blog": {
+    "title": "Peptide Research Blog: Guides, Testing and Lab Insights",
+    "description": "Read research peptide articles, testing guides and lab tips written for Australian researchers. Learn about HPLC purity, COAs, reconstitution and storage.",
+    "skipPrerender": false
+  },
+  "/blog/understanding-hplc-a-guide-for-australian-researchers": {
+    "title": "HPLC Testing Explained: A Guide for Australian Researchers",
+    "description": "A practical guide to HPLC for Australian researchers: how purity testing works, how to read a chromatogram and why it matters when choosing research peptides.",
+    "skipPrerender": false
+  },
+  "/calculator": {
+    "title": "Peptide Calculator: Reconstitution Volume and Concentration",
+    "description": "Use the free peptide calculator to work out reconstitution volumes, concentrations and dose measurements for your lab research. Quick, accurate and easy to use.",
+    "skipPrerender": false
+  },
+  "/coa": {
+    "title": "COA Results: HPLC Purity Reports for Every Peptide Batch",
+    "description": "Browse certificates of analysis (COAs) for every peptide batch. Independent HPLC purity results are published so Australian researchers can verify quality.",
+    "skipPrerender": false
+  },
+  "/contact": {
+    "title": "Contact Us: Peptide Product Questions and Enquiries, AU",
+    "description": "Get in touch with our Sydney, NSW team about orders, shipping, order tracking or research peptide questions. Friendly support for customers across Australia.",
+    "skipPrerender": false
+  },
+  "/contact-info": {
+    "title": "Contact and Support: Get Help With Your Peptide Orders",
+    "description": "Contact our Sydney, NSW team for help with orders, order tracking, COA results or research peptide questions. Fast support for customers across Australia.",
+    "skipPrerender": false
+  },
+  "/faq": {
+    "title": "FAQ: Peptide Shipping, Testing, Storage and Returns",
+    "description": "Find answers to common questions on ordering, shipping times, payment, order tracking, COAs and HPLC testing for research peptides supplied across Australia.",
+    "skipPrerender": false
+  },
+  "/leaderboard": {
+    "title": "Rewards Leaderboard: Top Customers and Loyalty Rankings",
+    "description": "Explore the leaderboard for rankings and activity from our Australian research peptide community. HPLC-tested peptides, published COAs, same-day dispatch.",
+    "skipPrerender": false
+  },
+  "/legal": {
+    "title": "Legal and Compliance: Terms and Research Use Only Policy",
+    "description": "Review the terms, conditions and research-use-only disclaimers for all peptide products supplied from Sydney, Australia. Please read before placing an order.",
+    "skipPrerender": false
+  },
+  "/privacy": {
+    "title": "Privacy Policy: How We Collect and Protect Your Data",
+    "description": "Read how your personal information is collected, stored and protected when you order research peptides online. Our privacy policy covers Australian customers.",
+    "skipPrerender": false
+  },
+  "/product/1ml-31g-6mm-syringes": {
+    "title": "1ml 31G 6mm Insulin Syringes for Peptide Research Australia",
+    "description": "Sterile 1ml 31G 6mm syringes for precise measurement and handling of reconstituted research peptides in the lab. Ships from Sydney, same-day dispatch Mon-Fri.",
+    "skipPrerender": false
+  },
+  "/product/5-amino-1mq": {
+    "title": "5-Amino-1MQ Metabolic Research Compound, Australia Supply",
+    "description": "5-Amino-1MQ is a small-molecule NNMT inhibitor used in cellular metabolism and energy research. HPLC tested, COA on file, same-day dispatch Mon-Fri, Australia.",
+    "skipPrerender": false
+  },
+  "/product/Semaglutide": {
+    "title": "Buy Semaglutide GLP-1 Peptide for Research in Australia",
+    "description": "Semaglutide is a GLP-1 receptor agonist widely used as a reference compound in metabolic research. Independent HPLC testing and published COAs. Research only.",
+    "skipPrerender": false
+  },
+  "/product/acetic-water": {
+    "title": "Acetic Acid Water for Reconstituting Peptides in Australia",
+    "description": "Acetic acid water for dissolving peptides that need a mildly acidic diluent, such as IGF-1 LR3. Lab-grade solution, dispatched Mon-Fri from Sydney, Australia.",
+    "skipPrerender": false
+  },
+  "/product/adamax": {
+    "title": "Adamax Nootropic Peptide Research Compound in Australia",
+    "description": "Adamax is a Semax-derived peptide with an adamantane modification, studied in cognition research. HPLC tested with COA. Research use only, shipped in Australia.",
+    "skipPrerender": false
+  },
+  "/product/ahk-cu": {
+    "title": "AHK-Cu Copper Peptide: Hair Growth Research in Australia",
+    "description": "AHK-Cu is a copper-binding tripeptide studied in hair follicle and skin biology research. Supplied to Australian labs with HPLC testing and published COAs.",
+    "skipPrerender": false
+  },
+  "/product/aod-9604": {
+    "title": "AOD-9604 Fat Metabolism Peptide for Research in Australia",
+    "description": "AOD-9604 is a modified fragment of human growth hormone (176-191) studied in lipid metabolism research. HPLC tested, COAs published, Australian dispatch.",
+    "skipPrerender": false
+  },
+  "/product/bac-water": {
+    "title": "Bacteriostatic Water for Peptide Reconstitution in Australia",
+    "description": "Bacteriostatic water for reconstituting lyophilised research peptides in the lab. Sterile, ready to use and dispatched from Sydney across Australia Mon-Fri.",
+    "skipPrerender": false
+  },
+  "/product/bpc-157": {
+    "title": "BPC-157 Body Protection Compound Peptide, Research Australia",
+    "description": "BPC-157 is a synthetic pentadecapeptide derived from a gastric protein, studied in tissue and gut research. HPLC verified, COA published. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/bpc-5mg-tb-5mg": {
+    "title": "BPC-157 5mg and TB-500 5mg Peptide Blend, Australia",
+    "description": "A BPC-157 5mg and TB-500 5mg combination vial for tissue repair research. Each batch is HPLC tested with a COA. Research use only, same-day dispatch Mon-Fri.",
+    "skipPrerender": false
+  },
+  "/product/cagrilintide": {
+    "title": "Cagrilintide Amylin Analogue Peptide for Research Australia",
+    "description": "Cagrilintide is a long-acting amylin analogue used in metabolic and appetite signalling research. HPLC tested with published COAs, shipped across Australia.",
+    "skipPrerender": false
+  },
+  "/product/cjc-1295-dac": {
+    "title": "Buy CJC-1295 with DAC Long-Acting GHRH Peptide Australia",
+    "description": "CJC-1295 with DAC is a long-acting GHRH analogue for extended-release research. Independent HPLC testing, published COAs, Australian dispatch. Research use.",
+    "skipPrerender": false
+  },
+  "/product/cjc-1295-no-dac": {
+    "title": "CJC-1295 No DAC (Mod GRF 1-29) for Research in Australia",
+    "description": "CJC-1295 No DAC, also called Modified GRF 1-29, is a short-acting GHRH analogue for research. HPLC-verified purity, COA on file, same-day dispatch Mon-Fri.",
+    "skipPrerender": false
+  },
+  "/product/cjc-1295-no-dac-ipa-5mg": {
+    "title": "CJC-1295 No DAC with Ipamorelin 5mg Peptide Blend, Australia",
+    "description": "A CJC-1295 (No DAC) and Ipamorelin 5mg blend for GH-axis research. HPLC tested with published COA, dispatched same day Mon-Fri in Australia. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/dihexa": {
+    "title": "Order Dihexa Peptide for Cognitive Research in Australia",
+    "description": "Dihexa is an angiotensin IV derived peptide studied in neuroscience for synaptic function and HGF/c-Met signalling. HPLC tested, COA on file. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/dsip": {
+    "title": "DSIP Delta Sleep-Inducing Peptide for Research Australia",
+    "description": "DSIP (Delta Sleep-Inducing Peptide) is a nonapeptide investigated in sleep and neuroendocrine research. Every batch HPLC verified with a COA. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/epitalon": {
+    "title": "Buy Epitalon Peptide for Telomerase and Aging Research",
+    "description": "Epitalon, a synthetic tetrapeptide, is studied in telomerase and ageing biology research. Sourced for Australian labs, HPLC tested with published COAs.",
+    "skipPrerender": false
+  },
+  "/product/fox04-dri": {
+    "title": "Buy FOXO4-DRI Senolytic Peptide for Research Australia",
+    "description": "FOXO4-DRI is a D-retro-inverso peptide used in cellular senescence research, targeting the FOXO4-p53 interaction. HPLC tested with COA. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/ghk-cu": {
+    "title": "Buy GHK-Cu Copper Peptide for Skin Research in Australia",
+    "description": "GHK-Cu, the copper-binding tripeptide, is widely studied for tissue remodelling and skin biology research. Australian supply, HPLC tested, COAs published.",
+    "skipPrerender": false
+  },
+  "/product/ghrp-6": {
+    "title": "Buy GHRP-6 Growth Hormone Releasing Peptide in Australia",
+    "description": "GHRP-6 is a hexapeptide growth hormone secretagogue used in ghrelin pathway research. HPLC verified, COA available, same-day dispatch Mon-Fri in Australia.",
+    "skipPrerender": false
+  },
+  "/product/glow": {
+    "title": "Buy Glow Peptide Blend: GHK-Cu, BPC-157 and TB-500 Online",
+    "description": "The GLOW peptide blend is formulated for skin and tissue repair research. Supplied from Sydney with HPLC testing and published COAs. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/glutathione": {
+    "title": "Buy Glutathione Antioxidant Peptide for Research Australia",
+    "description": "Glutathione, a glutamate-cysteine-glycine tripeptide, is a key subject in oxidative stress research. HPLC tested, COA published. Research use only, Australia.",
+    "skipPrerender": false
+  },
+  "/product/hcg": {
+    "title": "Buy HCG Hormone Research Compound Online in Australia",
+    "description": "Human chorionic gonadotropin (HCG) is a glycoprotein hormone studied in reproductive endocrinology research. COA-backed, HPLC tested, Australian dispatch.",
+    "skipPrerender": false
+  },
+  "/product/hgh-191aa": {
+    "title": "Buy HGH 191AA Somatropin Peptide for Research Australia",
+    "description": "Recombinant HGH 191AA (somatropin) for laboratory research in Australia. Each batch is independently HPLC tested with COA results published. Research use only.",
+    "skipPrerender": true
+  },
+  "/product/igf-1-lr3": {
+    "title": "Buy IGF-1 LR3 Peptide for Growth Factor Studies Australia",
+    "description": "IGF-1 LR3 is an 83-amino-acid long-acting IGF-1 analogue used in cell growth research. HPLC tested, COAs published, Sydney dispatch. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/ipamorelin": {
+    "title": "Buy Ipamorelin Peptide: GHRP for Lab Research Australia",
+    "description": "Looking for research-grade Ipamorelin? This selective ghrelin receptor agonist is HPLC tested, COA-backed and dispatched same day Mon-Fri across Australia.",
+    "skipPrerender": false
+  },
+  "/product/kisspeptin-10": {
+    "title": "Buy Kisspeptin-10 Peptide for Hormone Research Australia",
+    "description": "Kisspeptin-10 is a neuropeptide central to GnRH and reproductive signalling research. Australian supplier, HPLC-verified batches and COAs. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/klow": {
+    "title": "Buy Klow Peptide Blend: GHK-Cu, BPC-157, TB-500, KPV",
+    "description": "Explore the KLOW multi-peptide research blend, made for laboratory studies in Australia. Every batch is HPLC tested with a published COA. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/kpv": {
+    "title": "Buy KPV Tripeptide for Inflammation Research, Australia",
+    "description": "KPV is a three-amino-acid fragment of alpha-MSH, widely studied in inflammation research. Order from Sydney with HPLC testing and COAs. Research use only.",
+    "skipPrerender": false
+  },
+  "/product/mots-c": {
+    "title": "Buy MOTS-c Peptide: Mitochondrial Research, Australia",
+    "description": "MOTS-c is a mitochondrial-derived peptide studied in metabolic regulation and exercise biology research. HPLC verified, COA published, Australian dispatch.",
+    "skipPrerender": false
+  },
+  "/product/mt-1": {
+    "title": "Buy MT-1 Melanotan Peptide for Research in Australia",
+    "description": "Melanotan 1 (MT-1) is a synthetic alpha-MSH analogue studied in melanocortin research. HPLC-tested with published COAs. Research use only, shipped in Australia.",
+    "skipPrerender": false
+  },
+  "/product/mt-2": {
+    "title": "MT-2 Melanotan II Peptide for Melanocortin Research, AU",
+    "description": "Melanotan 2 (MT-2) is a melanocortin receptor agonist studied in pigmentation research. HPLC tested, COAs published, shipped across Australia. Research only.",
+    "skipPrerender": false
+  },
+  "/product/nad": {
+    "title": "NAD+ Coenzyme Compound for Cellular Research in Australia",
+    "description": "NAD+ is a coenzyme central to cellular energy and metabolism research. Sourced for Australian labs, independently HPLC tested, with COA results published.",
+    "skipPrerender": false
+  },
+  "/product/nasal-spray-10ml": {
+    "title": "Nasal Spray Bottle 10ml for Peptide Research in Australia",
+    "description": "A 10ml nasal spray bottle for dispensing reconstituted research peptide solutions in the lab. Dispatched same day Mon-Fri from Sydney across Australia.",
+    "skipPrerender": false
+  },
+  "/product/pnc-27": {
+    "title": "PNC-27 Anticancer Peptide for Oncology Research Australia",
+    "description": "PNC-27 is a p53-derived peptide used in cancer cell biology research. Each batch HPLC tested with a published COA. Research use only, ships in Australia.",
+    "skipPrerender": false
+  },
+  "/product/pt-141": {
+    "title": "Buy PT-141 Bremelanotide Peptide for Research Australia",
+    "description": "PT-141 (bremelanotide) is a melanocortin receptor agonist used in sexual function and neuroendocrine research. HPLC tested with COA. Research only, Australia.",
+    "skipPrerender": false
+  },
+  "/product/reta": {
+    "title": "Reta (Retatrutide) Triple Agonist Peptide, Research in AU",
+    "description": "Retatrutide is a triple agonist of the GIP, GLP-1 and glucagon receptors, studied in metabolic research. HPLC tested, COA published, same-day dispatch Mon-Fri.",
+    "skipPrerender": false
+  },
+  "/product/selank": {
+    "title": "Selank Anxiolytic Peptide for Neuroscience Research in AU",
+    "description": "Selank is a synthetic tuftsin analogue investigated in anxiety and stress response research. Supplied across Australia with HPLC testing and COAs. Research use.",
+    "skipPrerender": false
+  },
+  "/product/semax": {
+    "title": "Semax Nootropic Peptide for Cognitive Research in Australia",
+    "description": "Semax is a heptapeptide derived from ACTH (4-10), studied in cognition and neuroprotection research. HPLC verified with a published COA. Research only.",
+    "skipPrerender": false
+  },
+  "/product/semax--selank": {
+    "title": "Buy Semax and Selank Peptide Blend for Research Australia",
+    "description": "A Semax and Selank combination for neuropeptide research, blended and supplied for Australian labs. HPLC tested with COA on file. Research use only, Australia.",
+    "skipPrerender": false
+  },
+  "/product/sermotelin": {
+    "title": "Sermorelin Peptide for Growth Hormone Research Australia",
+    "description": "Sermorelin is a GHRH (1-29) analogue used in growth hormone axis research. Independently HPLC tested with published COAs. Research use only, Australia.",
+    "skipPrerender": true
+  },
+  "/product/sharps-container": {
+    "title": "Sharps Container for Safe Needle Disposal in Australia",
+    "description": "Puncture-resistant sharps container for the safe disposal of used needles and syringes in the lab. Dispatched from Sydney Mon-Fri to customers across Australia.",
+    "skipPrerender": false
+  },
+  "/product/slu-pp-332": {
+    "title": "SLU-PP-332 Exercise Mimetic Peptide for Research, Australia",
+    "description": "SLU-PP-332 is a pan-ERR agonist studied as an exercise mimetic in muscle and metabolic research. HPLC tested, COA published. Research use only, Australia.",
+    "skipPrerender": false
+  },
+  "/product/snap-8": {
+    "title": "SNAP-8 Research Peptide Information | PEPLAB Australia",
+    "description": "Explore SNAP-8 product details at PEPLAB Australia, including research information, product specifications, and batch documentation. For research use only.",
+    "skipPrerender": false
+  },
+  "/product/ss-31": {
+    "title": "SS-31 Research Peptide Information | PEPLAB Australia",
+    "description": "Explore SS-31 research peptide details at PEPLAB Australia, including product information, quality testing, and batch documentation. For research use only.",
+    "skipPrerender": false
+  },
+  "/product/tb-500": {
+    "title": "TB-500 Research Compound Details | PEPLAB Australia",
+    "description": "Learn TB-500 at PEPLAB Australia, including product details, specifications, quality testing information, and key laboratory research references for research use.",
+    "skipPrerender": false
+  },
+  "/product/tesamorelin": {
+    "title": "Tesamorelin Research Compound Details | PEPLAB Australia",
+    "description": "Explore Tesamorelin at PEPLAB Australia, including product details, specifications, and quality testing information for laboratory research use only online.",
+    "skipPrerender": false
+  },
+  "/product/thymosin-aplha-1": {
+    "title": "Thymosin Alpha-1 Research Product | PEPLAB Australia",
+    "description": "Read Thymosin Alpha-1 at PEPLAB Australia, including product details, specifications, and quality testing information for laboratory research use only.",
+    "skipPrerender": false
+  },
+  "/product/tirzepatide": {
+    "title": "Tirzepatide Research Product Details | PEPLAB Australia",
+    "description": "Explore Tirzepatide at PEPLAB Australia, including product details, specifications, and testing information. For research use only. View product details.",
+    "skipPrerender": false
+  },
+  "/product/vip": {
+    "title": "VIP Peptide for Research Use | PEPLAB Australia Official",
+    "description": "Explore VIP peptide details at PEPLAB Australia, including product specifications, quality testing info, and key laboratory research details. For research use only.",
+    "skipPrerender": false
+  },
+  "/refund": {
+    "title": "Refund and Returns Policy | PEPLAB Australia Official",
+    "description": "Read PEPLAB Australia's refund policy for details on return conditions, refund eligibility, order issues, and the steps required to submit a refund request.",
+    "skipPrerender": false
+  },
+  "/research": {
+    "title": "Research Compounds and Products | PEPLAB Australia",
+    "description": "Browse PEPLAB Australia's research compounds for product information, available specifications, and quality testing details for laboratory research purposes.",
+    "skipPrerender": false
+  },
+  "/research/compounds": {
+    "title": "Research Compounds and Peptides | PEPLAB Australia",
+    "description": "Explore research compounds at PEPLAB Australia, with product details, specifications, and information on available research compounds. For research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/5-amino-1mq": {
+    "title": "5-Amino-1MQ Research Compound | PEPLAB Australia Research",
+    "description": "Learn about 5-Amino-1MQ research compound details at PEPLAB Australia, including product specifications and key research information. For research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/adalank": {
+    "title": "Adalank Research Compound Details | PEPLAB Australia",
+    "description": "Explore Adalank at PEPLAB Australia, including product specifications, product references and research information. Review product details for research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/adamax": {
+    "title": "Adamax Research Compound Details | PEPLAB Australia",
+    "description": "Learn about Adamax at PEPLAB Australia, including product details, specifications, and key information for laboratory research and reference purposes.",
+    "skipPrerender": false
+  },
+  "/research/compounds/aod-9604": {
+    "title": "AOD-9604 Research Compound Details | PEPLAB Australia",
+    "description": "Get an overview of AOD-9604 at PEPLAB Australia, including product details, specifications, and quality testing information for laboratory research purposes.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ara-290": {
+    "title": "ARA-290 Research Compound Details | PEPLAB Australia",
+    "description": "Discover ARA-290 at PEPLAB Australia, with product details, specifications, quality testing information, and key details for laboratory research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/bpc-157": {
+    "title": "BPC-157 Research Compound Details | PEPLAB Australia",
+    "description": "Explore BPC-157 at PEPLAB Australia, including product details, specifications, quality testing information, and key details for laboratory research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/bpc-157-tb-500": {
+    "title": "BPC-157 + TB-500 Research Compound | PEPLAB Australia",
+    "description": "Get key details about BPC-157 + TB-500 at PEPLAB Australia, including product information, specifications, and quality testing for laboratory research use.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cagrilintide": {
+    "title": "Cagrilintide Research Compound Details | PEPLAB Australia",
+    "description": "Find Cagrilintide research compound details at PEPLAB Australia, including product specifications and quality testing for laboratory research purposes only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cartalax": {
+    "title": "Cartalax Research Compound Details | PEPLAB Australia",
+    "description": "Learn about Cartalax at PEPLAB Australia, including key product details, specifications, and quality information for laboratory research purposes and reference.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cerebrolysin": {
+    "title": "Cerebrolysin Research Compound Details | PEPLAB",
+    "description": "Explore Cerebrolysin research compound details at PEPLAB Australia, including product information and specifications for laboratory research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cjc-1295-dac": {
+    "title": "CJC-1295 DAC Research Compound Details | PEPLAB AU",
+    "description": "Explore CJC-1295 DAC research compound details at PEPLAB Australia, including product information and specifications for laboratory research use only.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cjc-1295-no-dac": {
+    "title": "CJC-1295 No DAC Research Compound | PEPLAB Australia",
+    "description": "Explore CJC-1295 No DAC at PEPLAB Australia, with product details, specifications, quality testing information, and key laboratory research reference details.",
+    "skipPrerender": false
+  },
+  "/research/compounds/cjc-1295-no-dac-ipamorelin": {
+    "title": "CJC-1295 No DAC + Ipamorelin Blend Research Overview",
+    "description": "Research on CJC-1295 No DAC and ipamorelin covers GH pathways, human pharmacology, blend evidence, safety limits, and laboratory research references.",
+    "skipPrerender": false
+  },
+  "/research/compounds/dihexa": {
+    "title": "Dihexa Research Compound Details | PEPLAB Australia",
+    "description": "Explore Dihexa at PEPLAB Australia, including product details, specifications, and quality testing information for laboratory research use only and reference.",
+    "skipPrerender": false
+  },
+  "/research/compounds/epitalon": {
+    "title": "Epitalon Research Overview: Telomeres & Cellular Ageing",
+    "description": "Epitalon research examines telomerase activity, telomere length, cell proliferation, longevity claims, safety limitations and peptide identity testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/foxo4-dri": {
+    "title": "FOXO4-DRI Research Overview: Senescent Cells & Ageing",
+    "description": "FOXO4-DRI research explores FOXO4-p53 interactions, senescent-cell apoptosis, mouse ageing models, reproductive findings, safety and peptide testing in detail.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ghk-cu": {
+    "title": "GHK-Cu Research Overview: Collagen, Skin & Tissue Repair",
+    "description": "GHK-Cu research covers collagen synthesis, skin studies, wound models, hair research, inflammatory signalling, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ghrp-2": {
+    "title": "GHRP-2 Research Overview: Hormones & Appetite Studies",
+    "description": "GHRP-2 research covers growth hormone release, appetite effects, endocrine responses, repeated-exposure findings, safety limitations and peptide testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ghrp-6": {
+    "title": "GHRP-6 Research Overview: Growth Hormone & Sleep Studies",
+    "description": "GHRP-6 research examines growth hormone release, endocrine responses, hormone pulsatility, sleep-stage findings, safety limitations and peptide testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/glow": {
+    "title": "GLOW Blend Research Overview: Formula & Evidence",
+    "description": "GLOW Blend research covers GHK-Cu, BPC-157 and TB-500, collagen studies, tissue-response models, safety limitations and analytical testing requirements.",
+    "skipPrerender": false
+  },
+  "/research/compounds/hcg": {
+    "title": "HCG Research Overview: Hormones, Fertility & Testing",
+    "description": "HCG research covers LH-like signalling, testosterone production, fertility studies, formulation differences, safety risks and biological potency testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/igf-1-des": {
+    "title": "IGF-1 DES Research Overview: Binding & Metabolic Effects",
+    "description": "IGF-1 DES research examines IGF-binding proteins, molecular structure, animal distribution studies, glucose effects, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ipamorelin": {
+    "title": "Ipamorelin Research Overview: GH Release & Clinical Trials",
+    "description": "Ipamorelin research covers ghrelin-receptor activity, growth hormone release, human pharmacology, postoperative trials, safety limitations and peptide testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/klow": {
+    "title": "KLOW Blend Research Overview: Formula & Evidence",
+    "description": "KLOW Blend research covers GHK-Cu, BPC-157, TB-500 and KPV, component studies, blend composition, safety limitations and analytical testing requirements.",
+    "skipPrerender": false
+  },
+  "/research/compounds/kpv": {
+    "title": "KPV Research Overview: Inflammation & Cellular Studies",
+    "description": "KPV research examines PepT1 transport, inflammatory signalling, cellular responses, mouse colitis models, safety limitations and peptide testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ll-37": {
+    "title": "LL-37 Research Overview: Cathelicidin Biology & Wound Studies",
+    "description": "LL-37 research examines cathelicidin biology, antimicrobial activity, wound-healing trials, clinical evidence, safety limitations and analytical testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/melanotan-2": {
+    "title": "Melanotan II Research Overview: Receptors & Pigmentation",
+    "description": "Melanotan II research covers melanocortin receptors, pigmentation, erectile responses, early human studies, safety concerns and peptide testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/melatonin": {
+    "title": "Melatonin Research Overview: Circadian Signalling & Sleep",
+    "description": "Melatonin research covers circadian signalling, sleep studies, MT1 and MT2 receptors, formulation differences, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/mots-c": {
+    "title": "MOTS-C Research Overview: Metabolic Signalling & Studies",
+    "description": "MOTS-C research examines mitochondrial signalling, AMPK activity, metabolic regulation, exercise biology, preclinical findings, safety limitations and COA testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/nad-plus": {
+    "title": "NAD+ Research Overview: Cellular Energy & Metabolism",
+    "description": "NAD+ research examines cellular metabolism, redox reactions NAD-related pathways, human infusion studies, precursor research and analytical testing limitations.",
+    "skipPrerender": false
+  },
+  "/research/compounds/p21": {
+    "title": "P21 Research Overview: P021 Identity & Neuroplasticity",
+    "description": "P21 research covers P021 identity, CNTF-derived peptide design, neuroplasticity, cognitive findings in animal models, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/pnc-27": {
+    "title": "PNC-27 Research Overview: HDM2 Binding & Cancer Studies",
+    "description": "PNC-27 research examines HDM2 binding, cancer-cell membrane disruption, preclinical findings, selectivity questions, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/pt-141": {
+    "title": "PT-141 Research Overview: Bremelanotide & Clinical Studies",
+    "description": "Explore PT-141 research, including bremelanotide, melanocortin receptor activity, clinical data on sexual desire, approved indications, and peptide COA testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/retatrutide": {
+    "title": "Retatrutide Research Overview Triple Agonist & Clinical Trial",
+    "description": "Retatrutide research covers GIP, GLP-1 and glucagon receptor activity, clinical trial findings on weight and glucose control, liver fat and safety limitations.",
+    "skipPrerender": false
+  },
+  "/research/compounds/semax": {
+    "title": "Semax Research Overview: Neurotrophins, Studies & Testing",
+    "description": "Learn about Semax research on BDNF, neural signalling and cerebral ischaemia, including clinical evidence, safety limitations and analytical testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/sermorelin": {
+    "title": "Sermorelin Research Overview: Mechanism, Studies & Testing",
+    "description": "Learn about sermorelin research, GHRH receptor activity, growth hormone studies, clinical evidence, safety limitations and analytical testing, including COAs.",
+    "skipPrerender": false
+  },
+  "/research/compounds/slu-pp-332": {
+    "title": "SLU-PP-332 Research Overview: ERR Activity & Metabolism",
+    "description": "Review SLU-PP-332 research on ERR activation, cellular metabolism, exercise models, metabolic outcomes in mice, safety limitations and analytical testing.",
+    "skipPrerender": false
+  },
+  "/research/compounds/ss-31": {
+    "title": "SS-31 Research Overview Elamipretide and Mitochondria Studies",
+    "description": "SS-31 research on mitochondrial membrane function, elamipretide clinical trials, Barth syndrome findings, safety limitations, and peptide testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/tesamorelin": {
+    "title": "Tesamorelin Research Overview | Visceral Fat and GH Studies",
+    "description": "Tesamorelin research on growth hormone signalling, visceral fat, liver fat, clinical trial findings, safety limitations, and peptide testing methods.",
+    "skipPrerender": false
+  },
+  "/research/compounds/thymosin-alpha-1": {
+    "title": "Thymosin Alpha-1 | Research Compound Information | PEPLAB",
+    "description": "Explore Thymosin Alpha-1 research compound information at PEPLAB. Learn about its scientific background, molecular properties, and current research areas.",
+    "skipPrerender": false
+  },
+  "/research/compounds/tirzepatide": {
+    "title": "Tirzepatide Research Overview Mechanism and Clinical Studies",
+    "description": "Tirzepatide research, GIP/GLP-1 receptor activity, clinical trial findings, safety considerations and analytical testing, including COA interpretation.",
+    "skipPrerender": false
+  },
+  "/research/compounds/vip": {
+    "title": "VIP Research Overview | Vasoactive Intestinal Peptide Studies",
+    "description": "Explore VIP research, VPAC1 and VPAC2 receptor activity, clinical trial findings, physiological effects, safety limitations and peptide identity testing methods.",
+    "skipPrerender": false
+  },
+  "/shipping": {
+    "title": "PEPLAB Australia Shipping Policy Delivery Information Guide",
+    "description": "Learn about PEPLAB Australia shipping options, delivery timeframes, and shipping policies. Find important information about order processing and delivery.",
+    "skipPrerender": false
+  },
+  "/shop": {
+    "title": "Shop PEPLAB Australia | Explore Our Products Online Today",
+    "description": "Explore the PEPLAB Australia online shop to discover our range of products. Browse available options and find the right products to suit your needs today.",
+    "skipPrerender": false
+  },
+  "/standards": {
+    "title": "PEPLAB Standards | Quality and Compliance Information Guide",
+    "description": "Learn about PEPLAB standards, quality requirements, and compliance information. Explore our standards to understand the guidelines and practices we follow.",
+    "skipPrerender": false
+  },
+  "/terms": {
+    "title": "PEPLAB Terms and Conditions | Website Use and Policies Guide",
+    "description": "Read the PEPLAB terms and conditions to understand website usage, purchasing policies, and applicable terms. Review our guidelines before using our website.",
+    "skipPrerender": false
+  },
+  "/track-order": {
+    "title": "Track Your Order Online | PEPLAB Australia Order Tracking",
+    "description": "Track your PEPLAB Australia order online to check your order status and shipping updates. Get the latest delivery information and contact support for assistance.",
+    "skipPrerender": false
+  }
+}

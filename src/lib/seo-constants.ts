@@ -1,91 +1,102 @@
 /** Shared SEO copy — peplab.com.au homepage and site defaults. */
 
-export const HOMEPAGE_SEO_TITLE = 'PEPLAB | Peptides Australia';
+import { withOnpageSeo } from '@/lib/onpage-seo';
+
+export const HOMEPAGE_SEO_TITLE = 'Research Peptides Australia | HPLC Tested | PEPLAB';
 
 export const HOMEPAGE_SEO_DESCRIPTION =
-  "Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only.";
+  'Shop lab-grade research peptides in Australia. Each batch is HPLC tested, with all published COAs and fast same-day dispatch Mon–Fri. For research use only.';
 
 export const SITE_BRAND_NAME = 'PEPLAB Australia';
 
+function pageSeo(path: string, title: string, description: string) {
+  return withOnpageSeo(path, { title, description });
+}
+
 export const PAGE_SEO = {
-  coa: {
-    title: 'COA Results | PEPLAB Australia',
-    description:
-      'Browse published Certificates of Analysis for PEPLAB Australia research peptides. HPLC-verified batch documentation from independent testing.',
-  },
-  calculator: {
-    title: 'Peptide Calculator | PEPLAB Australia',
-    description:
-      'Calculate reconstitution volumes, syringe units, and dose counts for research peptides with the PEPLAB Australia calculator.',
-  },
-  trackOrder: {
-    title: 'Track Your Order | PEPLAB Australia',
-    description:
-      'Track your PEPLAB Australia order with your order number and email. Australia-wide dispatch and AusPost tracking updates.',
-  },
-  contact: {
-    title: 'Contact PEPLAB Australia',
-    description:
-      'Contact PEPLAB Australia for order support, product questions, and research enquiries. Mon–Fri Australian support.',
-  },
-  contactInfo: {
-    title: 'Contact & Support | PEPLAB Australia',
-    description:
-      'PEPLAB Australia contact details, Telegram support, business hours, and registered address.',
-  },
-  standards: {
-    title: 'Quality Standards | PEPLAB Australia',
-    description:
-      'How PEPLAB Australia tests every peptide batch: HPLC purity, identity verification, published COAs, and research-grade handling standards.',
-  },
-  research: {
-    title: 'Peptide Research Overview | PEPLAB Australia',
-    description:
-      'Understanding peptides, scientific evidence and laboratory testing. Learn how to assess research papers, HPLC purity, mass spectrometry and Certificates of Analysis.',
-  },
-  blog: {
-    title: 'Blog | PEPLAB Australia',
-    description:
-      'PEPLAB Australia blog: research peptide literacy, COA guidance, HPLC testing notes, and practical tips for Australian laboratory buyers.',
-  },
-  researchCompounds: {
-    title: 'Find Your Compound | PEPLAB Research',
-    description:
-      'Browse the PEPLAB Research Library. Open compound-specific research overviews covering mechanism, published studies and analytical testing.',
-  },
-  researchRetatrutide: {
-    title: 'Retatrutide Research Overview | PEPLAB Australia',
-    description:
-      'Retatrutide (LY3437943) research overview: GIP, GLP-1 and glucagon triple receptor activity, Phase 2 and Phase 3 findings, safety context and COA guidance.',
-  },
-  researchGhkCu: {
-    title: 'GHK-Cu Research: Copper Peptide, Skin & Collagen | PEPLAB',
-    description:
-      'Explore GHK-Cu copper peptide research on collagen, skin, tissue repair and hair, with original studies, evidence limitations and guidance on COA testing.',
-  },
-  researchMotsC: {
-    title: 'MOTS-C Research: Mitochondria & Metabolism | PEPLAB',
-    description:
-      'Explore MOTS-C research on mitochondrial signalling, AMPK, metabolic regulation and exercise, with original studies and clear human-evidence limits.',
-  },
-  researchBpcTb: {
-    title: 'BPC-157 + TB-500 Blend Research & Evidence | PEPLAB',
-    description:
-      'Explore BPC-157 + TB-500 blend research, component evidence, tissue-repair models, TB-500 identity and the limitations of combination claims.',
-  },
-  researchTirzepatide: {
-    title: 'Tirzepatide Research: GIP, GLP-1 & Metabolism | PEPLAB',
-    description:
-      'Explore tirzepatide research on GIP and GLP-1 receptor activity, body weight and glucose regulation, with clinical studies, FAQs and COA guidance.',
-  },
-  researchTesamorelin: {
-    title: 'Tesamorelin Research: GHRH & Visceral Fat | PEPLAB',
-    description:
-      'Explore tesamorelin research on growth hormone signalling, visceral fat and liver fat, with human studies, evidence limitations and COA guidance.',
-  },
-  researchCjcIpa: {
-    title: 'CJC-1295 No DAC + Ipamorelin Research | PEPLAB',
-    description:
-      'Explore CJC-1295 No DAC + ipamorelin research, growth hormone pathways, DAC differences, component studies and the limits of blend evidence.',
-  },
-} as const;
+  shop: pageSeo(
+    '/shop',
+    'Shop PEPLAB Australia | Explore Our Products Online Today',
+    'Explore the PEPLAB Australia online shop to discover our range of products. Browse available options and find the right products to suit your needs today.',
+  ),
+  coa: pageSeo(
+    '/coa',
+    'COA Results: HPLC Purity Reports for Every Peptide Batch',
+    'Browse certificates of analysis (COAs) for every peptide batch. Independent HPLC purity results are published so Australian researchers can verify quality.',
+  ),
+  calculator: pageSeo(
+    '/calculator',
+    'Peptide Calculator: Reconstitution Volume and Concentration',
+    'Use the free peptide calculator to work out reconstitution volumes, concentrations and dose measurements for your lab research. Quick, accurate and easy to use.',
+  ),
+  trackOrder: pageSeo(
+    '/track-order',
+    'Track Your Order Online | PEPLAB Australia Order Tracking',
+    'Track your PEPLAB Australia order online to check your order status and shipping updates. Get the latest delivery information and contact support for assistance.',
+  ),
+  contact: pageSeo(
+    '/contact',
+    'Contact Us: Peptide Product Questions and Enquiries, AU',
+    'Get in touch with our Sydney, NSW team about orders, shipping, order tracking or research peptide questions. Friendly support for customers across Australia.',
+  ),
+  contactInfo: pageSeo(
+    '/contact-info',
+    'Contact and Support: Get Help With Your Peptide Orders',
+    'Contact our Sydney, NSW team for help with orders, order tracking, COA results or research peptide questions. Fast support for customers across Australia.',
+  ),
+  standards: pageSeo(
+    '/standards',
+    'PEPLAB Standards | Quality and Compliance Information Guide',
+    'Learn about PEPLAB standards, quality requirements, and compliance information. Explore our standards to understand the guidelines and practices we follow.',
+  ),
+  research: pageSeo(
+    '/research',
+    'Research Compounds and Products | PEPLAB Australia',
+    "Browse PEPLAB Australia's research compounds for product information, available specifications, and quality testing details for laboratory research purposes.",
+  ),
+  blog: pageSeo(
+    '/blog',
+    'Peptide Research Blog: Guides, Testing and Lab Insights',
+    'Read research peptide articles, testing guides and lab tips written for Australian researchers. Learn about HPLC purity, COAs, reconstitution and storage.',
+  ),
+  researchCompounds: pageSeo(
+    '/research/compounds',
+    'Research Compounds and Peptides | PEPLAB Australia',
+    'Explore research compounds at PEPLAB Australia, with product details, specifications, and information on available research compounds. For research use only.',
+  ),
+  faq: pageSeo(
+    '/faq',
+    'FAQ: Peptide Shipping, Testing, Storage and Returns',
+    'Find answers to common questions on ordering, shipping times, payment, order tracking, COAs and HPLC testing for research peptides supplied across Australia.',
+  ),
+  shipping: pageSeo(
+    '/shipping',
+    'PEPLAB Australia Shipping Policy Delivery Information Guide',
+    'Learn about PEPLAB Australia shipping options, delivery timeframes, and shipping policies. Find important information about order processing and delivery.',
+  ),
+  terms: pageSeo(
+    '/terms',
+    'PEPLAB Terms and Conditions | Website Use and Policies Guide',
+    'Read the PEPLAB terms and conditions to understand website usage, purchasing policies, and applicable terms. Review our guidelines before using our website.',
+  ),
+  privacy: pageSeo(
+    '/privacy',
+    'Privacy Policy: How We Collect and Protect Your Data',
+    'Read how your personal information is collected, stored and protected when you order research peptides online. Our privacy policy covers Australian customers.',
+  ),
+  refund: pageSeo(
+    '/refund',
+    'Refund and Returns Policy | PEPLAB Australia Official',
+    "Read PEPLAB Australia's refund policy for details on return conditions, refund eligibility, order issues, and the steps required to submit a refund request.",
+  ),
+  legal: pageSeo(
+    '/legal',
+    'Legal and Compliance: Terms and Research Use Only Policy',
+    'Review the terms, conditions and research-use-only disclaimers for all peptide products supplied from Sydney, Australia. Please read before placing an order.',
+  ),
+  leaderboard: pageSeo(
+    '/leaderboard',
+    'Rewards Leaderboard: Top Customers and Loyalty Rankings',
+    'Explore the leaderboard for rankings and activity from our Australian research peptide community. HPLC-tested peptides, published COAs, same-day dispatch.',
+  ),
+};

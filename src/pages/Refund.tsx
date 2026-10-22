@@ -1,14 +1,15 @@
 import { RotateCcw, AlertCircle, CheckCircle, XCircle, Package, Mail } from 'lucide-react';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
 
 export default function Refund() {
   return (
     <div className="min-h-screen bg-[#070A12]">
-      <SEO 
-        title="Returns & Refunds Policy | PEPLAB"
-        description="PEPLAB Returns & Refunds Policy - Australian Consumer Law compliant. Learn about our return and refund procedures."
+      <SEO
+        title={PAGE_SEO.refund.title}
+        description={PAGE_SEO.refund.description}
       />
       
       <ContentPageHeader />
