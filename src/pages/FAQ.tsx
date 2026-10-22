@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, Search, HelpCircle, MessageCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import SEO from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import { Skeleton } from '@/components/ui/skeleton';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
@@ -97,9 +98,9 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen" style={{ background: '#070A12' }}>
-      <SEO 
-        title="FAQ | PEPLAB - Frequently Asked Questions"
-        description="Find answers to common questions about ordering, shipping, products, and more."
+      <SEO
+        title={PAGE_SEO.faq.title}
+        description={PAGE_SEO.faq.description}
       />
       
       <div className="absolute inset-0 grid-overlay opacity-40" />

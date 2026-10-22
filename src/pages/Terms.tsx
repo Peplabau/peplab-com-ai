@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { SEO } from '@/components/SEO';
 import { CONFIG } from '@/lib/config';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
 
@@ -23,8 +24,8 @@ export default function Terms() {
   return (
     <div className="min-h-screen bg-[#070A12]">
       <SEO
-        title="Terms of Service | PEPLAB"
-        description="PEPLAB Terms of Service — Australian Consumer Law compliant. Read our terms before purchasing research products."
+        title={PAGE_SEO.terms.title}
+        description={PAGE_SEO.terms.description}
       />
 
       <ContentPageHeader />

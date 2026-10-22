@@ -480,6 +480,11 @@ export default function Catalog() {
             <span className="tabular-nums">{shopPeptideHeadlineCount}+</span>{' '}
             <span className="gradient-text">peptides</span>
           </h1>
+          <p className="mb-6 max-w-3xl text-sm leading-relaxed text-[#A9B3C7] sm:text-base">
+            Browse PEPLAB Australia research peptides. Each listing is HPLC tested with published
+            COAs, and orders dispatch from Sydney Monday to Friday. Open a product for specifications,
+            reconstitution notes and batch documentation. Research use only.
+          </p>
 
           {/* Search + research category filter — full content width */}
           <div className="catalog-search">

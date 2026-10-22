@@ -1,7 +1,22 @@
 /** Indexable peplab.com.au URLs. Shared by the sitemap and the HTML prerender. */
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 export const SITE_URL = 'https://peplab.com.au';
 
-export const STATIC_SEO_ROUTES = [
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+export const ONPAGE_SEO = JSON.parse(
+  readFileSync(join(root, 'src/lib/onpage-seo.json'), 'utf8'),
+);
+
+function withOnpage(route) {
+  const hit = ONPAGE_SEO[route.path];
+  if (!hit?.title) return route;
+  return { ...route, title: hit.title, description: hit.description };
+}
+
+const STATIC_SEO_ROUTES_BASE = [
   {
     path: '/',
     title: 'PEPLAB | Peptides Australia',
@@ -146,3 +161,5 @@ export const STATIC_SEO_ROUTES = [
     changefreq: 'weekly',
   },
 ];
+
+export const STATIC_SEO_ROUTES = STATIC_SEO_ROUTES_BASE.map(withOnpage);

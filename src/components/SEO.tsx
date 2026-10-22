@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CONFIG } from '@/lib/config';
 import { isShopAppHost, publicCanonicalOrigin } from '@/lib/domain';
@@ -36,7 +36,7 @@ export function SEO({
     ogImage ?? `${origin}${CONFIG.SHARE_PREVIEW_IMAGE_PATH}`;
   // peplab.ai is a working storefront but must not compete for SEO ranking.
   const blockIndexing = noIndex || isShopAppHost();
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Update document title
     document.title = title;
 

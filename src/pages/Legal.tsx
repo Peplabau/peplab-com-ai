@@ -1,14 +1,15 @@
 import { Scale, Shield, FileText, AlertTriangle, Gavel, ExternalLink } from 'lucide-react';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
 
 export default function Legal() {
   return (
     <div className="min-h-screen bg-[#070A12]">
-      <SEO 
-        title="Legal & Compliance | PEPLAB"
-        description="PEPLAB Legal & Compliance Information - TGA, Australian Consumer Law, and research product regulations."
+      <SEO
+        title={PAGE_SEO.legal.title}
+        description={PAGE_SEO.legal.description}
       />
       
       <ContentPageHeader />

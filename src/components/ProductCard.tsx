@@ -288,7 +288,11 @@ export default function ProductCard({
         {isLanding ? (
           <div className="pc-body pc-body-landing">
             <div className="pc-landing-head">
-              <h3 className="pc-landing-name">{product.name}</h3>
+              {isPdp ? (
+                <h1 className="pc-landing-name">{product.name}</h1>
+              ) : (
+                <h3 className="pc-landing-name">{product.name}</h3>
+              )}
               <span className="pc-landing-hplc">99%+ HPLC</span>
             </div>
             <p className="pc-landing-specs">
@@ -354,7 +358,11 @@ export default function ProductCard({
                 </div>
 
                 {/* Name */}
-                <h3 className={`pc-name ${hovered ? "pc-name-hover" : ""}`}>{product.name}</h3>
+                {isPdp ? (
+                  <h1 className={`pc-name ${hovered ? "pc-name-hover" : ""}`}>{product.name}</h1>
+                ) : (
+                  <h3 className={`pc-name ${hovered ? "pc-name-hover" : ""}`}>{product.name}</h3>
+                )}
 
                 {/* Mobile: research tag */}
                 <p className="pc-ruo-mobile">Research Use Only</p>
@@ -644,7 +652,7 @@ const STYLES = `
 .pc-name {
   font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.92);
   line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: color 0.25s;
+  margin: 0; transition: color 0.25s;
 }
 .pc-name-hover { color: #2ED1B4; }
 
@@ -1137,6 +1145,7 @@ const STYLES = `
   margin-bottom: 6px;
 }
 .pc-landing-name {
+  margin: 0;
   font-size: 14px;
   font-weight: 700;
   color: #F4F6FA;

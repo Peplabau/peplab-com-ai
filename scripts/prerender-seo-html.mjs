@@ -7,7 +7,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { SITE_URL, STATIC_SEO_ROUTES } from './seo-routes.mjs';
+import { ONPAGE_SEO, SITE_URL, STATIC_SEO_ROUTES } from './seo-routes.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -143,7 +143,20 @@ export function prerenderPublicSeo(distDir = join(root, 'dist')) {
     return 0;
   }
   const template = readFileSync(indexPath, 'utf8');
-  const routes = [...STATIC_SEO_ROUTES, ...researchRoutes()];
+  const onpageRoutes = Object.entries(ONPAGE_SEO)
+    .filter(([, entry]) => entry?.title && !entry.skipPrerender)
+    .map(([path, entry]) => ({
+      path,
+      title: entry.title,
+      description: entry.description,
+      priority: '0.8',
+      changefreq: 'weekly',
+    }));
+  const byPath = new Map();
+  for (const route of [...STATIC_SEO_ROUTES, ...researchRoutes(), ...onpageRoutes]) {
+    byPath.set(route.path, route);
+  }
+  const routes = [...byPath.values()];
   for (const route of routes) {
     const html = applyRoute(template, route);
     const file =

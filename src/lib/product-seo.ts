@@ -1,4 +1,5 @@
 import { publicCanonicalOrigin } from '@/lib/domain';
+import { getOnpageSeo } from '@/lib/onpage-seo';
 import { mergeSeoKeywords } from '@/lib/seo-keywords';
 import { getDefaultStorefrontDosage, type Product } from '@/products';
 
@@ -22,8 +23,9 @@ export function buildProductSeo(product: Product, slug: string) {
     fallback ||
     `${product.name} for in-vitro laboratory research. HPLC-verified batches, published COAs, Australia-wide dispatch from PEPLAB. Research use only.`;
 
-  const title = `${product.name} Australia | PEPLAB — Research Peptides`;
-  const description = truncate(stripMarkup(rawDescription));
+  const onpage = getOnpageSeo(`/product/${slug}`);
+  const title = onpage?.title || `${product.name} Australia | PEPLAB — Research Peptides`;
+  const description = onpage?.description || truncate(stripMarkup(rawDescription));
   const keywords = mergeSeoKeywords(
     [product.name, `${product.name} Australia`, slug.replace(/-/g, ' '), 'research peptides Australia', 'buy peptides Australia', 'HPLC verified peptides'],
   );
@@ -43,7 +45,15 @@ export function buildProductJsonLd(product: Product, slug: string) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: truncate(stripMarkup(product.description || product.moreInfo || product.name), 500),
+    description: truncate(
+      stripMarkup(
+        getOnpageSeo(`/product/${slug}`)?.description ||
+          product.description ||
+          product.moreInfo ||
+          product.name,
+      ),
+      500,
+    ),
     image: imagePath,
     sku: slug,
     brand: {
@@ -60,7 +70,8 @@ export function buildProductJsonLd(product: Product, slug: string) {
         : 'https://schema.org/OutOfStock',
       seller: {
         '@type': 'Organization',
-        name: 'PEPLAB',
+        '@id': `${SITE_ORIGIN}/#organization`,
+        name: 'PEPLAB | Peptides Australia',
       },
     },
   };

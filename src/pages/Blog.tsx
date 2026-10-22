@@ -144,7 +144,8 @@ export default function Blog() {
                 PEPLAB <span className="gradient-text">Blog</span>
               </h1>
               <p className="mx-auto max-w-2xl text-base text-[#A9B3C7] sm:text-lg">
-                Research literacy, COA guidance, and practical notes for Australian laboratory buyers.
+                Research literacy, COA guidance, HPLC testing notes and practical lab tips for
+                Australian buyers. New explainers are added as testing and research topics come up.
               </p>
             </header>
 

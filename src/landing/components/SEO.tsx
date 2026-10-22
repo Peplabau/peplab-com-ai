@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { CONFIG } from '@/landing/lib/config';
 import { publicCanonicalOrigin } from '@/lib/domain';
+import { HOMEPAGE_SEO_DESCRIPTION, HOMEPAGE_SEO_TITLE } from '@/lib/seo-constants';
 import { SITE_SEO_KEYWORDS } from '@/landing/lib/seo-keywords';
 
 interface SEOProps {
@@ -12,8 +13,8 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = 'PEPLAB | Peptides Australia',
-  description = "Australia's independent research peptide supplier. Every batch HPLC tested with published COAs. Express same-day dispatch Mon–Fri. Research use only.",
+  title = HOMEPAGE_SEO_TITLE,
+  description = HOMEPAGE_SEO_DESCRIPTION,
   keywords = SITE_SEO_KEYWORDS,
   ogImage = `${CONFIG.SITE_URL}${CONFIG.SHARE_PREVIEW_IMAGE_PATH}`,
   noIndex = false,

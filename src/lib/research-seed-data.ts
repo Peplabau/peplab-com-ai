@@ -11,9 +11,9 @@ const RESEARCH_CORE_SEED_ARTICLES: ResearchArticleInput[] = [
     card_title: 'What is Retatrutide?',
     card_description:
       'An investigational GIP / GLP-1 / glucagon triple receptor agonist (LY3437943) — classification, receptor mechanism and the research record.',
-    seo_title: 'Retatrutide Research Overview | PEPLAB Australia',
+    seo_title: 'Retatrutide Research Overview Triple Agonist & Clinical Trial',
     seo_description:
-      'Retatrutide (LY3437943) research overview: GIP, GLP-1 and glucagon triple receptor activity, Phase 2 and Phase 3 findings, safety context and COA guidance.',
+      'Retatrutide research covers GIP, GLP-1 and glucagon receptor activity, clinical trial findings on weight and glucose control, liver fat and safety limitations.',
     eyebrow: 'GLP-1 / Incretin',
     h1: 'Retatrutide Research Overview',
     subtitle: 'Triple Receptor Activity and Metabolic Research',
@@ -205,9 +205,9 @@ Explore PEPLAB’s [Quality & Testing](/standards) information and available [CO
     card_title: 'What is GHK-Cu?',
     card_description:
       'A copper-binding tripeptide complex (copper tripeptide-1) studied for collagen, extracellular matrix remodelling, skin and tissue-repair research.',
-    seo_title: 'GHK-Cu Research: Copper Peptide, Skin & Collagen | PEPLAB',
+    seo_title: 'GHK-Cu Research Overview: Collagen, Skin & Tissue Repair',
     seo_description:
-      'Explore GHK-Cu copper peptide research on collagen, skin, tissue repair and hair, with original studies, evidence limitations and guidance on COA testing.',
+      'GHK-Cu research covers collagen synthesis, skin studies, wound models, hair research, inflammatory signalling, safety limitations and analytical testing.',
     eyebrow: 'Copper Peptides / Skin & Tissue Research',
     h1: 'GHK-Cu Research Overview',
     subtitle: 'Copper Peptide Activity, Collagen and Skin Research',
@@ -416,9 +416,9 @@ Explore PEPLAB’s [Quality & Testing](/standards) information and available [CO
     card_title: 'What is MOTS-C?',
     card_description:
       'A 16-amino-acid mitochondrial-derived peptide studied in metabolic regulation, AMPK signalling, muscle biology and exercise-related research.',
-    seo_title: 'MOTS-C Research: Mitochondria & Metabolism | PEPLAB',
+    seo_title: 'MOTS-C Research Overview: Metabolic Signalling & Studies',
     seo_description:
-      'Explore MOTS-C research on mitochondrial signalling, AMPK, metabolic regulation and exercise, with original studies and clear human-evidence limits.',
+      'MOTS-C research examines mitochondrial signalling, AMPK activity, metabolic regulation, exercise biology, preclinical findings, safety limitations and COA testing.',
     eyebrow: 'Mitochondrial / Metabolic Research',
     h1: 'MOTS-C Research Overview',
     subtitle: 'Mitochondrial Signalling and Metabolic Adaptation',
@@ -553,9 +553,9 @@ This page summarises scientific evidence and does not provide instructions for p
     card_title: 'What is BPC-157 + TB-500 Blend?',
     card_description:
       'A combination of two tissue-repair research peptides — component evidence, TB-500 identity questions and the limits of blend claims.',
-    seo_title: 'BPC-157 + TB-500 Blend Research & Evidence | PEPLAB',
+    seo_title: 'BPC-157 + TB-500 Research Compound | PEPLAB Australia',
     seo_description:
-      'Explore BPC-157 + TB-500 blend research, component evidence, tissue-repair models, TB-500 identity and the limitations of combination claims.',
+      'Get key details about BPC-157 + TB-500 at PEPLAB Australia, including product information, specifications, and quality testing for laboratory research use.',
     eyebrow: 'Peptide Blends / Tissue Research',
     h1: 'BPC-157 + TB-500 Blend Research Overview',
     subtitle: 'Component Evidence and Tissue-Repair Research',
@@ -699,9 +699,9 @@ Purity does not establish sterility, endotoxin status or clinical effectiveness.
     card_title: 'What is Tirzepatide?',
     card_description:
       'A dual GIP / GLP-1 receptor agonist (LY3298176) — clinical evidence on body weight, glucose regulation and the limits of product equivalence.',
-    seo_title: 'Tirzepatide Research: GIP, GLP-1 & Metabolism | PEPLAB',
+    seo_title: 'Tirzepatide Research Overview Mechanism and Clinical Studies',
     seo_description:
-      'Explore tirzepatide research on GIP and GLP-1 receptor activity, body weight and glucose regulation, with clinical studies, FAQs and COA guidance.',
+      'Tirzepatide research, GIP/GLP-1 receptor activity, clinical trial findings, safety considerations and analytical testing, including COA interpretation.',
     eyebrow: 'GLP-1 / Incretin',
     h1: 'Tirzepatide Research Overview',
     subtitle: 'Dual Receptor Activity and Metabolic Research',
@@ -841,9 +841,9 @@ This page summarises scientific evidence and does not provide instructions for p
     card_title: 'What is Tesamorelin?',
     card_description:
       'A synthetic GHRH analogue studied mainly for HIV-associated visceral fat and liver-fat research — mechanism, trials and indication limits.',
-    seo_title: 'Tesamorelin Research: GHRH & Visceral Fat | PEPLAB',
+    seo_title: 'Tesamorelin Research Overview | Visceral Fat and GH Studies',
     seo_description:
-      'Explore tesamorelin research on growth hormone signalling, visceral fat and liver fat, with human studies, evidence limitations and COA guidance.',
+      'Tesamorelin research on growth hormone signalling, visceral fat, liver fat, clinical trial findings, safety limitations, and peptide testing methods.',
     eyebrow: 'Growth Hormone / GHRH',
     h1: 'Tesamorelin Research Overview',
     subtitle: 'Growth Hormone Signalling and Visceral Fat Research',
@@ -983,9 +983,9 @@ This page summarises scientific evidence and does not provide instructions for p
     card_title: 'What is CJC-1295 No DAC + Ipamorelin Blend?',
     card_description:
       'A two-pathway growth hormone blend — No DAC vs long-acting CJC-1295, ipamorelin component evidence and the limits of blend claims.',
-    seo_title: 'CJC-1295 No DAC + Ipamorelin Research | PEPLAB',
+    seo_title: 'CJC-1295 No DAC + Ipamorelin Blend Research Overview',
     seo_description:
-      'Explore CJC-1295 No DAC + ipamorelin research, growth hormone pathways, DAC differences, component studies and the limits of blend evidence.',
+      'Research on CJC-1295 No DAC and ipamorelin covers GH pathways, human pharmacology, blend evidence, safety limits, and laboratory research references.',
     eyebrow: 'Peptide Blends / Growth Hormone',
     h1: 'CJC-1295 No DAC + Ipamorelin Blend Research Overview',
     subtitle: 'GHRH and Ghrelin-Receptor Pathway Research',

@@ -1,14 +1,15 @@
 import { Shield, Lock, Eye, FileText, User, Mail, Cookie } from 'lucide-react';
 import { SEO } from '@/components/SEO';
+import { PAGE_SEO } from '@/lib/seo-constants';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-[#070A12]">
-      <SEO 
-        title="Privacy Policy | PEPLAB"
-        description="PEPLAB Privacy Policy - Australian Privacy Principles compliant. Learn how we collect, use, and protect your personal information."
+      <SEO
+        title={PAGE_SEO.privacy.title}
+        description={PAGE_SEO.privacy.description}
       />
       
       <ContentPageHeader />

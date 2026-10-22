@@ -13,6 +13,7 @@ import { SEO } from '@/components/SEO';
 import { JsonLd } from '@/components/JsonLd';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import ProductImage from '@/components/ProductImage';
+import { getOnpageSeo } from '@/lib/onpage-seo';
 import { buildBreadcrumbJsonLd } from '@/lib/seo-breadcrumbs';
 import {
   COA_ARCHIVE_PATH,
@@ -298,6 +299,7 @@ export default function ResearchCompoundPage() {
   }
 
   const path = researchCompoundPath(article.slug);
+  const onpageSeo = getOnpageSeo(path);
   const { lead, accent } = splitH1(article.h1 || `${article.name} Research Overview`);
   const eyebrow = article.eyebrow || article.category;
   const relatedCards = buildRelatedCards(article);
@@ -305,8 +307,10 @@ export default function ResearchCompoundPage() {
   return (
     <>
       <SEO
-        title={article.seo_title || `${article.name} Research | PEPLAB`}
-        description={article.seo_description || article.card_description}
+        title={onpageSeo?.title || article.seo_title || `${article.name} Research | PEPLAB`}
+        description={
+          onpageSeo?.description || article.seo_description || article.card_description
+        }
       />
       <JsonLd
         id={`research-${article.slug}-breadcrumbs`}

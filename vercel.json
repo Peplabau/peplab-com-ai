@@ -99,6 +99,10 @@
   ],
   "headers": [
     {
+      "source": "/llms.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }]
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "peplab.ai" }],
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]

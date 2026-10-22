@@ -344,7 +344,9 @@ export default function ReconstitutionCalculator() {
           </div>
           <div className="rcalc-header-copy">
             <h1 className="rcalc-title">Research calculator</h1>
-            <p className="rcalc-subtitle">Calculate your research dosage with precision.</p>
+            <p className="rcalc-subtitle">
+              Work out reconstitution volume, concentration and syringe units from the vial amount and diluent you enter.
+            </p>
           </div>
         </div>
 
