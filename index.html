@@ -52,22 +52,34 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://dbhoyrqehxbjvdvddixc.supabase.co" crossorigin />
-  <link rel="preconnect" href="https://widget.trustpilot.com" crossorigin />
-  <!-- TrustBox bootstrap (SPA also loads this; head tag helps first paint) -->
-  <script type="text/javascript" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-    async></script>
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  </noscript>
 
-  <!-- Google Tag Manager -->
-  <script>(function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-PS75R6HS');</script>
+  <!-- Google Tag Manager — idle/load deferred so it does not block first paint on mobile -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    (function () {
+      function loadGtm() {
+        if (window.__peplabGtmLoaded) return;
+        window.__peplabGtmLoaded = true;
+        var j = document.createElement('script');
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-PS75R6HS';
+        document.head.appendChild(j);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtm, { timeout: 2500 });
+      } else {
+        window.addEventListener('load', function () { setTimeout(loadGtm, 1); });
+      }
+    })();
+  </script>
   <!-- End Google Tag Manager -->
 
   <link rel="icon" href="/favicon.ico" sizes="48x48" />

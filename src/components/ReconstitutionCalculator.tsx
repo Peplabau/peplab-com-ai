@@ -343,7 +343,7 @@ export default function ReconstitutionCalculator() {
             <Calculator className="w-6 h-6" strokeWidth={2} />
           </div>
           <div className="rcalc-header-copy">
-            <h1 className="rcalc-title">Research calculator</h1>
+            <h2 className="rcalc-title">Research calculator</h2>
             <p className="rcalc-subtitle">
               Work out reconstitution volume, concentration and syringe units from the vial amount and diluent you enter.
             </p>

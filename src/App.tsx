@@ -2,8 +2,6 @@ import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 // PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
 import { HOME_PATH, SHOP_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_COMPOUND_SLUG_PATH, BLOG_PATH, BLOG_SLUG_PATH } from '@/lib/routes';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { CartProvider } from '@/context/CartContext';
 import { RewardsProvider } from '@/context/RewardsContext';
@@ -54,7 +52,6 @@ const Leaderboard = lazy(() => import('@/pages/Leaderboard'));
 const Calculator = lazy(() => import('@/pages/Calculator'));
 // const Protocols = lazy(() => import('@/pages/Protocols')); // temporarily disabled — restore with routes
 const CoaArchive = lazy(() => import('@/pages/CoaArchive'));
-gsap.registerPlugin(ScrollTrigger);
 
 /** Inline shell styles — work before Tailwind CSS finishes loading on slow mobile networks. */
 const PAGE_SHELL_STYLE = { background: '#070A12', minHeight: '100dvh' } as const;
@@ -247,7 +244,9 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    ScrollTrigger.getAll().forEach((st) => st.kill());
+    void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    });
   }, [pathname]);
 
   return null;

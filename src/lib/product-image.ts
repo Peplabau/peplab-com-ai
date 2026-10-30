@@ -18,6 +18,8 @@ const VARIANT_WIDTH: Record<ProductImageVariant, number> = {
   detail: 1200,
 };
 
+const THUMB_WIDTH = VARIANT_WIDTH.thumb;
+
 export type OptimizeImageOptions = {
   width?: number;
   quality?: number;
@@ -70,16 +72,13 @@ export function getProductImageSources(
   const base = (raw ?? '').trim();
   if (!base) return { src: '', srcSet: undefined as string | undefined };
 
-  if (variant === 'thumb') {
-    const src = getOptimizedProductImageUrl(base, { width: THUMB_WIDTH });
-    const srcSet = [
-      `${getOptimizedProductImageUrl(base, { width: THUMB_WIDTH })} ${THUMB_WIDTH}w`,
-      `${getOptimizedProductImageUrl(base, { width: THUMB_WIDTH * 2 })} ${THUMB_WIDTH * 2}w`,
-    ].join(', ');
-    return { src, srcSet };
-  }
-
-  return { src: getOriginalProductImageUrl(base), srcSet: undefined };
+  const width = VARIANT_WIDTH[variant];
+  const src = getOptimizedProductImageUrl(base, { width });
+  const srcSet = [
+    `${getOptimizedProductImageUrl(base, { width })} ${width}w`,
+    `${getOptimizedProductImageUrl(base, { width: width * 2 })} ${width * 2}w`,
+  ].join(', ');
+  return { src, srcSet };
 }
 
 /** Responsive `sizes` for catalog product cards (2-col mobile → 4-col desktop). */
@@ -97,17 +96,18 @@ export function preloadProductImages(
   max = 6,
   variant: ProductImageVariant = 'card',
 ): void {
-  urls.slice(0, max).forEach((raw) => {
+  urls.slice(0, max).forEach((raw, index) => {
     const href =
       variant === 'thumb'
         ? getOptimizedProductImageUrl(raw, { width: THUMB_WIDTH })
-        : getOriginalProductImageUrl(raw);
+        : getOptimizedProductImageUrl(raw, { width: VARIANT_WIDTH.card });
     if (!href) return;
     if (document.querySelector(`link[rel="preload"][as="image"][href="${href}"]`)) return;
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'image';
     link.href = href;
+    if (index < 2) link.setAttribute('fetchpriority', 'high');
     document.head.appendChild(link);
   });
 }
