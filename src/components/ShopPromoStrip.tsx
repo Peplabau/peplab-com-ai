@@ -374,8 +374,8 @@ export default function ShopPromoStrip({ className = '' }: ShopPromoStripProps) 
           ) : null}
           <SeasonalCornerIcons theme={theme} />
 
-          <div className="grid grid-cols-2 items-start">
-            <div className="relative z-10 flex items-center gap-2 sm:gap-3 px-3 pt-3 sm:px-5 sm:pt-4">
+          <div className="grid grid-cols-2 items-start gap-2 sm:gap-4">
+            <div className="relative z-10 flex items-center gap-2 sm:gap-3 pl-4 pr-1 pt-6 sm:pl-6 sm:pt-7">
               <div className="p-1.5 sm:p-2 rounded-full bg-[rgba(139,92,246,0.2)] flex-shrink-0">
                 <Award className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#A78BFA]" />
               </div>
@@ -392,7 +392,7 @@ export default function ShopPromoStrip({ className = '' }: ShopPromoStripProps) 
               </div>
             </div>
 
-            <div className="catalog-halloween-treat relative overflow-hidden px-2 pt-2.5 pb-0 sm:px-4 sm:pt-4">
+            <div className="catalog-halloween-treat relative overflow-hidden pl-1 pr-4 pt-5 pb-0 sm:pr-6 sm:pt-6">
               {isChristmas ? null : <div className="catalog-halloween-web" aria-hidden="true" />}
               <div className="catalog-halloween-copy">
                 <p className="catalog-halloween-title">
@@ -405,7 +405,7 @@ export default function ShopPromoStrip({ className = '' }: ShopPromoStripProps) 
             </div>
           </div>
 
-          <div className="relative z-10 block px-3 pb-3 pt-1 pr-10 sm:px-5 sm:pb-4 sm:pr-14 pointer-events-none">
+          <div className="relative z-10 block pl-4 pb-4 pt-3 pr-14 sm:pl-6 sm:pb-5 sm:pr-20 pointer-events-none">
             <LoyaltyProgressBar
               compact
               hideTitle
