@@ -230,7 +230,52 @@ export function ChristmasStockingIcon({ className }: { className?: string }) {
   );
 }
 
-/** Background decor for a seasonal promo panel (drifting icon + web or lights/snow). */
+const XMAS_FLAKES = [
+  { left: '3%', top: '24%', size: 15 },
+  { left: '47%', top: '60%', size: 13 },
+  { left: '27%', top: '70%', size: 13 },
+  { left: '57%', top: '72%', size: 15 },
+  { left: '78%', top: '70%', size: 14 },
+  { left: '95%', top: '38%', size: 15 },
+];
+
+const XMAS_STARS = [
+  { left: '2%', top: '50%', delay: '0s' },
+  { left: '18%', top: '12%', delay: '0.8s' },
+  { left: '38%', top: '52%', delay: '1.6s' },
+  { left: '52%', top: '22%', delay: '0.4s' },
+  { left: '66%', top: '58%', delay: '1.2s' },
+  { left: '88%', top: '20%', delay: '2s' },
+  { left: '97%', top: '66%', delay: '0.6s' },
+];
+
+/** Christmas backdrop: hanging string lights, gold sparkles, snowflakes and a snow bank. */
+export function ChristmasScene() {
+  return (
+    <div className="catalog-xmas-scene" aria-hidden="true">
+      <div className="catalog-xmas-sparkles" />
+      {XMAS_STARS.map((star) => (
+        <span
+          key={`${star.left}-${star.top}`}
+          className="catalog-xmas-star"
+          style={{ left: star.left, top: star.top, animationDelay: star.delay }}
+        />
+      ))}
+      {XMAS_FLAKES.map((flake) => (
+        <Snowflake
+          key={`${flake.left}-${flake.top}`}
+          className="catalog-xmas-scene-flake"
+          style={{ left: flake.left, top: flake.top, width: flake.size, height: flake.size }}
+          strokeWidth={1.6}
+        />
+      ))}
+      <div className="catalog-xmas-lights" />
+      <div className="catalog-xmas-snowbank" />
+    </div>
+  );
+}
+
+/** Background decor for a seasonal promo panel (pumpkin + web or the Christmas scene). */
 export function SeasonalStripDecor({ theme }: { theme: SeasonalTheme }) {
   if (theme === 'halloween') {
     return (
@@ -243,15 +288,7 @@ export function SeasonalStripDecor({ theme }: { theme: SeasonalTheme }) {
     );
   }
 
-  return (
-    <>
-      <div className="catalog-xmas-snow" aria-hidden="true" />
-      <div className="catalog-xmas-lights" aria-hidden="true" />
-      <div className="catalog-halloween-pumpkin catalog-xmas-flake" aria-hidden="true">
-        <Snowflake className="h-full w-full text-white" strokeWidth={1.6} />
-      </div>
-    </>
-  );
+  return <ChristmasScene />;
 }
 
 /** Bottom-right seasonal icons (pumpkins or Santa hats). */
@@ -366,12 +403,7 @@ export default function ShopPromoStrip({ className = '' }: ShopPromoStripProps) 
           }
           className="catalog-halloween-promo relative block overflow-hidden rounded-xl sm:rounded-2xl border border-[rgba(139,92,246,0.4)] bg-[#0c0a14] shadow-[0_0_24px_rgba(139,92,246,0.18)] no-underline text-inherit hover:bg-[#0c0a14] hover:opacity-100 hover:shadow-[0_0_24px_rgba(139,92,246,0.18)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5CF6]/60"
         >
-          {isChristmas ? (
-            <>
-              <div className="catalog-xmas-snow" aria-hidden="true" />
-              <div className="catalog-xmas-lights" aria-hidden="true" />
-            </>
-          ) : null}
+          {isChristmas ? <ChristmasScene /> : null}
           <SeasonalCornerIcons theme={theme} />
 
           <div className="grid grid-cols-2 items-start gap-2 sm:gap-4">
@@ -405,7 +437,11 @@ export default function ShopPromoStrip({ className = '' }: ShopPromoStripProps) 
             </div>
           </div>
 
-          <div className="relative z-10 block pl-4 pb-4 pt-3 pr-14 sm:pl-6 sm:pb-5 sm:pr-20 pointer-events-none">
+          <div
+            className={`relative z-10 block pl-4 pt-3 pr-14 sm:pl-6 sm:pr-20 pointer-events-none ${
+              isChristmas ? 'pb-8 sm:pb-10' : 'pb-4 sm:pb-5'
+            }`}
+          >
             <LoyaltyProgressBar
               compact
               hideTitle
