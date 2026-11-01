@@ -1,9 +1,14 @@
+import { SEASONAL_PROMO_COPY, useSeasonalTheme } from '@/hooks/use-seasonal-theme';
+
 export default function NewLandingAnnounce() {
+  const theme = useSeasonalTheme();
+  const label = SEASONAL_PROMO_COPY[theme].announce;
+
   return (
-    <div className="nl-announce nl-announce--halloween" role="region" aria-label="Halloween special">
+    <div className={`nl-announce nl-announce--${theme}`} role="region" aria-label={label}>
       <div className="nl-announce-inner">
         <p className="nl-announce-text">
-          <span className="nl-announce-highlight">Halloween Special</span>
+          <span className="nl-announce-highlight">{label}</span>
           <span className="nl-announce-sep" aria-hidden>
             |
           </span>

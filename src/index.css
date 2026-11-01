@@ -4430,6 +4430,110 @@ a.catalog-halloween-promo:active {
   }
 }
 
+/* Christmas variant of the seasonal promo (admin → Seasonal promo theme) */
+.catalog-season--christmas .catalog-halloween-title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  color: #ef4444;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.catalog-season--christmas .catalog-halloween-offer {
+  color: #4ade80;
+  text-shadow: 0 0 14px rgba(74, 222, 128, 0.5);
+}
+
+.catalog-season--christmas .catalog-halloween-jack {
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.55));
+}
+
+.catalog-xmas-gift {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.45));
+}
+
+.catalog-xmas-chip-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.3));
+}
+
+@media (min-width: 640px) {
+  .catalog-xmas-chip-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.catalog-xmas-flake {
+  filter: drop-shadow(0 0 8px rgba(186, 230, 253, 0.8));
+  opacity: 0.9;
+}
+
+.catalog-xmas-lights {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.9rem;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 50% 72%, #fde68a 0 2.2px, rgba(253, 230, 138, 0.35) 3px, transparent 5px),
+    radial-gradient(circle at 50% 72%, #f87171 0 2.2px, rgba(248, 113, 113, 0.35) 3px, transparent 5px),
+    radial-gradient(circle at 50% 72%, #4ade80 0 2.2px, rgba(74, 222, 128, 0.35) 3px, transparent 5px),
+    radial-gradient(ellipse 60% 100% at 50% 0%, transparent 46%, rgba(244, 246, 250, 0.22) 50%, transparent 54%);
+  background-size: 66px 100%, 66px 100%, 66px 100%, 22px 100%;
+  background-position: 0 0, 22px 0, 44px 0, 0 0;
+  background-repeat: repeat-x;
+  animation: catalog-xmas-twinkle 2.4s ease-in-out infinite;
+}
+
+.catalog-xmas-snow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 0 1.4px, transparent 2px);
+  background-size: 46px 46px, 78px 78px;
+  background-position: 0 0, 23px 31px;
+  animation: catalog-xmas-snowfall 14s linear infinite;
+}
+
+@keyframes catalog-xmas-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes catalog-xmas-snowfall {
+  from {
+    background-position: 0 0, 23px 31px;
+  }
+  to {
+    background-position: 0 460px, 23px 811px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-xmas-lights,
+  .catalog-xmas-snow {
+    animation: none;
+  }
+}
+
 .coa-archive-hero {
   --coa-rg-purple: #8b5cf6;
   --coa-rg-pink: #ec4899;
