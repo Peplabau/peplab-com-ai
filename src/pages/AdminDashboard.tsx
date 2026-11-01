@@ -533,7 +533,7 @@ export default function AdminDashboard() {
       try {
         const user = await getCurrentUser();
         if (!user) {
-          window.location.href = '/login';
+          window.location.href = '/login?redirect=/admin/dashboard';
           return;
         }
 

@@ -109,8 +109,8 @@ export async function handoffToExternalShop(nextPath?: string | null): Promise<v
 
   const currentOrigin = window.location.origin.replace(/\/+$/, '');
 
-  // Already on peplab.ai — just navigate locally.
-  if (currentOrigin === EXTERNAL_SHOP_ORIGIN) {
+  // Already on peplab.ai, or heading to the admin panel — just navigate locally.
+  if (currentOrigin === EXTERNAL_SHOP_ORIGIN || next.startsWith('/admin')) {
     window.location.assign(`${currentOrigin}${next}`);
     return;
   }
