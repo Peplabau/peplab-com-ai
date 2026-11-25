@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import CartDrawer from '@/components/CartDrawer';
-import ShopPromoStrip, { HalloweenPumpkinIcon } from '@/components/ShopPromoStrip';
+import ShopPromoStrip from '@/components/ShopPromoStrip';
 import ResearchMarquee from '@/components/ResearchMarquee';
 import { SEO } from '@/components/SEO';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
@@ -244,20 +244,7 @@ export default function HomeLanding({ embedded = false }: HomeLandingProps) {
         />
       ) : null}
 
-      {/* Wide panel — same animated Halloween treatment as the promo strip. */}
-      <div className="catalog-halloween-strip relative overflow-hidden rounded-2xl border border-[rgba(139,92,246,0.4)] bg-[#0c0a14] px-4 py-8 shadow-[0_0_24px_rgba(139,92,246,0.18)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-        <div className="catalog-halloween-pumpkin" aria-hidden="true">
-          <HalloweenPumpkinIcon className="h-full w-full" />
-        </div>
-        <div className="catalog-halloween-web" aria-hidden="true" />
-        <div className="catalog-halloween-jacks" aria-hidden="true">
-          <span className="catalog-halloween-jack catalog-halloween-jack--a">
-            <HalloweenPumpkinIcon className="h-full w-full" />
-          </span>
-          <span className="catalog-halloween-jack catalog-halloween-jack--b">
-            <HalloweenPumpkinIcon className="h-full w-full" />
-          </span>
-        </div>
+      <div className="relative overflow-hidden rounded-2xl border border-[rgba(139,92,246,0.4)] bg-[#0c0a14] px-4 py-8 shadow-[0_0_24px_rgba(139,92,246,0.18)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div className="relative z-10 mx-auto w-full max-w-xl">
               {!sessionReady || isHandingOff ? (
                 <div className="flex min-h-[280px] flex-col items-center justify-center text-center">
