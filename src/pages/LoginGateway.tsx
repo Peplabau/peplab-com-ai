@@ -20,7 +20,6 @@ import {
   Ticket,
   ArrowLeft,
   MessageCircle,
-  ShoppingBag,
 } from 'lucide-react';
 import { supabase, signIn, signUp, getCurrentUser } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
@@ -29,7 +28,7 @@ import { handoffToExternalShop, resolvePostLoginPath } from '@/lib/login-redirec
 import { SEO } from '@/components/SEO';
 import ContentPageHeader from '@/components/ContentPageHeader';
 import Footer from '@/sections/Footer';
-import { EXTERNAL_SHOP_ORIGIN, LOGIN_GATEWAY_PAGE_TITLE } from '@/lib/domain';
+import { LOGIN_GATEWAY_PAGE_TITLE } from '@/lib/domain';
 import { SITE_SEO_DESCRIPTION, SITE_SEO_KEYWORDS, SITE_SEO_TITLE } from '@/lib/seo-keywords';
 import { HOMEPAGE_SEO_DESCRIPTION } from '@/lib/seo-constants';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
@@ -366,13 +365,6 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
             </div>
 
             <div className="mb-5 space-y-2.5">
-              <a
-                href={EXTERNAL_SHOP_ORIGIN}
-                className="flex w-full items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold bg-[rgba(46,209,180,0.16)] border border-[rgba(46,209,180,0.4)] text-[#F4F6FA] hover:bg-[rgba(46,209,180,0.24)] transition-colors"
-              >
-                <ShoppingBag className="w-4 h-4 text-[#2ED1B4] shrink-0" />
-                Shop now
-              </a>
               <div className="grid grid-cols-2 gap-2.5">
                 <a
                   href={LOGIN_COMMUNITY_TELEGRAM}
@@ -609,7 +601,7 @@ export default function LoginGateway({ asHomepage = false }: LoginGatewayProps) 
               )}
             </div>
 
-            {/* "New to PEPLAB?" help dropdown — hidden; Shop now + Community/WhatsApp cover new visitors
+            {/* "New to PEPLAB?" help dropdown — hidden; Community/WhatsApp cover new visitors
             {!isSignUp && (
               <div className="mt-5 rounded-2xl border border-[rgba(244,246,250,0.08)] bg-[rgba(17,24,39,0.45)] overflow-hidden">
                 <button

@@ -130,8 +130,10 @@ export default function ContactInfo() {
   }, []);
 
   const tgHandle = telegramHandleFromUrl(telegramLink);
-  const mapsQuery = encodeURIComponent(CONFIG.BUSINESS.ADDRESS_LINES.join(', '));
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+  const addressLines = CONFIG.BUSINESS.ADDRESS_LINES;
+  const mapsUrl = addressLines.length
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLines.join(', '))}`
+    : '';
 
   return (
     <>
@@ -253,13 +255,14 @@ export default function ContactInfo() {
 
           {/* Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {addressLines.length > 0 && mapsUrl ? (
             <div className="p-6 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
               <div className="flex items-center gap-3 mb-4">
                 <MapPin className="w-5 h-5 text-[#EC4899]" />
                 <h3 className="text-lg font-bold text-[#F4F6FA]">Our address</h3>
               </div>
               <address className="text-[#A9B3C7] not-italic leading-relaxed mb-4">
-                {CONFIG.BUSINESS.ADDRESS_LINES.map((line) => (
+                {addressLines.map((line) => (
                   <span key={line} className="block">{line}</span>
                 ))}
               </address>
@@ -276,6 +279,7 @@ export default function ContactInfo() {
                 <ExternalLink className="w-4 h-4 shrink-0" />
               </a>
             </div>
+            ) : null}
 
             <div className="p-6 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
               <div className="flex items-center gap-3 mb-4">

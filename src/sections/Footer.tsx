@@ -200,6 +200,7 @@ export default function Footer() {
                   </div>
                 </li>
               )}
+              {CONFIG.BUSINESS.ADDRESS_LINES.length > 0 && (
               <li>
                 <MapPin className="w-4 h-4 shrink-0 text-[#2ED1B4]" aria-hidden />
                 <div>
@@ -214,6 +215,7 @@ export default function Footer() {
                   </address>
                 </div>
               </li>
+              )}
               <li>
                 <Clock className="w-4 h-4 shrink-0 text-[#2ED1B4]" aria-hidden />
                 <div>

@@ -79,7 +79,7 @@ export const CONFIG = {
     ABN: '',
     PHONE_DISPLAY: '+61 435 717 401',
     PHONE_TEL: '+61435717401',
-    ADDRESS_LINES: ['30 Shepherd Street Liverpool NSW 2170, Australia'] as const,
+    ADDRESS_LINES: [] as const,
     BUSINESS_HOURS: 'Mon-Fri, 9:00 AM - 5:00 PM AEST',
   },
 

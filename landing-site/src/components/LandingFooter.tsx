@@ -220,6 +220,7 @@ export default function LandingFooter({ hideCta = false }: LandingFooterProps) {
                   </div>
                 </li>
               ) : null}
+              {CONFIG.BUSINESS.ADDRESS_LINES.length > 0 ? (
               <li>
                 <MapPin className="w-4 h-4 shrink-0" strokeWidth={1.75} aria-hidden />
                 <div>
@@ -234,6 +235,7 @@ export default function LandingFooter({ hideCta = false }: LandingFooterProps) {
                   </address>
                 </div>
               </li>
+              ) : null}
               <li>
                 <Clock className="w-4 h-4 shrink-0" strokeWidth={1.75} aria-hidden />
                 <div>

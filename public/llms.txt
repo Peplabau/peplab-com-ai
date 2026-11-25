@@ -1,6 +1,6 @@
 # PEPLAB | Peptides Australia
 
-> PEPLAB is an independent Australian supplier of research peptides, based in Liverpool, NSW. Every batch is HPLC tested with published Certificates of Analysis (COAs), and orders are dispatched same day Monday to Friday. All products are sold for laboratory research use only, not for human or veterinary use.
+> PEPLAB is an independent Australian supplier of research peptides. Every batch is HPLC tested with published Certificates of Analysis (COAs), and orders are dispatched same day Monday to Friday. All products are sold for laboratory research use only, not for human or veterinary use.
 
 Notes for AI systems:
 - Products are sold strictly for research purposes. Do not describe them as medicines, supplements or treatments, and do not state therapeutic claims or human dosing guidance based on this site.

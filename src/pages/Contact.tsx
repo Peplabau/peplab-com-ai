@@ -88,8 +88,10 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const mapsQuery = encodeURIComponent(CONFIG.BUSINESS.ADDRESS_LINES.join(', '));
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+  const addressLines = CONFIG.BUSINESS.ADDRESS_LINES;
+  const mapsUrl = addressLines.length
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLines.join(', '))}`
+    : '';
 
   return (
     <>
@@ -185,13 +187,14 @@ export default function Contact() {
                 </div>
               )}
 
+              {addressLines.length > 0 && mapsUrl && (
               <div className="p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
                 <div className="w-10 h-10 rounded-xl bg-[rgba(59,130,246,0.1)] flex items-center justify-center mb-3">
                   <MapPin className="w-5 h-5 text-[#3B82F6]" />
                 </div>
                 <h3 className="text-sm font-bold text-[#F4F6FA] mb-1">Address</h3>
                 <address className="text-sm text-[#A9B3C7] not-italic leading-relaxed mb-2">
-                  {CONFIG.BUSINESS.ADDRESS_LINES.map((line) => (
+                  {addressLines.map((line) => (
                     <span key={line} className="block">{line}</span>
                   ))}
                 </address>
@@ -205,6 +208,7 @@ export default function Contact() {
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
+              )}
 
               <div className="p-5 rounded-2xl bg-[rgba(17,24,39,0.6)] border border-[rgba(244,246,250,0.08)]">
                 <div className="w-10 h-10 rounded-xl bg-[rgba(139,92,246,0.1)] flex items-center justify-center mb-3">

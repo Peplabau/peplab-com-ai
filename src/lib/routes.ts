@@ -6,8 +6,7 @@ export const SHOP_PATH = '/shop';
 
 /**
  * Legacy marketing landing path.
- * Kept for old bookmarks/links; app + Vercel redirect this to the homepage.
- * Prefer HOME_PATH for new links.
+ * On peplab.com.au this route now renders the 404 page.
  */
 export const LANDING_PATH = '/landing';
 

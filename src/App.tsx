@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 // PROTOCOLS_PATH temporarily disabled (client risk) — restore with /protocols routes below.
 import { HOME_PATH, SHOP_PATH, RESEARCH_PATH, RESEARCH_COMPOUNDS_PATH, RESEARCH_COMPOUND_SLUG_PATH, BLOG_PATH, BLOG_SLUG_PATH } from '@/lib/routes';
 
@@ -35,7 +35,6 @@ const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const Login = lazy(() => import('@/pages/Login'));
 const LoginGateway = lazy(() => import('@/pages/LoginGateway'));
 const ShopHome = lazy(() => import('@/pages/ShopHome'));
-const PeplabLandingRoute = lazy(() => import('@/pages/PeplabLandingRoute'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
@@ -324,8 +323,8 @@ function LoginOnlyApp() {
                 <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Public — keep indexed / crawlable */}
-                <Route path="/landing" element={<PeplabLandingRoute />} />
-                <Route path="/new-landing" element={<Navigate to="/landing" replace />} />
+                <Route path="/landing" element={<NotFound />} />
+                <Route path="/new-landing" element={<NotFound />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
@@ -401,8 +400,8 @@ function App() {
             <Routes>
               <Route path={HOME_PATH} element={<StorefrontLandingRoute />} />
               <Route path={SHOP_PATH} element={<StorefrontLandingRoute />} />
-              <Route path="/landing" element={<PeplabLandingRoute />} />
-              <Route path="/new-landing" element={<Navigate to="/landing" replace />} />
+              <Route path="/landing" element={<NotFound />} />
+              <Route path="/new-landing" element={<NotFound />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/privacy" element={<Privacy />} />
