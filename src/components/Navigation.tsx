@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
   ShoppingCart,
   Menu,
@@ -21,7 +20,7 @@ import { supabase, getCurrentUser, signOut } from '@/lib/supabase';
 import { checkIsAdmin } from '@/lib/supabase-db';
 import SearchBar from './SearchBar';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
-import { isLoginOnlyDomain, isShopAppHost } from '@/lib/domain';
+import { isShopAppHost } from '@/lib/domain';
 import {
   DEFAULT_LANDING_PAGE_SETTINGS,
   getSiteSetting,
@@ -35,7 +34,6 @@ type NavigationProps = {
 };
 
 export default function Navigation({ embedded = false }: NavigationProps) {
-  const { pathname } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -158,15 +156,9 @@ export default function Navigation({ embedded = false }: NavigationProps) {
   // setting resolves (see the prime effect above). The call still returns the
   // live result from `resolveShopHref`, which also handles peplab.ai.
   void publicStorefrontOn;
-  const hideShopOnMainLogin =
-    !isShopAppHost() &&
-    (pathname === '/login' ||
-      pathname === '/signup' ||
-      pathname === '/forgot-password' ||
-      pathname === '/reset-password' ||
-      (isLoginOnlyDomain() && pathname === '/'));
+  const hideShopOnMainDomain = !isShopAppHost();
   const navEntries: ReadonlyArray<NavAnchor> = [
-    ...(hideShopOnMainLogin ? [] : [{ label: 'Shop', href: resolveShopHref(SHOP_PATH) }]),
+    ...(hideShopOnMainDomain ? [] : [{ label: 'Shop', href: resolveShopHref(SHOP_PATH) }]),
     { label: 'Research', href: RESEARCH_PATH },
     { label: 'Blog', href: BLOG_PATH },
     { label: 'COA', href: COA_ARCHIVE_PATH },

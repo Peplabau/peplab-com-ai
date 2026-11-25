@@ -13,6 +13,7 @@ import { CONFIG } from '@/lib/config';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/auspost';
 import { getSiteSetting, DEFAULT_SUPPORT_LINKS } from '@/lib/settings';
 import { HOME_PATH, SHOP_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH, RESEARCH_PATH, BLOG_PATH } from '@/lib/routes';
+import { isShopAppHost } from '@/lib/domain';
 // PROTOCOLS_PATH temporarily unused — restore with Dosage chart footer link
 // import { HOME_PATH, SHOP_PATH, PROTOCOLS_PATH, CALCULATOR_PATH, COA_ARCHIVE_PATH } from '@/lib/routes';
 
@@ -108,6 +109,7 @@ export default function Footer() {
             <p className="nl-footer-tagline">{CONFIG.SITE_DESCRIPTION}</p>
           </div>
 
+          {isShopAppHost() ? (
           <div className="nl-footer-col">
             <h4 className="nl-footer-col-heading">Shop</h4>
             <ul className="nl-footer-links">
@@ -122,6 +124,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+          ) : null}
 
           <div className="nl-footer-col">
             <h4 className="nl-footer-col-heading">Quality</h4>
