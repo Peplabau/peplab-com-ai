@@ -73,7 +73,7 @@ function StorefrontRouteLoading() {
  *   peplab.ai                        → always `ShopHome` (open catalog).
  *   peplab.com.au, admin ON          → `ShopHome` (public catalog).
  *   peplab.com.au, admin OFF         → `ShopHome` with the catalog replaced by
- *                                      the lock card (login + Shop CTA). Reviews,
+ *                                      the lock card (login). Reviews,
  *                                      leaderboard, quality, SEO copy, and the
  *                                      footer stay on the page.
  *

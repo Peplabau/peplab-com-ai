@@ -6,7 +6,6 @@ import {
   EyeOff,
   Lock,
   Mail,
-  ShoppingBag,
   User,
 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
@@ -19,14 +18,11 @@ import { checkIsAdmin } from '@/lib/supabase-db';
 import { getCurrentUser, signIn, signUp, supabase } from '@/lib/supabase';
 import { sendSignUpWelcome } from '@/lib/email';
 import { handoffToExternalShop, resolvePostLoginPath } from '@/lib/login-redirect';
-import { EXTERNAL_SHOP_ORIGIN, externalShopUrl } from '@/lib/domain';
+import { EXTERNAL_SHOP_ORIGIN } from '@/lib/domain';
 import {
   DEFAULT_RESEARCH_DISCLAIMER_SETTINGS,
   getSiteSetting,
 } from '@/lib/settings';
-
-/** Shop CTA → peplab.ai root (not /shop). */
-const SHOP_EXTERNAL_URL = externalShopUrl('/');
 
 const VERIFICATION_PENDING_COPY =
   "Your account is created. We've also sent a quick confirmation email — open it to finish setting up your dashboard access.";
@@ -47,7 +43,7 @@ type AuthMode = 'signin' | 'signup';
 
 type HomeLandingProps = {
   /**
-   * Render only the lock slot (Shop CTA + sign-in card) so it can replace the
+   * Render only the lock slot (sign-in card) so it can replace the
    * catalog inside ShopHome. Navigation, SEO, and the sections below stay on
    * the parent page.
    */
@@ -263,17 +259,6 @@ export default function HomeLanding({ embedded = false }: HomeLandingProps) {
           </span>
         </div>
         <div className="relative z-10 mx-auto w-full max-w-xl">
-              {!isHandingOff ? (
-                <a
-                  href={SHOP_EXTERNAL_URL}
-                  rel="nofollow noopener noreferrer"
-                  className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(139,92,246,0.45)] bg-[rgba(139,92,246,0.12)] px-4 py-3 text-sm font-semibold text-[#F4F6FA] transition-colors hover:bg-[rgba(139,92,246,0.2)]"
-                >
-                  <ShoppingBag className="h-4 w-4 text-[#F97316] shrink-0" />
-                  Shop
-                </a>
-              ) : null}
-
               {!sessionReady || isHandingOff ? (
                 <div className="flex min-h-[280px] flex-col items-center justify-center text-center">
                   <div className="mb-4 h-9 w-9 animate-spin rounded-full border-2 border-[#2ED1B4] border-t-transparent" />
